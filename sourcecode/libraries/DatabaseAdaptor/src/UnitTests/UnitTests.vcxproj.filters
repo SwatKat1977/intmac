@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Library Sources">
+      <UniqueIdentifier>{475fc56f-beb4-4457-a670-d61680a61a52}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Test_ResultsRow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ResultsRow.cpp">
+      <Filter>Library Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Test_ResultColumn.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Test_ResultsSet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ResultsSet.cpp">
+      <Filter>Library Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Test_SQLiteAdaptor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SQLiteAdaptor.cpp">
+      <Filter>Library Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\sqlite\sqlite3.c">
+      <Filter>Library Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SQLiteDatabaseObject.cpp">
+      <Filter>Library Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Test_SQLiteDatabaseObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\ResultsRow.h">
+      <Filter>Library Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ResultsSet.h">
+      <Filter>Library Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SQLiteAdaptor.h">
+      <Filter>Library Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sqlite\sqlite3.h">
+      <Filter>Library Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sqlite\sqlite3ext.h">
+      <Filter>Library Sources</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

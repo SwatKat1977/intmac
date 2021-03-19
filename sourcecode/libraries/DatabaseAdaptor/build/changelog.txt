@@ -1,0 +1,29 @@
+SQLite Database Adaptor Lib Change Log File
+-------------------------------------------
+
+Version 0.3.2 [04th July 2015]
+* [MOD] Added preprocessor option 'SQLITE_DEFAULT_FOREIGN_KEYS=1' so that 
+        foreign keys are enforced.
+
+
+Version 0.3.1 [30th June 2015]
+* [MOD] Changed linkage format from Multi-threaad <debug> DLL to Multi-threaad <debug>.
+
+
+Version 0.3.0 [22nd June 2015]
+* [FIX] Added iResultsSet::Clear() function to clear contents of the results, 
+        a call to this was added to RawQuery because old data is returned!
+* [MOD] Minor code tidying.
+
+
+Version 0.2.0 [21st June 2015]
+* [MOD] Moved RawQuery() from Adaptor to Database Object.
+* [NEW] Added unit tests for SQLiteDatabaseObject.
+
+
+Version 0.1.1 [06th June 2015]
+* [FIX] Updated SQLiteApator header to fix incorrect include file. 
+
+		
+Version 0.1.0 [03rd June 2015]
+* [NEW] Initial version.

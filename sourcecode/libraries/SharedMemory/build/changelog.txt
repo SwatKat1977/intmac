@@ -1,0 +1,21 @@
+Shared Memory Lib Change Log File
+---------------------------------
+
+Version 0.1.2 [24th Jan 2015]
+* [BUG] Fixed bug in SharedMemoryConnection::Write(), a write size error occurs
+        when writing blanked messages.
+* [BUG] Fixed bug in SharedMemoryBlock::Write(), a write size error occurs when
+        writing blanked messages.
+
+
+Version 0.1.1 [12th Jan 2015]
+* [BUG] Fixed bug in SharedMemoryBlock::Write() where by write size is
+        incorrect.
+* [BUG] Fixed bug in SharedMemoryBlock::Read() so it now correctly uses the
+        offset value passed in.
+* [BUG] Fixed bug in SharedMemoryConnection::Read() so it now correctly uses 
+        the offset value passed in.
+
+		
+Version 0.1.0 [11th Jan 2015]
+* [NEW] Initial version.

@@ -1,0 +1,26 @@
+#  Copyright 2014-2017 Integrated Test Management Centre Foundation Team
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#  http://www.apache.org/licenses/LICENSE-2.0
+#  //////////////////////////////////////////////////////////////////////////
+
+# Messages sent from the gateway to the authentication service.
+
+"""    Handshake messages
++-----------------+
++ Start Handshake +
++-----------------+
+         ||
+         \/
++-----------------+
++  End Handshake  +
++-----------------+
+"""
+MsgID_HandshakeBase = 1000
+MsgID_StartHandshake = MsgID_HandshakeBase + 1
+MsgID_EndHandshake = MsgID_HandshakeBase + 2
+
+
+MsgID_UtiltyMsgsBase = 9000
+MsgID_KeepAlive = MsgID_UtiltyMsgsBase + 1

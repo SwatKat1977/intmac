@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<service>
+	<database username="user" name="database" password="password"/>
+	<clientInterface startState="enabled" port="7000" connectionType="raw" />
+	<service name="auth" mode="disabled" port="8000" host="localhost"
+	                  connectionType="raw" />
+	<service name="businessLogic" mode="disabled" port="8001" host="localhost"
+	                  connectionType="raw" />
+</service>

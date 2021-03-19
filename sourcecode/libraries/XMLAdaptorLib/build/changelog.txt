@@ -1,0 +1,10 @@
+XML Adaptor Library Change Log File
+-----------------------------------
+		
+Version 1.1.0 [6th Feb 2015]
+* [MOD] Added PlatformUtils::Terminate to allow proper cleanup of memory.
+* [BUG] DOMParser destructor now deletes the underlying parser object.
+
+
+Version 1.0.0 [27th Jan 2015]
+* [NEW] Initial version.

@@ -1,0 +1,13 @@
+1. Ability to create test subject
+2. Ability to create test
+3. Define Requirements Coverage
+4. Manually test running
+4. Automated test running
+5. Manage defects.
+6. Analyse Test Plan
+
+Reporting:
+System Test Report
+Daily Reporting
+Requirements coverage reporting
+configuration management

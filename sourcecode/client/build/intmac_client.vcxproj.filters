@@ -1,0 +1,363 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="HCI">
+      <UniqueIdentifier>{375cdc69-c3b5-412f-9f28-e4312cac0382}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System">
+      <UniqueIdentifier>{872c8728-db41-40df-b42f-5c079d80f140}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HCI\Main Dialog">
+      <UniqueIdentifier>{1f710b4d-77f6-4e65-a72b-45b08cc75fba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{37bb4ed2-76f9-444a-ba43-334df3a4a08c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\MVP">
+      <UniqueIdentifier>{00d3a6b0-6aec-48c6-9099-edf0cd5a79e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data Models">
+      <UniqueIdentifier>{ec93ade5-a595-4ee7-b4ae-f1bacd62140a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HCI\Common Dialogs">
+      <UniqueIdentifier>{01f46f03-3e6a-4082-8fc5-33f66199ee44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Shared Memory">
+      <UniqueIdentifier>{6d521d76-45a7-47b7-bfc4-1d64b77b1110}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XML">
+      <UniqueIdentifier>{98efdd9d-4aa4-4a32-9378-d8d19e742da1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HCI\Main Dialog\Manage Project">
+      <UniqueIdentifier>{52dc525a-fc17-437a-847b-914a569371ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HCI\Main Dialog\Assets">
+      <UniqueIdentifier>{a4512011-3a0a-4550-a9db-351dfd6a9b2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HCI\Main Dialog\Test Plan">
+      <UniqueIdentifier>{08de4daa-4ff5-449e-b117-12500ffe8715}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Messaging">
+      <UniqueIdentifier>{618ff504-b7c5-450f-a66a-51cb8e2b0344}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client Services">
+      <UniqueIdentifier>{5526f98d-8cbd-41a9-883e-feafb2d2695c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\system\client.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hci\commonDialogs\CommonInputBox.cpp">
+      <Filter>HCI\Common Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hci\mainDialog\mainDialog.cpp">
+      <Filter>HCI\Main Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\system\MessageHandler.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\dataModels\stateModel.cpp">
+      <Filter>Data Models</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\dataModels\projectModel.cpp">
+      <Filter>Data Models</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\dataModels\assetData.cpp">
+      <Filter>Data Models</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\dataModels\assetDataTransaction.cpp">
+      <Filter>Data Models</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\system\shMemHarnessCommsLayer.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\system\communicationsLayerFactory.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\system\commsThread.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\system\commsMessage.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\common\stringUtils.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\xml\configNode.cpp">
+      <Filter>XML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hci\mainDialog\manageProject\manageProjectPage.cpp">
+      <Filter>HCI\Main Dialog\Manage Project</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hci\mainDialog\manageProject\manageProjectPaneManager.cpp">
+      <Filter>HCI\Main Dialog\Manage Project</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hci\mainDialog\manageProject\releasesToolbarPane.cpp">
+      <Filter>HCI\Main Dialog\Manage Project</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hci\mainDialog\manageProject\releaseCycleDetailsPane.cpp">
+      <Filter>HCI\Main Dialog\Manage Project</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hci\mainDialog\manageProject\releaseDetailsPane.cpp">
+      <Filter>HCI\Main Dialog\Manage Project</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hci\mainDialog\manageProject\releasesTreeCtrl.cpp">
+      <Filter>HCI\Main Dialog\Manage Project</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\dataModels\releaseTransaction.cpp">
+      <Filter>Data Models</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\dataModels\releaseData.cpp">
+      <Filter>Data Models</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hci\mainDialog\assets\paneManager.cpp">
+      <Filter>HCI\Main Dialog\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hci\mainDialog\assets\toolbarItemData.cpp">
+      <Filter>HCI\Main Dialog\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hci\mainDialog\assets\toolbarPane.cpp">
+      <Filter>HCI\Main Dialog\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hci\mainDialog\assets\assetsPage.cpp">
+      <Filter>HCI\Main Dialog\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hci\mainDialog\assets\assetsTreeCtrl.cpp">
+      <Filter>HCI\Main Dialog\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hci\mainDialog\manageProject\releaseItemData.cpp">
+      <Filter>HCI\Main Dialog\Manage Project</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hci\mainDialog\assets\mainPane.cpp">
+      <Filter>HCI\Main Dialog\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hci\mainDialog\testPlan\testPlanPage.cpp">
+      <Filter>HCI\Main Dialog\Test Plan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hci\mainDialog\manageProject\releaseFolderDetailsPane.cpp">
+      <Filter>HCI\Main Dialog\Manage Project</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hci\mainDialog\manageProject\manageProjectMain.cpp">
+      <Filter>HCI\Main Dialog\Manage Project</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\system\eventHandler.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\messaging\MessageDefinition.cpp">
+      <Filter>Messaging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\clientServices\clientServicesManager.cpp">
+      <Filter>Client Services</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\clientServices\sessionManagerClientSrv.cpp">
+      <Filter>Client Services</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\messaging\MessagesRegister.cpp">
+      <Filter>Messaging</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\system\client.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\MVP\iModel.h">
+      <Filter>Common\MVP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\MVP\iHciView.h">
+      <Filter>Common\MVP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\MVP\iHciPresenter.h">
+      <Filter>Common\MVP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hci\commonDialogs\CommonInputBox.h">
+      <Filter>HCI\Common Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hci\mainDialog\mainDialog.h">
+      <Filter>HCI\Main Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\system\iMessageHandler.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\system\MessageHandler.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\system\iCommsMessage.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\dataModels\stateModel.h">
+      <Filter>Data Models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\dataModels\projectModel.h">
+      <Filter>Data Models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\dataModels\assetData.h">
+      <Filter>Data Models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\dataModels\assetDataTransaction.h">
+      <Filter>Data Models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\dataModels\iAssetData.h">
+      <Filter>Data Models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\system\iCommunicationsLayer.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\system\shMemHarnessCommsLayer.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\system\communicationsLayerFactory.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\externalLibraries\sharedMemory\iSharedMemory.h">
+      <Filter>Common\Shared Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\externalLibraries\sharedMemory\iSharedMemoryAdaptor.h">
+      <Filter>Common\Shared Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\externalLibraries\sharedMemory\iSharedMemoryBlock.h">
+      <Filter>Common\Shared Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\externalLibraries\sharedMemory\sharedMemoryAdaptor.h">
+      <Filter>Common\Shared Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\externalLibraries\sharedMemory\sharedMemoryFactory.h">
+      <Filter>Common\Shared Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\system\iCommsLayerConnectInfo.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\system\shMemConnectionInfo.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\clientServerMessages_state.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\system\commsThread.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\system\commsMessage.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\system\projectConstants.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\stringUtils.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\xml\configNode.h">
+      <Filter>XML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hci\mainDialog\manageProject\manageProjectPage.h">
+      <Filter>HCI\Main Dialog\Manage Project</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hci\mainDialog\manageProject\manageProjectPaneManager.h">
+      <Filter>HCI\Main Dialog\Manage Project</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hci\mainDialog\manageProject\releasesToolbarPane.h">
+      <Filter>HCI\Main Dialog\Manage Project</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hci\mainDialog\manageProject\releaseCycleDetailsPane.h">
+      <Filter>HCI\Main Dialog\Manage Project</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hci\mainDialog\manageProject\releaseDetailsPane.h">
+      <Filter>HCI\Main Dialog\Manage Project</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hci\mainDialog\manageProject\releasesTreeCtrl.h">
+      <Filter>HCI\Main Dialog\Manage Project</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\dataModels\releaseTransaction.h">
+      <Filter>Data Models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\dataModels\iReleaseData.h">
+      <Filter>Data Models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\dataModels\releaseData.h">
+      <Filter>Data Models</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hci\mainDialog\assets\paneManager.h">
+      <Filter>HCI\Main Dialog\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hci\mainDialog\assets\toolbarItemData.h">
+      <Filter>HCI\Main Dialog\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hci\mainDialog\assets\toolbarPane.h">
+      <Filter>HCI\Main Dialog\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hci\mainDialog\assets\assetsPage.h">
+      <Filter>HCI\Main Dialog\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hci\mainDialog\assets\assetsTreeCtrl.h">
+      <Filter>HCI\Main Dialog\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hci\mainDialog\manageProject\releaseItemData.h">
+      <Filter>HCI\Main Dialog\Manage Project</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hci\mainDialog\assets\mainPane.h">
+      <Filter>HCI\Main Dialog\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hci\mainDialog\testPlan\testPlanPage.h">
+      <Filter>HCI\Main Dialog\Test Plan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hci\mainDialog\manageProject\releaseFolderDetailsPane.h">
+      <Filter>HCI\Main Dialog\Manage Project</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hci\mainDialog\manageProject\manageProjectMain.h">
+      <Filter>HCI\Main Dialog\Manage Project</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\iEventEnabledObject.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\iEventHandler.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\iEventMsg.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\system\eventHandler.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\system\eventsList.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\messaging\iMessageDefinition.h">
+      <Filter>Messaging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\messaging\MessageDefinition.h">
+      <Filter>Messaging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\MsgProtocolDefs.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\clientServices\clientServicesDefs.h">
+      <Filter>Client Services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\clientServices\clientServicesManager.h">
+      <Filter>Client Services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\clientServices\iClientServicesManager.h">
+      <Filter>Client Services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\clientServices\sessionManagerClientSrv.h">
+      <Filter>Client Services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\clientServices\iClientService.h">
+      <Filter>Client Services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\clientServices\iSessionManagerClientSrv.h">
+      <Filter>Client Services</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\messaging\MessagesRegister.h">
+      <Filter>Messaging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\messaging\iMessagesRegister.h">
+      <Filter>Messaging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\messaging\MessageDefinitions.h">
+      <Filter>Messaging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\MessageIdentities.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
