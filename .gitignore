@@ -1,5 +1,2 @@
-syntax:glob
-
-html/**
-**.pyc
+*.pyc
 .DS_Store
