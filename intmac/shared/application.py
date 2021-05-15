@@ -1,65 +1,79 @@
-#  Copyright 2014-2018 Integrated Test Management Centre Foundation Team
-#  Licensed under the Apache License, Version 2.0 (the "License");
-#  you may not use this file except in compliance with the License.
-#  You may obtain a copy of the License at
-#  http://www.apache.org/licenses/LICENSE-2.0
-#  //////////////////////////////////////////////////////////////////////////
-import datetime
+'''
+Copyright 2014-2021 Secure Shed Project Dev Team
 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-# Application framework class.
-class Application(object):
+    http://www.apache.org/licenses/LICENSE-2.0
 
-    ## IsRunning property (getter).
-    #  @param self The object pointer.
-	@property
-	def IsRunning(self):
-		return self._isRunning
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+'''
+from abc import ABCMeta, abstractmethod
+from intmac_exception import IntmacException
 
+class Application(metaclass=ABCMeta):
+    ''' Application framework class. '''
 
-    ## IsRunning property (setter).
-    #  @param self The object pointer.
-    #  @param value New value for property.
-	@IsRunning.setter
-	def IsRunning(self, value):
-		self._isRunning = value
+    @property
+    def is_running(self) -> bool:
+        '''
+        Getter for is_running property.
 
+        returns:
+            Is running flag (boolean).
+        '''
+        return self._is_running
 
-    ## Default constructor.
-    #  @param self The object pointer.
-	def __init__(self):
-		self._isRunning = False
+    @is_running.setter
+    def is_running(self, is_running : bool) -> None:
+        '''
+        Setter for is_running property.
 
+        parameters:
+            is_running New value for property.
+        '''
+        self._is_running = is_running
 
-	## ** Overridable function **
-	#  Start the application.
-    #  @param self The object pointer.
-	def Run(self):
-		# Initialise the application, run main loop if initialised.
-		if self._Initialise() == True:
+    def __init__(self):
+        self._is_initialised = False
+        self._is_running = False
 
-			# Run the main loop.
-			while self._isRunning == True:
-				self._MainLoop()
+    def run(self) -> None:
+        '''
+        Start the main application, this is a looping method.
+        '''
 
-		# Perform any shutdown required.
-		self._Shutdown()
+        if not self._is_initialised:
+            raise IntmacException('Application not initialised')
 
+        # Run the main loop.
+        while self._is_running:
+            self._main_loop()
 
-	## ** Overridable function **
-    #  @param self The object pointer.
-    #  @return True if initialise was successful, otherwise False.
-	def _Initialise(self):
-		return True
+        # Perform any shutdown required once the application has ended.
+        self._shutdown()
 
+    @abstractmethod
+    def initialise(self) -> bool:
+        '''
+        Abstract method for the application initialisation.  It should return
+        a boolean (True => Successful, False => Unsuccessful), upons success
+        self._is_initialised should be set to True.
 
-	## ** Overridable function **
-    #  @param self The object pointer.
-	def _MainLoop(self):
-		pass
+        returns:
+            Boolean: True => Successful, False => Unsuccessful.
+        '''
+        return True
 
+    @abstractmethod
+    def _main_loop(self) -> None:
+        ''' Abstract method for main application. '''
 
-	## ** Overridable function **
-    #  @param self The object pointer.
-	def _Shutdown(self):
-		pass
+    @abstractmethod
+    def _shutdown(self):
+        ''' Abstract method for application shutdown. '''
