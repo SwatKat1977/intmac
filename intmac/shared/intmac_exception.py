@@ -14,13 +14,5 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-# ***********************************************************************
-# Definition of Intmac Exception class
-# ***********************************************************************
 class IntmacException(Exception):
-	def __init__(self, ID, message = ""):
-
-		# Call the base class constructor with the parameters it needs
-		super(IntmacException, self).__init__(message)
-
-		self.exceptionID = ID
+    ''' Definition of Intmac Exception base class '''
