@@ -43,7 +43,7 @@ class Application(metaclass=ABCMeta):
         self._is_initialised = False
         self._is_running = False
 
-    def run(self) -> None:
+    async def run(self) -> None:
         '''
         Start the main application, this is a looping method.
         '''
@@ -58,12 +58,29 @@ class Application(metaclass=ABCMeta):
         # Perform any shutdown required once the application has ended.
         self._shutdown()
 
-    @abstractmethod
     def initialise(self) -> bool:
         '''
+        Application initialisation.  It should return a boolean
+        (True => Successful, False => Unsuccessful), upon success
+        self._is_initialised is set to True.
+
+        returns:
+            Boolean: True => Successful, False => Unsuccessful.
+        '''
+        if self._initialise() is True:
+            self._is_initialised = True
+            init_status = True
+
+        else:
+            init_status = False
+
+        return init_status
+
+    @abstractmethod
+    def _initialise(self) -> bool:
+        '''
         Abstract method for the application initialisation.  It should return
-        a boolean (True => Successful, False => Unsuccessful), upons success
-        self._is_initialised should be set to True.
+        a boolean (True => Successful, False => Unsuccessful).
 
         returns:
             Boolean: True => Successful, False => Unsuccessful.

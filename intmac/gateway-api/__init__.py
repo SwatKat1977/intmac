@@ -1,12 +1,28 @@
+'''
+Copyright 2014-2021 Secure Shed Project Dev Team
 
-#pylint: disable=wrong-import-position
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+'''
+
 import asyncio
-import os
 import sys
 from quart import Quart
+from gateway_api_application import GatewayApiApplication
 
 ## Quart application instance
 app = Quart(__name__)
+
+api_application = GatewayApiApplication(app)
 
 @app.before_serving
 async def startup() -> None:
@@ -16,6 +32,7 @@ async def startup() -> None:
     returns:
         None
     """
+    app.service_task = asyncio.ensure_future(api_application.run())
 
 @app.after_serving
 async def shutdown() -> None:
@@ -25,3 +42,6 @@ async def shutdown() -> None:
     returns:
         None
     """
+
+if not api_application.initialise():
+    sys.exit()
