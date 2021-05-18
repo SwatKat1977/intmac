@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 from abc import ABCMeta, abstractmethod
-from intmac_exception import IntmacException
+from items_exception import ItemsException
 
 class Application(metaclass=ABCMeta):
     ''' Application framework class. '''
@@ -49,7 +49,7 @@ class Application(metaclass=ABCMeta):
         '''
 
         if not self._is_initialised:
-            raise IntmacException('Application not initialised')
+            raise ItemsException('Application not initialised')
 
         # Run the main loop.
         while self._is_running:
