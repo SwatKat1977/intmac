@@ -1,4 +1,4 @@
-# Integrated Test Managemement Suite (INTMAC)
+# Integrated Test Managemement Suite (ITEMS)
 
 Integrated management suite for managing test cases.
 
@@ -6,7 +6,7 @@ Integrated management suite for managing test cases.
 
 ## Developers
 
-This section is for developers who wish to run, modify or test INTAC.
+This section is for developers who wish to run, modify or test ITEMS.
 
 ### Prerequisites
 
@@ -16,7 +16,7 @@ For Docker:
 
 ### Running Docker Images Locally
 
-Docker files have been provided to allow you to run INTMAC in Docker containers, the
+Docker files have been provided to allow you to run ITEMS in Docker containers, the
 following table details how to run and build each service locally.
 
 Notes:
