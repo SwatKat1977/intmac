@@ -18,7 +18,7 @@ from quart import Blueprint, request
 def create_placeholder_blueprint():
     view = PlaceholderView()
 
-    blueprint = Blueprint('auth_api', __name__)
+    blueprint = Blueprint('placeholder_api', __name__)
 
     @blueprint.route('/PLACEHOLDER', methods=['POST'])
     def authenticate_user_request():
