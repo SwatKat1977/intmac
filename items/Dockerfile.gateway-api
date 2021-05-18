@@ -12,7 +12,7 @@ RUN apk add --no-cache && \
     pip install --no-cache-dir -r requirements-gateway-api.txt && \
     rm requirements-gateway-api.txt
 
-USER intmac
+USER items
 
 # Copy base Gateway API files into Docker image.
 COPY --chown=items:items gateway-api /usr/local/items/gateway-api

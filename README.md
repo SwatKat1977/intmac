@@ -28,4 +28,4 @@ Notes:
 
 Service | Tag | Build Parameters | Run Parameters
 ------------ | ------------- | ------------- | -------------
-gateway-api | gateway-api | --file Dockerfile.gateway-api . | -d -p 2020:2020 gateway-api
+gateway-api | gateway-api | --file Dockerfile.gateway-api . -t gateway-api | -d -p 2020:2020 gateway-api
