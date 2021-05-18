@@ -1,10 +1,10 @@
 FROM python:3.9.5-alpine
 
-# Add a user and group for INTMAC and then setup file paths.
-RUN addgroup -S intmac && \
-    adduser -S intmac -G intmac && \
-    mkdir /usr/local/intmac &&  \
-    chown intmac:intmac /usr/local/intmac
+# Add a user and group for ITEMS and then setup file paths.
+RUN addgroup -S items && \
+    adduser -S items -G items && \
+    mkdir /usr/local/items &&  \
+    chown items:items /usr/local/items
 
 # Gateway API dependencies
 COPY requirements-gateway-api.txt .
@@ -15,12 +15,12 @@ RUN apk add --no-cache && \
 USER intmac
 
 # Copy base Gateway API files into Docker image.
-COPY --chown=intmac:intmac gateway-api /usr/local/intmac/gateway-api
-COPY --chown=intmac:intmac shared /usr/local/intmac/shared
+COPY --chown=items:items gateway-api /usr/local/items/gateway-api
+COPY --chown=items:items shared /usr/local/items/shared
 
 # Configure the environment
-WORKDIR /usr/local/intmac
-ENV PYTHONPATH="${PYTHONPATH}:/usr/local/intmac/gateway-api:/usr/local/intmac/shared"
+WORKDIR /usr/local/items
+ENV PYTHONPATH="${PYTHONPATH}:/usr/local/items/gateway-api:/usr/local/items/shared"
 
 # Install app dependencies of flask and waitress.
 RUN pip install hypercorn
