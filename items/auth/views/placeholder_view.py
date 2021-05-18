@@ -21,7 +21,7 @@ def create_placeholder_blueprint():
     blueprint = Blueprint('placeholder_api', __name__)
 
     @blueprint.route('/PLACEHOLDER', methods=['POST'])
-    def authenticate_user_request():
+    def placeholder_request():
         return view.placeholder_handler(request)
 
     return blueprint
@@ -29,7 +29,7 @@ def create_placeholder_blueprint():
 class PlaceholderView:
 
     def __init__(self):
-        print('AuthView init()')
+        print('PlaceholderView init()')
 
     def placeholder_handler(self, api_request):
         print('Test: Placeholder')
