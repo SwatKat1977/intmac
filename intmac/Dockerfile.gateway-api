@@ -1,0 +1,32 @@
+FROM python:3.9.5-alpine
+
+# Add a user and group for INTMAC and then setup file paths.
+RUN addgroup -S intmac && \
+    adduser -S intmac -G intmac && \
+    mkdir /usr/local/intmac &&  \
+    chown intmac:intmac /usr/local/intmac
+
+# Gateway API dependencies
+COPY requirements-gateway-api.txt .
+RUN apk add --no-cache && \
+    pip install --no-cache-dir -r requirements-gateway-api.txt && \
+    rm requirements-gateway-api.txt
+
+USER intmac
+
+# Copy base Gateway API files into Docker image.
+COPY --chown=intmac:intmac gateway-api /usr/local/intmac/gateway-api
+COPY --chown=intmac:intmac shared /usr/local/intmac/shared
+
+# Configure the environment
+WORKDIR /usr/local/intmac
+ENV PYTHONPATH="${PYTHONPATH}:/usr/local/intmac/gateway-api:/usr/local/intmac/shared"
+
+# Install app dependencies of flask and waitress.
+RUN pip install hypercorn
+RUN pip install mysql-connector
+RUN pip install quart
+
+EXPOSE 2020
+
+CMD hypercorn gateway-api:app --bind '0.0.0.0:2020'
