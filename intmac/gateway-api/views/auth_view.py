@@ -24,6 +24,10 @@ def create_auth_blueprint():
     def authenticate_user_request():
         return auth_view.authenticate_user_handler(request)
 
+    @auth_blueprint.route('/auth/logout', methods=['POST'])
+    def logout_user_request():
+        return auth_view.logout_user_handler(request)
+
     return auth_blueprint
 
 class AuthView:
@@ -33,4 +37,8 @@ class AuthView:
 
     def authenticate_user_handler(self, api_request):
         print('Test: Authenticate')
-        return 'bad', 404
+        return 'Test: Authenticate', 404
+
+    def logout_user_handler(self, api_request):
+        print('Test: Logout')
+        return 'Test: Logout', 404
