@@ -1,0 +1,32 @@
+FROM python:3.9.5-alpine
+
+# Add a user and group for ITEMS and then setup file paths.
+RUN addgroup -S items && \
+    adduser -S items -G items && \
+    mkdir /usr/local/items &&  \
+    chown items:items /usr/local/items
+
+# Gateway API dependencies
+COPY requirements-gateway-api.txt .
+RUN apk add --no-cache && \
+    pip install --no-cache-dir -r requirements-gateway-api.txt && \
+    rm requirements-gateway-api.txt
+
+USER items
+
+# Copy base Gateway API files into Docker image.
+COPY --chown=items:items gateway-api /usr/local/items/gateway-api
+COPY --chown=items:items shared /usr/local/items/shared
+
+# Configure the environment
+WORKDIR /usr/local/items
+ENV PYTHONPATH="${PYTHONPATH}:/usr/local/items/gateway-api:/usr/local/items/shared"
+
+# Install app dependencies of flask and waitress.
+RUN pip install hypercorn
+RUN pip install mysql-connector
+RUN pip install quart
+
+EXPOSE 2020
+
+CMD hypercorn gateway-api:app --bind '0.0.0.0:2020'
