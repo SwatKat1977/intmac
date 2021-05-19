@@ -1,0 +1,27 @@
+version: "3.8"
+
+networks:
+  items_docker_net:
+    driver: bridge
+
+services:
+
+  items-auth:
+    build:
+      context: .
+      dockerfile: Dockerfile.auth
+    container_name: items-auth
+    ports:
+      - "3030:3030"
+    networks:
+      - items_docker_net
+
+  items-gateway-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.gateway-api
+    container_name: items-gateway-api
+    ports:
+      - "2020:2020"
+    networks:
+      - items_docker_net
