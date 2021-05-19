@@ -1,0 +1,27 @@
+FROM python:3.9.5-alpine
+
+# Add a user and group for ITEMS and then setup file paths.
+RUN addgroup -S items && \
+    adduser -S items -G items && \
+    mkdir /usr/local/items &&  \
+    chown items:items /usr/local/items
+
+# Gateway API dependencies
+COPY requirements-auth.txt .
+RUN apk add --no-cache && \
+    pip install --no-cache-dir -r requirements-auth.txt && \
+    rm requirements-auth.txt
+
+USER items
+
+# Copy base files into Docker image.
+COPY --chown=items:items auth /usr/local/items/auth
+COPY --chown=items:items shared /usr/local/items/shared
+
+# Configure the environment
+WORKDIR /usr/local/items
+ENV PYTHONPATH="${PYTHONPATH}:/usr/local/items/auth:/usr/local/items/shared"
+
+EXPOSE 3030
+
+CMD hypercorn auth:app --bind '0.0.0.0:3030'
