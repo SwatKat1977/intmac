@@ -20,7 +20,7 @@ def create_placeholder_blueprint():
 
     blueprint = Blueprint('placeholder_api', __name__)
 
-    @blueprint.route('/PLACEHOLDER', methods=['POST'])
+    @blueprint.route('/test/placeholder', methods=['POST'])
     def placeholder_request():
         return view.placeholder_handler(request)
 
@@ -33,4 +33,4 @@ class PlaceholderView:
 
     def placeholder_handler(self, api_request):
         print('Test: Placeholder')
-        return 'Test: Placeholder', 402
+        return 'Test: Placeholder', 404

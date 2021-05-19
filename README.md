@@ -28,4 +28,5 @@ Notes:
 
 Service | Tag | Build Parameters | Run Parameters
 ------------ | ------------- | ------------- | -------------
-gateway-api | gateway-api | --file Dockerfile.gateway-api . -t gateway-api | -d -p 2020:2020 gateway-api
+auth | items_auth | --file Dockerfile.auth . -t <Tag> | -d -p 2020:2020 <Tag>
+gateway-api | items_gateway-api | --file Dockerfile.gateway-api . -t <Tag> | -d -p 2020:2020 <Tag>
