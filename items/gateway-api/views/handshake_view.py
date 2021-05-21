@@ -15,22 +15,22 @@ limitations under the License.
 '''
 from quart import Blueprint, request
 
-def create_auth_blueprint():
-    auth_view = AuthView()
+def create_handshake_blueprint():
+    view = View()
 
-    auth_blueprint = Blueprint('auth_api', __name__)
+    blueprint = Blueprint('handshake_api', __name__)
 
-    @auth_blueprint.route('/auth/authenticate', methods=['POST'])
+    @blueprint.route('/handshake/authenticate', methods=['POST'])
     def authenticate_user_request():
-        return auth_view.authenticate_user_handler(request)
+        return view.authenticate_user_handler(request)
 
-    @auth_blueprint.route('/auth/logout', methods=['POST'])
+    @blueprint.route('/handshake/logout', methods=['POST'])
     def logout_user_request():
-        return auth_view.logout_user_handler(request)
+        return view.logout_user_handler(request)
 
-    return auth_blueprint
+    return blueprint
 
-class AuthView:
+class View:
 
     def __init__(self):
         print('AuthView init()')

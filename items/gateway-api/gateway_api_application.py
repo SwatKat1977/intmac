@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 from application import Application
-from views.auth_view import create_auth_blueprint
+from views.handshake_view import create_handshake_blueprint
 
 class GatewayApiApplication(Application):
 
@@ -24,7 +24,7 @@ class GatewayApiApplication(Application):
 
     def _initialise(self) -> bool:
 
-        auth_view_blueprint = create_auth_blueprint()
+        auth_view_blueprint = create_handshake_blueprint()
         self._quart_instance.register_blueprint(auth_view_blueprint)
 
         return True
