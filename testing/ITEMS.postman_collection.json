@@ -39,14 +39,14 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:2020/auth/authenticate",
+							"raw": "http://localhost:2020/handshake/authenticate",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "2020",
 							"path": [
-								"auth",
+								"handshake",
 								"authenticate"
 							]
 						}
@@ -59,14 +59,14 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:2020/auth/logout",
+							"raw": "http://localhost:2020/handshake/logout",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "2020",
 							"path": [
-								"auth",
+								"handshake",
 								"logout"
 							]
 						}
