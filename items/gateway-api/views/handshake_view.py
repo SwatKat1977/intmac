@@ -35,6 +35,14 @@ def create_handshake_blueprint():
     def logout_user_request():
         return view.logout_user_handler(request)
 
+    @blueprint.route('/handshake/get_projects', methods=['GET'])
+    def get_projects_request():
+        return view.get_projects_handler(request)
+
+    @blueprint.route('/handshake/select_project', methods=['POST'])
+    def select_project_request():
+        return view.select_projects_handler(request)
+
     return blueprint
 
 class View:
@@ -66,3 +74,32 @@ class View:
         self._logger.debug("Logout is not implemented yet")
         return Response('', status=HTTPStatus.OK,
                         mimetype=mimetypes.types_map['.txt'])
+
+    def get_projects_handler(self, api_request):
+        self._logger.debug("getprojects currently returns a hard-coded list")
+
+        response = {
+            "projects": [
+                {
+                    "name": "test project #1",
+                    "description": "This is test project #1"
+                },
+                {
+                    "name": "test project #2",
+                    "description": "This is test project #2"
+                }
+            ]
+        }
+
+        return Response(json.dumps(response), status=HTTPStatus.OK,
+                        mimetype=mimetypes.types_map['.json'])
+
+    def select_projects_handler(self, api_request):
+        self._logger.debug("selectprojects returns a hard-coded response")
+
+        response = {
+            "status": "OK",
+            "errors": []
+        }
+        return Response(json.dumps(response), status=HTTPStatus.OK,
+                        mimetype=mimetypes.types_map['.json'])
