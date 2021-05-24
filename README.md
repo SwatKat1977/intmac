@@ -28,7 +28,8 @@ Notes:
 
 Service | Tag | Build Parameters | Run Parameters
 ------------ | ------------- | ------------- | -------------
-auth | items_auth | --file Dockerfile.auth . -t service_tag | -d -p 2020:2020 <Tag>
+auth | items_auth | --file Dockerfile.auth . -t service_tag | -d -p 3030:3030 <Tag>
+cms | items_cms | --file Dockerfile.cms . -t service_tag | -d -p 2222:2222 <Tag>
 gateway-api | items_gateway-api | --file Dockerfile.gateway-api . -t service_tag | -d -p 2020:2020 <Tag>
 
 Example of building Auth: docker image build --file Dockerfile.auth . -t items_auth
