@@ -6,22 +6,22 @@ RUN addgroup -S items && \
     mkdir /usr/local/items &&  \
     chown items:items /usr/local/items
 
-# Auth service dependencies
-COPY requirements-auth.txt .
+# Contents Management System (CMS) dependencies
+COPY requirements-cms.txt .
 RUN apk add --no-cache && \
-    pip install --no-cache-dir -r requirements-auth.txt && \
-    rm requirements-auth.txt
+    pip install --no-cache-dir -r requirements-cms.txt && \
+    rm requirements-cms.txt
 
 USER items
 
 # Copy base files into Docker image.
-COPY --chown=items:items auth /usr/local/items/auth
+COPY --chown=items:items cms /usr/local/items/cms
 COPY --chown=items:items shared /usr/local/items/shared
 
 # Configure the environment
 WORKDIR /usr/local/items
-ENV PYTHONPATH="${PYTHONPATH}:/usr/local/items/auth:/usr/local/items/shared"
+ENV PYTHONPATH="${PYTHONPATH}:/usr/local/items/cms:/usr/local/items/shared"
 
-EXPOSE 3030
+EXPOSE 2222
 
-CMD hypercorn auth:app --bind '0.0.0.0:3030'
+CMD hypercorn cms:app --bind '0.0.0.0:2222'
