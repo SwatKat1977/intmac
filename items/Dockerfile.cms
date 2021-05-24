@@ -1,0 +1,27 @@
+FROM python:3.9.5-alpine
+
+# Add a user and group for ITEMS and then setup file paths.
+RUN addgroup -S items && \
+    adduser -S items -G items && \
+    mkdir /usr/local/items &&  \
+    chown items:items /usr/local/items
+
+# Contents Management System (CMS) dependencies
+COPY requirements-cms.txt .
+RUN apk add --no-cache && \
+    pip install --no-cache-dir -r requirements-cms.txt && \
+    rm requirements-cms.txt
+
+USER items
+
+# Copy base files into Docker image.
+COPY --chown=items:items cms /usr/local/items/cms
+COPY --chown=items:items shared /usr/local/items/shared
+
+# Configure the environment
+WORKDIR /usr/local/items
+ENV PYTHONPATH="${PYTHONPATH}:/usr/local/items/cms:/usr/local/items/shared"
+
+EXPOSE 2222
+
+CMD hypercorn cms:app --bind '0.0.0.0:2222'
