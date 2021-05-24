@@ -23,6 +23,60 @@ from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
                            LOGGING_DEFAULT_LOG_LEVEL, \
                            LOGGING_LOG_FORMAT_STRING
 
+tests = [
+    {
+        'id': 0,
+        'name': b'root',
+        'parent': -1,
+        'type': 'filter'
+    },
+    {
+        'id': 1,
+        'name': b'UI Tests',
+        'parent': 0,
+        'type': 'filter'
+    },
+    {
+        'id': 2,
+        'name': b'API Tests',
+        'parent': 0,
+        'type': 'filter'
+    },
+    {
+        'id': 3,
+        'name': b'Items Login Successful',
+        'parent': 2,
+        'type': 'test case'
+    },
+    {
+        'id': 4,
+        'name': b'Items Login Unsuccessful',
+        'parent': 2,
+        'type': 'test case'
+    }
+]
+
+test_sets = [
+    {
+        'id': 0,
+        'name': b'root',
+        'parent': -1,
+        'type': 'filter'
+    },
+    {
+        'id': 0,
+        'name': b'RELEASE_1.0.0',
+        'parent': 0,
+        'type': 'filter'
+    },
+    {
+        'id': 0,
+        'name': b'RELEASE_1.0.1',
+        'parent': 0,
+        'type': 'filter'
+    },
+]
+
 def create_handshake_blueprint():
     view = View()
 
@@ -97,60 +151,6 @@ class View:
 
     def select_projects_handler(self, api_request):
         self._logger.debug("selectprojects returns a hard-coded response")
-
-        tests = [
-            {
-                'id': 0,
-                'name': b'root',
-                'parent': -1,
-                'type': 'filter'
-            },
-            {
-                'id': 1,
-                'name': b'UI Tests',
-                'parent': 0,
-                'type': 'filter'
-            },
-            {
-                'id': 2,
-                'name': b'API Tests',
-                'parent': 0,
-                'type': 'filter'
-            },
-            {
-                'id': 3,
-                'name': b'Items Login Successful',
-                'parent': 2,
-                'type': 'test case'
-            },
-            {
-                'id': 4,
-                'name': b'Items Login Unsuccessful',
-                'parent': 2,
-                'type': 'test case'
-            }
-        ]
-
-        test_sets = [
-            {
-                'id': 0,
-                'name': b'root',
-                'parent': -1,
-                'type': 'filter'
-            },
-            {
-                'id': 0,
-                'name': b'RELEASE_1.0.0',
-                'parent': 0,
-                'type': 'filter'
-            },
-            {
-                'id': 0,
-                'name': b'RELEASE_1.0.1',
-                'parent': 0,
-                'type': 'filter'
-            },
-        ]
 
         def generate():
             yield b'{'
