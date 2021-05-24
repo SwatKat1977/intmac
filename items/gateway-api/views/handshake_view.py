@@ -13,11 +13,12 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from base64 import b64encode
 from http import HTTPStatus
 import json
 import logging
 import mimetypes
-from quart import Blueprint, request, Response
+from quart import Blueprint, request, Response, stream_with_context
 from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
                            LOGGING_DEFAULT_LOG_LEVEL, \
                            LOGGING_LOG_FORMAT_STRING
@@ -97,9 +98,132 @@ class View:
     def select_projects_handler(self, api_request):
         self._logger.debug("selectprojects returns a hard-coded response")
 
-        response = {
-            "status": "OK",
-            "errors": []
-        }
-        return Response(json.dumps(response), status=HTTPStatus.OK,
-                        mimetype=mimetypes.types_map['.json'])
+        tests = [
+            {
+                'id': 0,
+                'name': b'root',
+                'parent': -1,
+                'type': 'filter'
+            },
+            {
+                'id': 1,
+                'name': b'UI Tests',
+                'parent': 0,
+                'type': 'filter'
+            },
+            {
+                'id': 2,
+                'name': b'API Tests',
+                'parent': 0,
+                'type': 'filter'
+            },
+            {
+                'id': 3,
+                'name': b'Items Login Successful',
+                'parent': 2,
+                'type': 'test case'
+            },
+            {
+                'id': 4,
+                'name': b'Items Login Unsuccessful',
+                'parent': 2,
+                'type': 'test case'
+            }
+        ]
+
+        test_sets = [
+            {
+                'id': 0,
+                'name': b'root',
+                'parent': -1,
+                'type': 'filter'
+            },
+            {
+                'id': 0,
+                'name': b'RELEASE_1.0.0',
+                'parent': 0,
+                'type': 'filter'
+            },
+            {
+                'id': 0,
+                'name': b'RELEASE_1.0.1',
+                'parent': 0,
+                'type': 'filter'
+            },
+        ]
+
+        def generate():
+            yield b'{'
+
+            try:
+                tests_iter = tests.__iter__()
+
+                previous = next(tests_iter)
+
+                yield b'"test_cases": ['
+
+                for entry in tests_iter:
+                    name = previous.get('name')
+
+                    yield (
+                        "{"
+                        f"\"id\":{previous.get('id')}, "
+                        "\"name\":"
+                        "\"" + b64encode(name).decode('ascii') + "\","
+                        f"\"parent\":{previous.get('parent')}, "
+                        f"\"type\":\"{previous.get('type')}\""
+                        "},"
+                    ).encode("UTF-8")
+                    previous = entry
+
+                yield (
+                    "{"
+                    f"\"id\":{previous.get('id')}, "
+                    "\"name\":"
+                    "\"" + b64encode(name).decode('ascii') + "\","
+                    f"\"parent\":{previous.get('parent')}, "
+                    f"\"type\":\"{previous.get('type')}\""
+                    "}],"
+                ).encode("UTF-8")
+
+            except StopIteration:
+                yield b'"test_cases": [],'
+
+            try:
+                test_sets_iter = test_sets.__iter__()
+
+                previous = next(test_sets_iter)
+
+                yield b'"test_sets": ['
+
+                for entry in test_sets_iter:
+                    name = previous.get('name')
+
+                    yield (
+                        "{"
+                        f"\"id\":{previous.get('id')}, "
+                        "\"name\":"
+                        "\"" + b64encode(name).decode('ascii') + "\","
+                        f"\"parent\":{previous.get('parent')}, "
+                        f"\"type\":\"{previous.get('type')}\""
+                        "},"
+                    ).encode("UTF-8")
+                    previous = entry
+
+                yield (
+                    "{"
+                    f"\"id\":{previous.get('id')}, "
+                    "\"name\":"
+                    "\"" + b64encode(name).decode('ascii') + "\","
+                    f"\"parent\":{previous.get('parent')}, "
+                    f"\"type\":\"{previous.get('type')}\""
+                    "}]"
+                ).encode("UTF-8")
+
+            except StopIteration:
+                yield b'"test_sets": []'
+
+            yield b'}'
+
+        return Response(generate(), status=HTTPStatus.OK,
+                        content_type='application/json')
