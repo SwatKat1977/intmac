@@ -16,6 +16,16 @@ services:
     networks:
       - items_docker_net
 
+  items-cms:
+    build:
+      context: .
+      dockerfile: Dockerfile.cms
+    container_name: items-cms
+    ports:
+      - "2222:2222"
+    networks:
+      - items_docker_net
+
   items-gateway-api:
     build:
       context: .
@@ -23,5 +33,15 @@ services:
     container_name: items-gateway-api
     ports:
       - "2020:2020"
+    networks:
+      - items_docker_net
+
+  items-web_portal:
+    build:
+      context: .
+      dockerfile: Dockerfile.web_portal
+    container_name: items-web_portal
+    ports:
+      - "2333:2333"
     networks:
       - items_docker_net
