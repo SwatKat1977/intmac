@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<service>
-	<database username="user" name="database" password="password"/>
-	<serviceDiscovery service= "gateway" mode="auto" port="8000"
-	                  connectionType="raw" />
-	<serviceDiscovery service= "businessLogic" mode="disabled" port="8001"
-	                  connectionType="raw" />
-</service>
