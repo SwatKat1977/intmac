@@ -39,14 +39,14 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:2020/auth/authenticate",
+							"raw": "http://localhost:2020/handshake/authenticate",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "2020",
 							"path": [
-								"auth",
+								"handshake",
 								"authenticate"
 							]
 						}
@@ -59,15 +59,55 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:2020/auth/logout",
+							"raw": "http://localhost:2020/handshake/logout",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "2020",
 							"path": [
-								"auth",
+								"handshake",
 								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Projects List",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:2020/handshake/get_projects",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "2020",
+							"path": [
+								"handshake",
+								"get_projects"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Select Project",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:2020/handshake/select_project",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "2020",
+							"path": [
+								"handshake",
+								"select_project"
 							]
 						}
 					},
