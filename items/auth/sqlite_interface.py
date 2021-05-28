@@ -108,32 +108,35 @@ class SqliteInterface:
         build_status = False
         build_err_str = ''
 
-        if os.path.isfile(self._database_filename):
-            return (False, ("Database with filename "
-                            f"'{self._database_filename}' already exists!"))
+        if not os.path.isfile(self._database_filename):
 
-        try:
-            self._connection = sqlite3.connect(self._database_filename)
+            try:
+                self._connection = sqlite3.connect(self._database_filename)
 
-        except sqlite3.OperationalError as op_except:
-            return (False, f'Database build failed: {str(op_except)}')
+            except sqlite3.OperationalError as op_except:
+                return (False, f'Database build failed: {str(op_except)}')
 
-        cursor = self._connection.cursor()
+            cursor = self._connection.cursor()
 
-        try:
-            self._create_table(cursor, self.sql_create_user_profile_table,
-                               'user_profile')
+            try:
+                self._create_table(cursor, self.sql_create_user_profile_table,
+                                   'user_profile')
 
-            self._create_table(cursor, self.sql_create_user_auth_details_table,
-                               'user_auth_details')
+                self._create_table(cursor, self.sql_create_user_auth_details_table,
+                                   'user_auth_details')
 
-            build_status = True
+                build_status = True
 
-        except SqliteInterfaceException as interface_except:
-            build_err_str = str(interface_except)
+            except SqliteInterfaceException as interface_except:
+                build_err_str = str(interface_except)
 
-        cursor.close()
-        self._connection.close()
+            cursor.close()
+            self._connection.close()
+
+        else:
+            build_err_str = ("Database with filename "
+                            f"'{self._database_filename}' already exists!")
+
         return (build_status, build_err_str)
 
     def open(self) -> Tuple[bool, str]:
@@ -194,3 +197,12 @@ class SqliteInterface:
             raise SqliteInterfaceException(
                 (f"Failed to create table '{table_name}', reason: "
                  f"{str(mysqlite_exception)}")) from mysqlite_exception
+
+abc = SqliteInterface('test.db')
+status, status_str = abc.build_database()
+print(status, status_str)
+
+abc = SqliteInterface('test__.db')
+st = abc.open()
+print(f'Status of open: {st}')
+abc.close()
