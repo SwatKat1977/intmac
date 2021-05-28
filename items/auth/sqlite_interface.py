@@ -13,17 +13,25 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from hashlib import sha256
 import os
 from sqlite3.dbapi2 import Cursor
 from typing import Tuple
+from uuid import uuid4
 import sqlite3
+import logging
+from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
+                           LOGGING_DEFAULT_LOG_LEVEL, \
+                           LOGGING_LOG_FORMAT_STRING
+from logon_type import LogonType
 
 class SqliteInterfaceException(Exception):
     """ Sqlite interface class base exception. """
 
 class SqliteInterface:
     """ Sqlite database wrapper """
-    __slots__ = ['_connection', '_database_filename', '_is_connected']
+    __slots__ = ['_connection', '_database_filename', '_logger',
+                 '_is_connected']
 
     sql_create_user_profile_table = """
         CREATE TABLE IF NOT EXISTS user_profile (
@@ -36,6 +44,14 @@ class SqliteInterface:
         )
     """
 
+    default_admin_user = {
+        'email_address' : 'admin@localhost',
+        'full_name' : 'Local Admin',
+        'display_name' : 'Local Admin',
+        'account_status' : 0,
+        'logon_type': LogonType.BASIC.value
+    }
+
     sql_create_user_auth_details_table = """
         CREATE TABLE IF NOT EXISTS user_auth_details (
             id integer PRIMARY KEY,
@@ -44,7 +60,7 @@ class SqliteInterface:
             password_salt text NOT NULL,
             user_id integer NOT NULL,
 
-            FOREIGN KEY(user_id) REFERENCES user_profile(id) 
+            FOREIGN KEY(user_id) REFERENCES user_profile(id)
         )
     """
 
@@ -71,6 +87,14 @@ class SqliteInterface:
         self._connection = None
         self._database_filename = database_filename
         self._is_connected = False
+
+        self._logger = logging.getLogger(__name__)
+        log_format= logging.Formatter(LOGGING_LOG_FORMAT_STRING,
+                                      LOGGING_DATETIME_FORMAT_STRING)
+        console_stream = logging.StreamHandler()
+        console_stream.setFormatter(log_format)
+        self._logger.setLevel(LOGGING_DEFAULT_LOG_LEVEL)
+        self._logger.addHandler(console_stream)
 
     def database_exists(self) -> bool:
         """
@@ -109,18 +133,38 @@ class SqliteInterface:
         build_err_str = ''
 
         if not os.path.isfile(self._database_filename):
+            self._logger.info("Building database...")
 
             try:
                 self._connection = sqlite3.connect(self._database_filename)
 
                 cursor = self._connection.cursor()
 
+                self._logger.info("-> Creating user_profile table")
                 self._create_table(cursor, self.sql_create_user_profile_table,
                                    'user_profile')
 
+                self._logger.info("-> Creating user_auth_details table")
                 self._create_table(cursor, self.sql_create_user_auth_details_table,
                                    'user_auth_details')
 
+                admin_password = str(uuid4())[:13]
+                admin_password_salt = str(uuid4())
+
+                self._logger.info("-> Creating admin with password '%s'",
+                                  admin_password)
+
+                user_id = self._insert_user_profile(
+                    cursor,
+                    self.default_admin_user.get('email_address'),
+                    self.default_admin_user.get('full_name'),
+                    self.default_admin_user.get('display_name'),
+                    self.default_admin_user.get('account_status'))
+
+                self._insert_basic_auth_entry(cursor, user_id, admin_password,
+                                              admin_password_salt)
+
+                self._logger.info("Database build successful")
                 build_status = True
 
             except SqliteInterfaceException as interface_except:
@@ -180,9 +224,9 @@ class SqliteInterface:
         Create a new database table.
 
         parameters:
-            cursor - Sqlite database cursor object
-            table_schema - Schema of table to create
-            table_name - name of table within Sqlite.
+            cursor - Sqlite database cursor object\n
+            table_schema - Schema of table to create\n
+            table_name - name of table within Sqlite\n
 
         returns:
             None.
@@ -196,6 +240,75 @@ class SqliteInterface:
             raise SqliteInterfaceException(
                 (f"Failed to create table '{table_name}', reason: "
                  f"{str(mysqlite_exception)}")) from mysqlite_exception
+
+    def _insert_user_profile(self, cursor : Cursor, email_address : str,
+                             full_name : str, display_name : str,
+                             account_status : int) -> int:
+        '''
+        Insert a user profile into the database.
+
+        parameters:
+            curosr - Sqlite database cursor\n
+            email_address - User's email address\n
+            full_name - Full name of the user (e.g. first name, surname)\n
+            display_name - Name to display\n
+            account_status - Status code of account (e.g. active)
+
+        returns:
+            int - new user_id
+        '''
+
+        query = ("INSERT INTO user_profile (email_address, full_name, "
+                 "display_name, insertion_date, account_status) "
+                 f"VALUES('{email_address}', '{full_name}', '{display_name}', "
+                 f"0, {account_status})")
+
+        try:
+            cursor.execute(query)
+            self._connection.commit()
+            new_user_id = cursor.lastrowid
+
+        except sqlite3.Error as sqlite_except:
+            raise SqliteInterfaceException(
+                f'Query failed, reason: {sqlite_except}') from sqlite_except
+
+        return new_user_id
+
+    def _insert_basic_auth_entry(self, cursor : Cursor, user_id : int,
+                                 password : str, password_salt : str) -> None:
+
+        '''
+        Insert a user authentication entry into the database.
+
+        parameters:
+            curosr - Sqlite database cursor
+
+            user_id - Id of user associated with entry
+
+            password - Password
+            
+            password_salt - Random password salt
+
+        returns:
+            None
+        '''
+
+        to_hash = f"{password}{password_salt}".encode('UTF-8')
+        password_hash = sha256(to_hash).hexdigest()
+
+        query = ("INSERT INTO user_auth_details (login_type, password, "
+                 "password_salt, user_id) "
+                 f"VALUES({LogonType.BASIC.value}, '{password_hash}', "
+                 f"'{password_salt}', {user_id})")
+
+        try:
+            cursor.execute(query)
+            self._connection.commit()
+
+        except sqlite3.Error as sqlite_except:
+            raise SqliteInterfaceException(
+                f'Query failed, reason: {sqlite_except}') from sqlite_except
+
 
 abc = SqliteInterface('test.db')
 status, status_str = abc.build_database()
