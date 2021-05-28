@@ -113,12 +113,8 @@ class SqliteInterface:
             try:
                 self._connection = sqlite3.connect(self._database_filename)
 
-            except sqlite3.OperationalError as op_except:
-                return (False, f'Database build failed: {str(op_except)}')
+                cursor = self._connection.cursor()
 
-            cursor = self._connection.cursor()
-
-            try:
                 self._create_table(cursor, self.sql_create_user_profile_table,
                                    'user_profile')
 
@@ -129,6 +125,9 @@ class SqliteInterface:
 
             except SqliteInterfaceException as interface_except:
                 build_err_str = str(interface_except)
+
+            except sqlite3.OperationalError as op_except:
+                return (False, f'Database build failed: {str(op_except)}')
 
             cursor.close()
             self._connection.close()
@@ -203,6 +202,11 @@ status, status_str = abc.build_database()
 print(status, status_str)
 
 abc = SqliteInterface('test__.db')
+st = abc.open()
+print(f'Status of open: {st}')
+abc.close()
+
+abc = SqliteInterface('test.db')
 st = abc.open()
 print(f'Status of open: {st}')
 abc.close()
