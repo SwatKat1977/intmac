@@ -40,7 +40,8 @@ class SqliteInterface:
             full_name text NOT NULL,
             display_name text NOT NULL,
             insertion_date integer NOT NULL,
-            account_status integer DEFAULT 0
+            account_status integer DEFAULT 0,
+            login_type integer DEFAULT 0 NOT NULL
         )
     """
 
@@ -55,7 +56,6 @@ class SqliteInterface:
     sql_create_user_auth_details_table = """
         CREATE TABLE IF NOT EXISTS user_auth_details (
             id integer PRIMARY KEY,
-            login_type integer DEFAULT 0 NOT NULL,
             password text NOT NULL,
             password_salt text NOT NULL,
             user_id integer NOT NULL,
@@ -159,7 +159,9 @@ class SqliteInterface:
                     self.default_admin_user.get('email_address'),
                     self.default_admin_user.get('full_name'),
                     self.default_admin_user.get('display_name'),
-                    self.default_admin_user.get('account_status'))
+                    self.default_admin_user.get('account_status'),
+                    self.default_admin_user.get('logon_type')
+                )
 
                 self._insert_basic_auth_entry(cursor, user_id, admin_password,
                                               admin_password_salt)
@@ -243,25 +245,28 @@ class SqliteInterface:
 
     def _insert_user_profile(self, cursor : Cursor, email_address : str,
                              full_name : str, display_name : str,
-                             account_status : int) -> int:
+                             account_status : int, login_type : int) -> int:
         '''
         Insert a user profile into the database.
 
         parameters:
-            curosr - Sqlite database cursor\n
+            cursor - Sqlite database cursor\n
             email_address - User's email address\n
             full_name - Full name of the user (e.g. first name, surname)\n
             display_name - Name to display\n
-            account_status - Status code of account (e.g. active)
+            account_status - Status code of account (e.g. active)\n
+            login_type - Type of login, such as basic
 
         returns:
             int - new user_id
         '''
 
         query = ("INSERT INTO user_profile (email_address, full_name, "
-                 "display_name, insertion_date, account_status) "
+                 "display_name, insertion_date, account_status, login_type) "
                  f"VALUES('{email_address}', '{full_name}', '{display_name}', "
-                 f"0, {account_status})")
+                 f"0, {account_status}, {login_type})")
+
+        print(query)
 
         try:
             cursor.execute(query)
@@ -281,12 +286,9 @@ class SqliteInterface:
         Insert a user authentication entry into the database.
 
         parameters:
-            curosr - Sqlite database cursor
-
-            user_id - Id of user associated with entry
-
-            password - Password
-            
+            cursor - Sqlite database cursor\n
+            user_id - Id of user associated with entry\n
+            password - Password\n
             password_salt - Random password salt
 
         returns:
@@ -296,10 +298,9 @@ class SqliteInterface:
         to_hash = f"{password}{password_salt}".encode('UTF-8')
         password_hash = sha256(to_hash).hexdigest()
 
-        query = ("INSERT INTO user_auth_details (login_type, password, "
-                 "password_salt, user_id) "
-                 f"VALUES({LogonType.BASIC.value}, '{password_hash}', "
-                 f"'{password_salt}', {user_id})")
+        query = ("INSERT INTO user_auth_details (password, password_salt, "
+                 "user_id) "
+                 f"VALUES('{password_hash}', '{password_salt}', {user_id})")
 
         try:
             cursor.execute(query)
