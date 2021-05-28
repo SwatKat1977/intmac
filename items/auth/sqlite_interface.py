@@ -41,7 +41,7 @@ class SqliteInterface:
             id integer PRIMARY KEY,
             login_type integer DEFAULT 0 NOT NULL,
             password text NOT NULL,
-            password_salt text NOT NULL
+            password_salt text NOT NULL,
             user_id integer NOT NULL,
 
             FOREIGN KEY(user_id) REFERENCES user_profile(id) 
@@ -110,7 +110,7 @@ class SqliteInterface:
 
         if os.path.isfile(self._database_filename):
             return (False, ("Database with filename "
-                            f"'{self._database_filename}'' already exists!"))
+                            f"'{self._database_filename}' already exists!"))
 
         try:
             self._connection = sqlite3.connect(self._database_filename)
@@ -136,7 +136,7 @@ class SqliteInterface:
         self._connection.close()
         return (build_status, build_err_str)
 
-    def open(self) -> bool:
+    def open(self) -> Tuple[bool, str]:
         """
         Open a database and store connection for later use.
 
@@ -145,19 +145,20 @@ class SqliteInterface:
         """
 
         open_status = False
+        err_str = ''
 
         try:
             self._connection = sqlite3.connect(self._database_filename)
             cursor = self._connection.cursor()
-            cursor.execute('SELECT id FROM url_queue LIMIT 1')
+            cursor.execute('SELECT id FROM user_profile LIMIT 1')
             open_status = True
             self._is_connected = True
 
         except sqlite3.Error as sqlite_except:
-            self._last_error_msg = f'open failed, reason: {sqlite_except}'
+            err_str = f'open failed, reason: {sqlite_except}'
             self._connection = None
 
-        return open_status
+        return (open_status, err_str)
 
     def close(self) -> None:
         """
