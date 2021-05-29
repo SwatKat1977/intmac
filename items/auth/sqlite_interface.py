@@ -16,7 +16,7 @@ limitations under the License.
 from hashlib import sha256
 import os
 from sqlite3.dbapi2 import Cursor
-from typing import Tuple
+from typing import Tuple, Union
 from uuid import uuid4
 import sqlite3
 import logging
@@ -41,7 +41,7 @@ class SqliteInterface:
             display_name text NOT NULL,
             insertion_date integer NOT NULL,
             account_status integer DEFAULT 0,
-            login_type integer DEFAULT 0 NOT NULL
+            logon_type integer DEFAULT 0 NOT NULL
         )
     """
 
@@ -215,10 +215,103 @@ class SqliteInterface:
         returns:
             None.
         """
+
         if self._connection:
             self._connection.close()
 
         self._connection = None
+
+    def user_email_valid_to_logon(self, email_address : str, logon_type : int) \
+                                  -> Tuple[Union[int, None], str]:
+        """
+        Get a user id via it's email address and logon type.
+
+        parameters:
+            email_address - User's email address\n
+            logon_type - Logon type
+        """
+
+        user_id = None
+        error_str = ''
+
+        query = ("SELECT id, logon_type, account_status FROM user_profile "
+                 "WHERE email_address = ?")
+
+        cursor = self._connection.cursor()
+
+        #         account_status integer DEFAULT 0,
+        # logon_type integer DEFAULT 0 NOT NULL
+
+        try:
+            cursor.execute(query, (email_address, logon_type))
+
+        except sqlite3.Error as sqlite_except:
+            raise RuntimeError(f'Query failed, reason: {sqlite_except}') from \
+                sqlite_except
+
+        rows = cursor.fetchall()
+
+        if rows:
+            user_id = rows[0][0]
+
+        else:
+            error_str = 'Unknown e-mail address'
+
+        return (user_id, error_str)
+
+    def basic_user_authenticate(self, user_id : int, password : str):
+
+
+
+        '''
+        CREATE TABLE IF NOT EXISTS user_auth_details (
+            id integer PRIMARY KEY,
+            password text NOT NULL,
+            password_salt text NOT NULL,
+            user_id integer NOT NULL,
+
+            FOREIGN KEY(user_id) REFERENCES user_profile(id)
+        )
+        '''
+        return_status = False
+
+        # email = 'd'
+        logon_type = LogonType.BASIC.value
+        query = (f"SELECT password, password_salt FROM user_profile WHERE email_address = "
+                 f"'{email}' AND logon_type = {logon_type}")
+        cursor = self._connection.cursor()
+
+        column_names = []
+
+        try:
+            cursor.execute(query)
+            column_names = list(map(lambda x: x[0], cursor.description))
+
+        except sqlite3.Error as sqlite_except:
+            raise RuntimeError(f'Query failed, reason: {sqlite_except}') from \
+                sqlite_except
+
+        rows = cursor.fetchall()
+        print(rows)
+
+        if not rows:
+            print('not valid')
+        data = []
+
+        for row in rows:
+            entry = {}
+
+            for idx, column in enumerate(row):
+                entry[column_names[idx]] = column
+
+            data.append(entry)
+
+        return data
+
+
+
+
+
 
     def _create_table(self, cursor : Cursor, table_schema : str,
                       table_name : str) -> None:
@@ -245,7 +338,7 @@ class SqliteInterface:
 
     def _insert_user_profile(self, cursor : Cursor, email_address : str,
                              full_name : str, display_name : str,
-                             account_status : int, login_type : int) -> int:
+                             account_status : int, logon_type : int) -> int:
         '''
         Insert a user profile into the database.
 
@@ -255,18 +348,16 @@ class SqliteInterface:
             full_name - Full name of the user (e.g. first name, surname)\n
             display_name - Name to display\n
             account_status - Status code of account (e.g. active)\n
-            login_type - Type of login, such as basic
+            logon_type - Type of login, such as basic
 
         returns:
             int - new user_id
         '''
 
         query = ("INSERT INTO user_profile (email_address, full_name, "
-                 "display_name, insertion_date, account_status, login_type) "
+                 "display_name, insertion_date, account_status, logon_type) "
                  f"VALUES('{email_address}', '{full_name}', '{display_name}', "
-                 f"0, {account_status}, {login_type})")
-
-        print(query)
+                 f"0, {account_status}, {logon_type})")
 
         try:
             cursor.execute(query)
@@ -311,16 +402,21 @@ class SqliteInterface:
                 f'Query failed, reason: {sqlite_except}') from sqlite_except
 
 
+print('-- Build database --')
 abc = SqliteInterface('test.db')
 status, status_str = abc.build_database()
 print(status, status_str)
 
+print('-- Open invalid database --')
 abc = SqliteInterface('test__.db')
 st = abc.open()
 print(f'Status of open: {st}')
 abc.close()
 
-abc = SqliteInterface('test.db')
-st = abc.open()
-print(f'Status of open: {st}')
-abc.close()
+print('-- Open valid database --')
+interface = SqliteInterface('test.db')
+st = interface.open()
+interface.basic_user_authenticate('admin@localhost', 'test')
+print('Valid: ', interface.get_user_id('admin@localhost', 0))
+print('Invalid: ', interface.get_user_id('admin@invalid', 0))
+interface.close()
