@@ -20,6 +20,7 @@ from typing import Tuple, Union
 from uuid import uuid4
 import sqlite3
 import logging
+from account_status import AccountStatus
 from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
                            LOGGING_DEFAULT_LOG_LEVEL, \
                            LOGGING_LOG_FORMAT_STRING
@@ -49,7 +50,7 @@ class SqliteInterface:
         'email_address' : 'admin@localhost',
         'full_name' : 'Local Admin',
         'display_name' : 'Local Admin',
-        'account_status' : 0,
+        'account_status' : AccountStatus.ACTIVE.value,
         'logon_type': LogonType.BASIC.value
     }
 
@@ -221,10 +222,11 @@ class SqliteInterface:
 
         self._connection = None
 
-    def user_email_valid_to_logon(self, email_address : str, logon_type : int) \
+    def valid_user_to_logon(self, email_address : str, logon_type : int) \
                                   -> Tuple[Union[int, None], str]:
         """
-        Get a user id via it's email address and logon type.
+        Check to see if a user is able to logon based on email address and the
+        logon type.
 
         parameters:
             email_address - User's email address\n
@@ -239,11 +241,8 @@ class SqliteInterface:
 
         cursor = self._connection.cursor()
 
-        #         account_status integer DEFAULT 0,
-        # logon_type integer DEFAULT 0 NOT NULL
-
         try:
-            cursor.execute(query, (email_address, logon_type))
+            cursor.execute(query, (email_address,))
 
         except sqlite3.Error as sqlite_except:
             raise RuntimeError(f'Query failed, reason: {sqlite_except}') from \
@@ -253,6 +252,14 @@ class SqliteInterface:
 
         if rows:
             user_id = rows[0][0]
+            account_logon_type = rows[0][1]
+            acocunt_status = rows[0][2]
+
+            if account_logon_type != logon_type:
+                error_str = 'Incorrect logon type'
+
+            elif acocunt_status != AccountStatus.ACTIVE.value:
+                error_str = 'Account not active'
 
         else:
             error_str = 'Unknown e-mail address'
@@ -416,7 +423,7 @@ abc.close()
 print('-- Open valid database --')
 interface = SqliteInterface('test.db')
 st = interface.open()
-interface.basic_user_authenticate('admin@localhost', 'test')
-print('Valid: ', interface.get_user_id('admin@localhost', 0))
-print('Invalid: ', interface.get_user_id('admin@invalid', 0))
+#interface.basic_user_authenticate('admin@localhost', 'test')
+print('Valid: ', interface.valid_user_to_logon('admin@localhost', 0))
+print('Invalid: ', interface.valid_user_to_logon('admin@invalid', 0))
 interface.close()
