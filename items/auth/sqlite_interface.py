@@ -223,7 +223,7 @@ class SqliteInterface:
         self._connection = None
 
     def valid_user_to_logon(self, email_address : str, logon_type : int) \
-                                  -> Tuple[Union[int, None], str]:
+                            -> Tuple[Union[int, None], str]:
         """
         Check to see if a user is able to logon based on email address and the
         logon type.
@@ -266,59 +266,49 @@ class SqliteInterface:
 
         return (user_id, error_str)
 
-    def basic_user_authenticate(self, user_id : int, password : str):
+    def basic_user_authenticate(self, user_id : int, password : str) \
+                                -> Tuple[Union[int, None], str]:
+        """
+        Authenticate a user using basic authentication (email address and a
+        password.
 
+        parameters:
+            user_id - User's unique id\n
+            password - Password to authenticate
+        """
 
-
-        '''
-        CREATE TABLE IF NOT EXISTS user_auth_details (
-            id integer PRIMARY KEY,
-            password text NOT NULL,
-            password_salt text NOT NULL,
-            user_id integer NOT NULL,
-
-            FOREIGN KEY(user_id) REFERENCES user_profile(id)
-        )
-        '''
         return_status = False
+        return_status_str = ''
 
-        # email = 'd'
-        logon_type = LogonType.BASIC.value
-        query = (f"SELECT password, password_salt FROM user_profile WHERE email_address = "
-                 f"'{email}' AND logon_type = {logon_type}")
         cursor = self._connection.cursor()
 
-        column_names = []
-
         try:
-            cursor.execute(query)
-            column_names = list(map(lambda x: x[0], cursor.description))
+            query = ("SELECT password, password_salt FROM user_auth_details "
+                     "WHERE user_id = ?")
+            cursor.execute(query, (user_id,))
 
         except sqlite3.Error as sqlite_except:
-            raise RuntimeError(f'Query failed, reason: {sqlite_except}') from \
-                sqlite_except
+            raise SqliteInterfaceException(
+                f'Query failed, reason: {sqlite_except}') from sqlite_except
 
         rows = cursor.fetchall()
-        print(rows)
 
         if not rows:
-            print('not valid')
-        data = []
+            raise SqliteInterfaceException('Invalid user id')
 
-        for row in rows:
-            entry = {}
+        recv_password = rows[0][0]
+        recv_password_salt = rows[0][1]
 
-            for idx, column in enumerate(row):
-                entry[column_names[idx]] = column
+        to_hash = f"{password}{recv_password_salt}".encode('UTF-8')
+        password_hash = sha256(to_hash).hexdigest()
 
-            data.append(entry)
+        if password_hash != recv_password:
+            return_status_str = "Username/password don't match"
 
-        return data
+        else:
+            return_status = True
 
-
-
-
-
+        return (return_status, return_status_str)
 
     def _create_table(self, cursor : Cursor, table_schema : str,
                       table_name : str) -> None:
@@ -360,6 +350,7 @@ class SqliteInterface:
         returns:
             int - new user_id
         '''
+        # pylint: disable=R0913
 
         query = ("INSERT INTO user_profile (email_address, full_name, "
                  "display_name, insertion_date, account_status, logon_type) "
@@ -407,23 +398,3 @@ class SqliteInterface:
         except sqlite3.Error as sqlite_except:
             raise SqliteInterfaceException(
                 f'Query failed, reason: {sqlite_except}') from sqlite_except
-
-
-print('-- Build database --')
-abc = SqliteInterface('test.db')
-status, status_str = abc.build_database()
-print(status, status_str)
-
-print('-- Open invalid database --')
-abc = SqliteInterface('test__.db')
-st = abc.open()
-print(f'Status of open: {st}')
-abc.close()
-
-print('-- Open valid database --')
-interface = SqliteInterface('test.db')
-st = interface.open()
-#interface.basic_user_authenticate('admin@localhost', 'test')
-print('Valid: ', interface.valid_user_to_logon('admin@localhost', 0))
-print('Invalid: ', interface.valid_user_to_logon('admin@invalid', 0))
-interface.close()
