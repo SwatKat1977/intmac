@@ -22,6 +22,6 @@ COPY --chown=items:items shared /usr/local/items/shared
 WORKDIR /usr/local/items
 ENV PYTHONPATH="${PYTHONPATH}:/usr/local/items/gateway-api:/usr/local/items/shared"
 
-EXPOSE 2020
+EXPOSE 2111
 
-CMD hypercorn gateway-api:app --bind '0.0.0.0:2020'
+CMD hypercorn gateway-api:app --bind '0.0.0.0:2111'
