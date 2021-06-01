@@ -16,4 +16,6 @@ limitations under the License.
 from enum import Enum
 
 class LogonType(Enum):
+    """ Type of logon, e.g. basic """
+
     BASIC = 0

@@ -16,5 +16,7 @@ limitations under the License.
 from enum import Enum
 
 class AccountStatus(Enum):
+    """ Status of the account """
+
     DISABLED = 0
     ACTIVE = 1
