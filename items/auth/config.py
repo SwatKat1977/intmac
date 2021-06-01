@@ -17,21 +17,25 @@ from configparser import ConfigParser
 from dataclasses import dataclass
 import logging
 import os
-from items_exception import ItemsException
 from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
                            LOGGING_DEFAULT_LOG_LEVEL, \
                            LOGGING_LOG_FORMAT_STRING
 
 @dataclass
 class DatabaseConfigData:
-    database_file : str
-    fail_on_no_database : bool
+    """ Database configuration data"""
+
+    database_file : str = './auth.db'
+    create_when_missing : bool = False
 
 @dataclass
 class ConfigData:
+    """ Main configuration data"""
+
     database : DatabaseConfigData
 
 class Config:
+    """ Load application configuration """
     __slots__ = ['_logger']
 
     def __init__(self) -> None:
@@ -43,7 +47,13 @@ class Config:
         self._logger.setLevel(LOGGING_DEFAULT_LOG_LEVEL)
         self._logger.addHandler(console_stream)
 
-    def read_config(self, config_file : str):
+    def read_config(self, config_file : str) -> ConfigData:
+        """
+        Read the configuation file for the application.
+
+        parameters:
+            config_file - Configuration filename with full path
+        """
 
         config = ConfigParser()
 
@@ -63,15 +73,14 @@ class Config:
                 if db_file:
                     db_data.database_file = db_file
 
-                fail_on_no_db = db_section.get('fail_no_database', None)
-                if fail_on_no_db is not None:
-                    db_data.fail_on_no_database = fail_on_no_db
+                db_data.create_when_missing = db_section.getboolean(
+                    'create_when_missing', False)
 
         self._logger.info("+=== Configuration Settings ===+")
         self._logger.info("+==============================+")
         self._logger.info("Database Settings :->")
-        self._logger.info("+= database file : %s", db_data.database_file)
-        self._logger.info("+= Fail on no db : %s", db_data.fail_on_no_database)
+        self._logger.info("+= Database file :       %s", db_data.database_file)
+        self._logger.info("+= Create_when_missing : %s", db_data.create_when_missing)
         self._logger.info("+==============================+")
 
         return ConfigData(db_data)

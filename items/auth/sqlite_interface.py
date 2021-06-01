@@ -97,9 +97,9 @@ class SqliteInterface:
         self._logger.setLevel(LOGGING_DEFAULT_LOG_LEVEL)
         self._logger.addHandler(console_stream)
 
-    def database_exists(self) -> bool:
+    def valid_database(self) -> bool:
         """
-        Check to see if the database exists.  We verify that:
+        Check to see if the database is valid.  We verify that:
           a) The file exist.
           b) It's at least 100 bytes (min size of header).
           c) Contains the expected header string.
@@ -108,17 +108,20 @@ class SqliteInterface:
             True if valid, False = not valid.
         """
 
-        if not os.path.isfile(self._database_filename):
-            return False
+        status = False
 
-        # SQLite database file header is 100 bytes
-        if os.path.getsize(self._database_filename) < 100:
-            return False
+        if os.path.isfile(self._database_filename):
 
-        with open(self._database_filename, 'rb') as handle:
-            header = handle.read(100)
+            # SQLite database file header is 100 bytes
+            if os.path.getsize(self._database_filename) > 100:
 
-        return header[:16] == b'SQLite format 3\x00'
+                with open(self._database_filename, 'rb') as handle:
+                    header = handle.read(100)
+
+                    if header[:16] == b'SQLite format 3\x00':
+                        status = True
+
+        return status
 
     def build_database(self) -> Tuple[bool, str]:
         """
@@ -198,8 +201,6 @@ class SqliteInterface:
 
         try:
             self._connection = sqlite3.connect(self._database_filename)
-            cursor = self._connection.cursor()
-            cursor.execute('SELECT id FROM user_profile LIMIT 1')
             open_status = True
             self._is_connected = True
 

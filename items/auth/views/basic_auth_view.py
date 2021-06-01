@@ -13,24 +13,26 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from sqlite_interface import SqliteInterface
 from quart import Blueprint, request
 
-def create_placeholder_blueprint():
-    view = PlaceholderView()
+def create_basic_auth_blueprint(sql_interface : SqliteInterface):
+    view = View(sql_interface)
 
-    blueprint = Blueprint('placeholder_api', __name__)
+    blueprint = Blueprint('basic_auth_api', __name__)
 
-    @blueprint.route('/test/placeholder', methods=['POST'])
-    def placeholder_request():
-        return view.placeholder_handler(request)
+    @blueprint.route('/basic_auth/authenticate', methods=['POST'])
+    def authenticate_request():
+        return view.authenticate(request)
 
     return blueprint
 
-class PlaceholderView:
+class View:
+    __slots__ = ['_sql_interface']
 
-    def __init__(self):
-        print('PlaceholderView init()')
-
-    def placeholder_handler(self, api_request):
+    def __init__(self, sql_interface : SqliteInterface) -> None:
+        self._sql_interface = sql_interface
+ 
+    def authenticate(self, api_request):
         print('Test: Placeholder')
         return 'Test: Placeholder', 404
