@@ -268,7 +268,7 @@ class SqliteInterface:
         return (user_id, error_str)
 
     def basic_user_authenticate(self, user_id : int, password : str) \
-                                -> Tuple[Union[int, None], str]:
+                                -> Tuple[bool, str]:
         """
         Authenticate a user using basic authentication (email address and a
         password.
@@ -276,6 +276,9 @@ class SqliteInterface:
         parameters:
             user_id - User's unique id\n
             password - Password to authenticate
+
+        returns:
+            tuple : (status, error string)
         """
 
         return_status = False
