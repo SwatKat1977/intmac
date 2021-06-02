@@ -64,7 +64,7 @@ class AuthApplication(Application):
 
     def _open_database(self):
 
-        self._db = SqliteInterface('self._config.database.database_file')
+        self._db = SqliteInterface(self._config.database.database_file)
 
         status = False
 
