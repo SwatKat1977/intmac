@@ -28,5 +28,4 @@ jobs:
       run: |
         cd items
         export PYTHONPATH=`pwd`/auth:`pwd`/shared
-        pylint
-        python ../pipelines/lint.py --path auth --threshold 10
+        pylint `pwd`/auth
