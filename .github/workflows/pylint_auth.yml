@@ -28,4 +28,4 @@ jobs:
       run: |
         cd items
         export PYTHONPATH=items/auth:items/shared
-        pylint `pwd`/auth --rcfile=items/pylint-auth.rc
+        pylint `pwd`/auth --rcfile=pylint-auth.rc
