@@ -27,6 +27,10 @@ class AuthApplication(Application):
     """ ITEMS Authentication Service """
     __slots__ = ["_config", "_db", "_logger"]
 
+    title_text = 'ITEMS Auth Microservice %s'
+    copyright_text = 'Copyright 2014-2021 Integrated Test Management Suite'
+    license_text = 'Licensed under the Apache License, Version 2.0'
+
     def __init__(self, quart_instance):
         super().__init__()
         self._quart_instance = quart_instance
@@ -44,6 +48,12 @@ class AuthApplication(Application):
     def _initialise(self) -> bool:
 
         return_status = False
+
+        build = "V0.0.0-MVP"
+
+        self._logger.info(self.title_text, build)
+        self._logger.info(self.copyright_text)
+        self._logger.info(self.license_text)
 
         config_mgr = Config()
         self._config = config_mgr.read_config("./config.ini")
