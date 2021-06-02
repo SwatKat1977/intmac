@@ -32,7 +32,7 @@ services:
       dockerfile: Dockerfile.gateway-api
     container_name: items-gateway-api
     ports:
-      - "2020:2020"
+      - "2111:2111"
     networks:
       - items_docker_net
 

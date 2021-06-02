@@ -13,24 +13,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
-from quart import Blueprint, request
+from enum import Enum
 
-def create_placeholder_blueprint():
-    view = PlaceholderView()
+class LogonType(Enum):
+    """ Type of logon, e.g. basic """
 
-    blueprint = Blueprint('placeholder_api', __name__)
-
-    @blueprint.route('/test/placeholder', methods=['POST'])
-    def placeholder_request():
-        return view.placeholder_handler(request)
-
-    return blueprint
-
-class PlaceholderView:
-
-    def __init__(self):
-        print('PlaceholderView init()')
-
-    def placeholder_handler(self, api_request):
-        print('Test: Placeholder')
-        return 'Test: Placeholder', 404
+    BASIC = 0
