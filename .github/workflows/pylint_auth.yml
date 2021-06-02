@@ -6,7 +6,7 @@ on:
   pull_request:
     branches:
       - main
-      - development
+      - project-restart
 jobs:
   build:
 
@@ -28,4 +28,4 @@ jobs:
       run: |
         cd items
         export PYTHONPATH=`pwd`/auth:`pwd`/shared
-        python ../pipelines/lint.py --path auth --threshold 10
+        pylint `pwd`/auth --rcfile=pylint-auth.rc
