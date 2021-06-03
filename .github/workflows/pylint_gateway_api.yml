@@ -26,5 +26,5 @@ jobs:
     - name: Run Pylint
       run: |
         cd items
-        export PYTHONPATH=`pwd`/gateway-api:`pwd`/shared
-        pylint `pwd`/gateway-api
+        export PYTHONPATH=`pwd`/gateway_api:`pwd`/shared
+        pylint `pwd`/gateway_api
