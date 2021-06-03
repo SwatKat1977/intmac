@@ -17,6 +17,7 @@ from application import Application
 from views.handshake_view import create_handshake_blueprint
 
 class GatewayApiApplication(Application):
+    """ Gateway API application class """
 
     def __init__(self, quart_instance):
         super().__init__()
