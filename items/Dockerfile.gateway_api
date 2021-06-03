@@ -7,21 +7,21 @@ RUN addgroup -S items && \
     chown items:items /usr/local/items
 
 # Gateway API dependencies
-COPY requirements-gateway-api.txt .
+COPY requirements-gateway_api.txt .
 RUN apk add --no-cache && \
-    pip install --no-cache-dir -r requirements-gateway-api.txt && \
-    rm requirements-gateway-api.txt
+    pip install --no-cache-dir -r requirements-gateway_api.txt && \
+    rm requirements-gateway_api.txt
 
 USER items
 
 # Copy base Gateway API files into Docker image.
-COPY --chown=items:items gateway-api /usr/local/items/gateway-api
+COPY --chown=items:items gateway-api /usr/local/items/gateway_api
 COPY --chown=items:items shared /usr/local/items/shared
 
 # Configure the environment
 WORKDIR /usr/local/items
-ENV PYTHONPATH="${PYTHONPATH}:/usr/local/items/gateway-api:/usr/local/items/shared"
+ENV PYTHONPATH="${PYTHONPATH}:/usr/local/items/gateway_api:/usr/local/items/shared"
 
 EXPOSE 2111
 
-CMD hypercorn gateway-api:app --bind '0.0.0.0:2111'
+CMD hypercorn gateway_api:app --bind '0.0.0.0:2111'

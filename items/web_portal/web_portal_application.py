@@ -16,6 +16,7 @@ limitations under the License.
 from application import Application
 
 class WebPortalApplication(Application):
+    ''' Web portal application class '''
 
     def __init__(self, quart_instance):
         super().__init__()

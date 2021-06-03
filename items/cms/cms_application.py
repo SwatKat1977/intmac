@@ -17,6 +17,7 @@ from application import Application
 from views.placeholder_view import create_placeholder_blueprint
 
 class CMSApplication(Application):
+    ''' Contents Management System application class '''
 
     def __init__(self, quart_instance):
         super().__init__()
