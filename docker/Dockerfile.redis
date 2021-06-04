@@ -1,0 +1,6 @@
+FROM redis:6.2.4-alpine
+LABEL com.items.version="0.0.0-pre_alpha"
+
+COPY docker/redis.conf /usr/local/etc/redis/redis.conf
+
+CMD redis-server /usr/local/etc/redis/redis.conf
