@@ -26,6 +26,5 @@ jobs:
         pip install quart
     - name: Run Pylint
       run: |
-        cd items
-        export PYTHONPATH=`pwd`/auth:`pwd`/shared
-        pylint `pwd`/auth --rcfile=pylint-auth.rc
+        export PYTHONPATH=`pwd`/items/auth:`pwd`/items/shared
+        pylint `pwd`/items/auth --rcfile=pylint-auth.rc
