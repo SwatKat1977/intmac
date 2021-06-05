@@ -51,14 +51,28 @@ class Config:
         """
         Read the configuation file for the application.
 
+        Order of precedence:
+        1) Override Environment variables
+        2) Configuration file
+        3) Default values
+
         parameters:
             config_file - Configuration filename with full path
         """
 
         config = ConfigParser()
 
+        # Set parameters to default values initially
         db_data = DatabaseConfigData('./auth.db', False)
 
+        # Check for Override Environment variables
+        if (database_file := os.getenv('ITEMS_DATABASE_FILE')) is not None:
+            db_data.database_file = database_file
+
+        if (create_on_missing := os.getenv('ITEMS_CREATE_WHEN_MISSING')) is not None:
+            db_data.create_when_missing = bool(create_on_missing)
+
+        # Check for config file and if present read it and use those values
         if config_file and not os.path.isfile(config_file):
             self._logger.warning(("Specified config file '%s' cannot be read, "
                                  "the defaults will be used!"), config_file)
@@ -73,8 +87,9 @@ class Config:
                 if db_file:
                     db_data.database_file = db_file
 
-                db_data.create_when_missing = db_section.getboolean(
-                    'create_when_missing', False)
+                create_missing = db_section.getboolean('create_when_missing')
+                if create_missing is not None:
+                    db_data.create_when_missing = create_missing
 
         self._logger.info("+=== Configuration Settings ===+")
         self._logger.info("+==============================+")
