@@ -6,6 +6,18 @@ networks:
 
 services:
 
+  ################
+  ## Core services
+  ################
+
+  items-redis:
+    build:
+      context: .
+      dockerfile: Dockerfile.redis
+    container_name: items-redis
+    networks:
+      - items_docker_net
+
   items-auth:
     build:
       context: .
@@ -29,7 +41,7 @@ services:
   items-gateway-api:
     build:
       context: .
-      dockerfile: Dockerfile.gateway-api
+      dockerfile: Dockerfile.gateway_api
     container_name: items-gateway-api
     ports:
       - "2111:2111"

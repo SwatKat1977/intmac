@@ -15,8 +15,8 @@ RUN apk add --no-cache && \
 USER items
 
 # Copy base files into Docker image.
-COPY --chown=items:items web_portal /usr/local/items/web_portal
-COPY --chown=items:items shared /usr/local/items/shared
+COPY --chown=items:items items/web_portal /usr/local/items/web_portal
+COPY --chown=items:items items/shared /usr/local/items/shared
 
 # Configure the environment
 WORKDIR /usr/local/items

@@ -15,8 +15,8 @@ RUN apk add --no-cache && \
 USER items
 
 # Copy base Gateway API files into Docker image.
-COPY --chown=items:items gateway-api /usr/local/items/gateway_api
-COPY --chown=items:items shared /usr/local/items/shared
+COPY --chown=items:items items/gateway_api /usr/local/items/gateway_api
+COPY --chown=items:items items/shared /usr/local/items/shared
 
 # Configure the environment
 WORKDIR /usr/local/items
