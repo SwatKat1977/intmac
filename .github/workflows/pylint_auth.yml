@@ -24,6 +24,7 @@ jobs:
         pip install pylint
         pip install jsonschema
         pip install quart
+        pip install redis
     - name: Run Pylint
       run: |
         export PYTHONPATH=`pwd`/items/auth:`pwd`/items/shared
