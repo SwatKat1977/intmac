@@ -15,6 +15,8 @@ limitations under the License.
 '''
 import json
 import logging
+from time import sleep, time
+from uuid import uuid4
 import redis
 from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
                            LOGGING_DEFAULT_LOG_LEVEL, \
@@ -59,7 +61,27 @@ class RedisInterface:
         t = json.loads(t)
         print(t)
 
+    def acquire_lock(self, lockname, timeout = 2):
+
+        lock_name = f'lock_{lockname}'
+        identifier = str(uuid4())
+        acquired_lock = None
+
+        end = time() + timeout
+
+        while time() < end and not acquired_lock:
+            if self._redis.setnx(lock_name, identifier):
+                acquired_lock = identifier
+
+            sleep(0.001)
+
+        self._redis.delete(lock_name)
+
+        return acquired_lock
+
 r = RedisInterface('localhost', '6379')
 r.initialise()
 r.test1()
 r.test2()
+yu = r.acquire_lock('trial')
+print('lock id:', yu)
