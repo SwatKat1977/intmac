@@ -103,6 +103,18 @@ class RedisInterface:
 
     def add_auth_session(self, email_address : str, token : str,
                                logon_type : LogonType) -> bool:
+        """
+        Add an authentication session to the REDIS database. It will attempt to
+        lock the record before adding it to ensure concurrency consistency.
+
+        parameters:
+            email_address - Email address of the user\n
+            token - Unique token specific for the session\n
+            logon_type - Type of logon that occurred - currently only BASIC
+        
+        returns:
+            bool - Success status of the add.
+        """
 
         status = False
 
