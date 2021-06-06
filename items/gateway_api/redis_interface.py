@@ -23,6 +23,7 @@ from items_exception import ItemsException
 from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
                            LOGGING_DEFAULT_LOG_LEVEL, \
                            LOGGING_LOG_FORMAT_STRING
+from logon_type import LogonType
 
 class RedisInterface:
     """ REDIS interface wrapper class for ITEMS project """
@@ -73,7 +74,7 @@ class RedisInterface:
         test_entry = json.loads(test_entry)
         print(test_entry)
 
-    def acquire_lock(self, name : str, timeout : int = 2) -> Union[None, str]:
+    def acquire_lock(self, name : str, timeout : int = 2) -> Union[None, bytes]:
         """
         Acquire a lock, retrying for timeout number of seconds.
 
@@ -87,7 +88,7 @@ class RedisInterface:
         """
 
         lock_name = f'lock_{name}'
-        identifier = str(uuid4())
+        identifier = str(uuid4()).encode("UTF-8")
         acquired_lock = None
 
         end = time() + timeout
@@ -99,6 +100,35 @@ class RedisInterface:
             sleep(0.001)
 
         return acquired_lock
+
+    def add_auth_session(self, email_address : str, token : str,
+                               logon_type : LogonType) -> bool:
+
+        status = False
+
+        # Session timeout isn't implemented so the expiry will always be set to
+        # a value of 0 (no expiry)
+
+        session_data = {
+            "email" : email_address,
+            "logon type" : logon_type.value,
+            "session expiry" : 0,
+            "token" : token
+        }
+
+        lock_id = self.acquire_lock(email_address)
+        if not lock_id:
+            self._logger.error("Unable to get a REDIS lock for %s",
+                               email_address)
+
+        else:
+            # If you logon a second time it will just invalid the previous one
+            # currently. This logic should be improved at a later date!!
+            self._redis.set(email_address, json.dumps(session_data))
+            self.release_lock(email_address, lock_id)
+            status = True
+
+        return status
 
     def release_lock(self, lock : str, identifier : str) -> bool:
         """
@@ -118,6 +148,8 @@ class RedisInterface:
 
         lock = self._redis.get(lock_name)
 
+        print('lock:', lock)
+        print('test: ', lock == identifier, identifier)
         if lock and lock == identifier:
             self._redis.delete(lock_name)
             status = True
@@ -133,6 +165,9 @@ r = RedisInterface('localhost', '6379')
 r.initialise()
 r.test1()
 r.test2()
+
+print('add:', r.add_auth_session('swatkat', 'invalid', LogonType.BASIC))
+
 yu = r.acquire_lock('trial')
 print('lock id:', yu)
 r.release_lock('trial', 'bar')
