@@ -111,7 +111,7 @@ class RedisInterface:
             email_address - Email address of the user\n
             token - Unique token specific for the session\n
             logon_type - Type of logon that occurred - currently only BASIC
-        
+
         returns:
             bool - Success status of the add.
         """
