@@ -23,8 +23,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install pylint
         pip install quart
+        pip install redis
     - name: Run Pylint
       run: |
         cd items
-        export PYTHONPATH=`pwd`/gateway_api:`pwd`/shared
-        pylint `pwd`/gateway_api
+        export PYTHONPATH=`pwd`/items/gateway_api:`pwd`/items/shared
+        pylint `pwd`/items/gateway_api
