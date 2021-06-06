@@ -16,13 +16,16 @@ limitations under the License.
 import json
 import logging
 from time import sleep, time
+from typing import Union
 from uuid import uuid4
 import redis
+from items_exception import ItemsException
 from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
                            LOGGING_DEFAULT_LOG_LEVEL, \
                            LOGGING_LOG_FORMAT_STRING
 
 class RedisInterface:
+    """ REDIS interface wrapper class for ITEMS project """
     __slots__ = ["_host", "_logger", "_port", "_redis"]
 
     def __init__(self, host : str, port : int) -> None:
@@ -39,6 +42,13 @@ class RedisInterface:
         self._logger.addHandler(console_stream)
 
     def initialise(self) -> bool:
+        """
+        Initialise the REDIS interface, it returns a boolean status.
+
+        returns:
+            bool - Initialisation status boolean
+        """
+
         status = False
 
         try:
@@ -52,18 +62,31 @@ class RedisInterface:
         return status
 
     def test1(self):
+        # pylint: disable=C0116
         trial = {"str": "example", "int": 2001}
         self._redis.set('jsondata', '{"str": "example", "int": 20}' )
         self._redis.set('jsondata', json.dumps(trial) )
 
     def test2(self):
-        t = self._redis.get('jsondata')
-        t = json.loads(t)
-        print(t)
+        # pylint: disable=C0116
+        test_entry = self._redis.get('jsondata')
+        test_entry = json.loads(test_entry)
+        print(test_entry)
 
-    def acquire_lock(self, lockname, timeout = 2):
+    def acquire_lock(self, name : str, timeout : int = 2) -> Union[None, str]:
+        """
+        Acquire a lock, retrying for timeout number of seconds.
 
-        lock_name = f'lock_{lockname}'
+        parameters:
+            name - Name of lock\n
+            timeout - Amount of time in seconds to try acquiring the lock
+
+        returns:
+          str | None - The unique lock identifier string is returned if the
+                       call was successful, otherwise None is returned.
+        """
+
+        lock_name = f'lock_{name}'
         identifier = str(uuid4())
         acquired_lock = None
 
@@ -75,9 +98,36 @@ class RedisInterface:
 
             sleep(0.001)
 
-        self._redis.delete(lock_name)
-
         return acquired_lock
+
+    def release_lock(self, lock : str, identifier : str) -> bool:
+        """
+        Attempt to release a lock. If the lock name doesn't exist or the
+        identifier doesn't match then an exception is raised.
+
+        parameters:
+            lock - Name of the lock (usually record key)\n
+            identifier - Lock identifier UUID
+
+        returns:
+            bool - Status of lock release attempt, True is success.
+        """
+
+        lock_name = f'lock_{lock}'
+        status = False
+
+        lock = self._redis.get(lock_name)
+
+        if lock and lock == identifier:
+            self._redis.delete(lock_name)
+            status = True
+
+        else:
+            self._logger.error(("Failed attempt releasing REDIS lock '%s' "
+                                "with id '%s'"), lock_name, identifier)
+            raise ItemsException('Invalid REDIS lock')
+
+        return status
 
 r = RedisInterface('localhost', '6379')
 r.initialise()
@@ -85,3 +135,4 @@ r.test1()
 r.test2()
 yu = r.acquire_lock('trial')
 print('lock id:', yu)
+r.release_lock('trial', 'bar')
