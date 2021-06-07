@@ -74,33 +74,6 @@ class RedisInterface:
         test_entry = json.loads(test_entry)
         print(test_entry)
 
-    def acquire_lock(self, name : str, timeout : int = 2) -> Union[None, bytes]:
-        """
-        Acquire a lock, retrying for timeout number of seconds.
-
-        parameters:
-            name - Name of lock\n
-            timeout - Amount of time in seconds to try acquiring the lock
-
-        returns:
-          str | None - The unique lock identifier string is returned if the
-                       call was successful, otherwise None is returned.
-        """
-
-        lock_name = f'lock_{name}'
-        identifier = str(uuid4()).encode("UTF-8")
-        acquired_lock = None
-
-        end = time() + timeout
-
-        while time() < end and not acquired_lock:
-            if self._redis.setnx(lock_name, identifier):
-                acquired_lock = identifier
-
-            sleep(0.001)
-
-        return acquired_lock
-
     def add_auth_session(self, email_address : str, token : str,
                                logon_type : LogonType) -> bool:
         """
@@ -128,7 +101,7 @@ class RedisInterface:
             "token" : token
         }
 
-        lock_id = self.acquire_lock(email_address)
+        lock_id = self._acquire_lock(email_address)
         if not lock_id:
             self._logger.error("Unable to get a REDIS lock for %s",
                                email_address)
@@ -137,12 +110,39 @@ class RedisInterface:
             # If you logon a second time it will just invalid the previous one
             # currently. This logic should be improved at a later date!!
             self._redis.set(email_address, json.dumps(session_data))
-            self.release_lock(email_address, lock_id)
+            self._release_lock(email_address, lock_id)
             status = True
 
         return status
 
-    def release_lock(self, lock : str, identifier : str) -> bool:
+    def _acquire_lock(self, name : str, timeout : int = 2) -> Union[None, bytes]:
+        """
+        Acquire a lock, retrying for timeout number of seconds.
+
+        parameters:
+            name - Name of lock\n
+            timeout - Amount of time in seconds to try acquiring the lock
+
+        returns:
+          str | None - The unique lock identifier string is returned if the
+                       call was successful, otherwise None is returned.
+        """
+
+        lock_name = f'lock_{name}'
+        identifier = str(uuid4()).encode("UTF-8")
+        acquired_lock = None
+
+        end = time() + timeout
+
+        while time() < end and not acquired_lock:
+            if self._redis.setnx(lock_name, identifier):
+                acquired_lock = identifier
+
+            sleep(0.001)
+
+        return acquired_lock
+
+    def _release_lock(self, lock : str, identifier : str) -> bool:
         """
         Attempt to release a lock. If the lock name doesn't exist or the
         identifier doesn't match then an exception is raised.
@@ -160,8 +160,6 @@ class RedisInterface:
 
         lock = self._redis.get(lock_name)
 
-        print('lock:', lock)
-        print('test: ', lock == identifier, identifier)
         if lock and lock == identifier:
             self._redis.delete(lock_name)
             status = True
