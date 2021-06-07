@@ -62,18 +62,6 @@ class RedisInterface:
 
         return status
 
-    def test1(self):
-        # pylint: disable=C0116
-        trial = {"str": "example", "int": 2001}
-        self._redis.set('jsondata', '{"str": "example", "int": 20}' )
-        self._redis.set('jsondata', json.dumps(trial) )
-
-    def test2(self):
-        # pylint: disable=C0116
-        test_entry = self._redis.get('jsondata')
-        test_entry = json.loads(test_entry)
-        print(test_entry)
-
     def add_auth_session(self, email_address : str, token : str,
                                logon_type : LogonType) -> bool:
         """
