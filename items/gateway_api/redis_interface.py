@@ -172,14 +172,3 @@ class RedisInterface:
             raise ItemsException('Invalid REDIS lock')
 
         return status
-
-r = RedisInterface('localhost', '6379')
-r.initialise()
-r.test1()
-r.test2()
-
-print('add:', r.add_auth_session('swatkat', 'invalid', LogonType.BASIC))
-
-yu = r.acquire_lock('trial')
-print('lock id:', yu)
-r.release_lock('trial', 'bar')
