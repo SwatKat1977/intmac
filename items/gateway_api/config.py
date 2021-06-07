@@ -21,18 +21,30 @@ from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
                            LOGGING_DEFAULT_LOG_LEVEL, \
                            LOGGING_LOG_FORMAT_STRING
 
+DEFAULT_DB_HOST_NAME = 'localhost'
+DEFAULT_DB_HOST_PORT = 6379
+
+DEFAULT_AUTH_BASE_URL = 'http://localhost:3030'
+
 @dataclass
 class DatabaseConfigData:
     """ Database configuration data """
 
-    database_host_name : str = 'localhost'
-    database_host_port : int = 6379
+    database_host_name : str
+    database_host_port : int
+
+@dataclass
+class AuthServiceConfigData:
+    """ Auyh Service configuration data"""
+
+    base_url : str
 
 @dataclass
 class ConfigData:
     """ Main configuration data"""
 
     database : DatabaseConfigData
+    auth_service : AuthServiceConfigData
 
 class Config:
     """ Load application configuration """
@@ -63,7 +75,9 @@ class Config:
         config = ConfigParser()
 
         # Set parameters to default values initially
-        db_data = DatabaseConfigData('localhost', 6379)
+        db_data = DatabaseConfigData(DEFAULT_DB_HOST_NAME,
+                                     DEFAULT_DB_HOST_PORT)
+        auth_service_data = AuthServiceConfigData(DEFAULT_AUTH_BASE_URL)
 
         # Check for Override Environment variables
         if (db_host_name := os.getenv('ITEMS_DATABASE_HOST_NAME')) is not None:
@@ -99,5 +113,8 @@ class Config:
         self._logger.info("+= Database host port : %s",
                           db_data.database_host_port)
         self._logger.info("+==============================+")
+        self._logger.info("Authentication Service Settings :->")
+        self._logger.info("+= Base URL : %s", auth_service_data.base_url)
+        self._logger.info("+==============================+")
 
-        return ConfigData(db_data)
+        return ConfigData(db_data, auth_service_data)
