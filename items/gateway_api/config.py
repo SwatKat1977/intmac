@@ -86,6 +86,9 @@ class Config:
         if (db_host_port := os.getenv('ITEMS_DATABASE_HOST_PORT')) is not None:
             db_data.database_host_port = int(db_host_port)
 
+        if (auth_url := os.getenv('ITEMS_AUTH_BASE_URL')) is not None:
+            auth_service_data.base_url = auth_url
+
         # Check for config file and if present read it and use those values
         if config_file and not os.path.isfile(config_file):
             self._logger.warning(("Specified config file '%s' cannot be read, "
@@ -104,6 +107,16 @@ class Config:
                 db_host_port = db_section.get('database_host_port')
                 if db_host_port:
                     db_data.database_host_port = db_host_port
+
+            if config.has_section('auth_service'):
+                auth_service_section = config['auth_service']
+
+                base_url = auth_service_section.get('base_url')
+                if base_url:
+                    auth_service_data.base_url = base_url
+
+        # if (auth_url := os.getenv('ITEMS_AUTH_BASE_URL')) is not None:
+        #     auth_service_data.base_url = auth_url
 
         self._logger.info("+=== Configuration Settings ===+")
         self._logger.info("+==============================+")
