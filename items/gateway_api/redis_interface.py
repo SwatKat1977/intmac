@@ -103,6 +103,34 @@ class RedisInterface:
 
         return status
 
+    def del_auth_session(self, email_address : str) -> bool:
+        """
+        Remove an authentication session. It will attempt to lock the record
+        before deleting it to ensure concurrency consistency.
+
+        parameters:
+            email_address - Email address of the user
+
+        returns:
+            bool - Success status of the del.
+        """
+
+        status = False
+
+        lock_id = self._acquire_lock(email_address)
+        if not lock_id:
+            self._logger.error("Unable to get a REDIS lock for %s",
+                               email_address)
+
+        else:
+            # If you logon a second time it will just invalid the previous one
+            # currently. This logic should be improved at a later date!!
+            self._redis.delete(email_address)
+            self._release_lock(email_address, lock_id)
+            status = True
+
+        return status
+
     def _acquire_lock(self, name : str, timeout : int = 2) -> Union[None, bytes]:
         """
         Acquire a lock, retrying for timeout number of seconds.
