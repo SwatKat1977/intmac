@@ -88,10 +88,10 @@ def create_handshake_blueprint(config : ConfigData, sessions : RedisInterface):
 
     blueprint = Blueprint('handshake_api', __name__)
 
-    @blueprint.route('/handshake/authenticate', methods=['POST'])
-    async def authenticate_user_request():
+    @blueprint.route('/handshake/basic_authenticate', methods=['POST'])
+    async def basic_authenticate_request():
         # pylint: disable=unused-variable
-        return await view.authenticate_user_handler(request)
+        return await view.basic_authenticate_handler(request)
 
     @blueprint.route('/handshake/logout', methods=['POST'])
     async def logout_user_request():
@@ -174,7 +174,7 @@ class View(BaseView):
 
         mimetypes.init()
 
-    async def authenticate_user_handler(self, api_request):
+    async def basic_authenticate_handler(self, api_request):
 
         request_obj, err_msg = await self._convert_json_body_to_object(
             api_request, self.basicAuthenticateRequestSchema)
