@@ -115,9 +115,6 @@ class Config:
                 if base_url:
                     auth_service_data.base_url = base_url
 
-        # if (auth_url := os.getenv('ITEMS_AUTH_BASE_URL')) is not None:
-        #     auth_service_data.base_url = auth_url
-
         self._logger.info("+=== Configuration Settings ===+")
         self._logger.info("+==============================+")
         self._logger.info("Database Settings :->")
