@@ -131,6 +131,19 @@ class RedisInterface:
 
         return status
 
+    def is_valid_session(self, email_address : str, token : str) -> bool:
+
+        status = False
+
+        session = self._redis.get(email_address)
+
+        if session:
+            json_data = json.loads(session)
+            recv_token = json_data["token"]
+            status = recv_token == token
+
+        return status
+
     def _acquire_lock(self, name : str, timeout : int = 2) -> Union[None, bytes]:
         """
         Acquire a lock, retrying for timeout number of seconds.

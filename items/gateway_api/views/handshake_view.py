@@ -18,10 +18,16 @@ from http import HTTPStatus
 import json
 import logging
 import mimetypes
-from quart import Blueprint, request, Response, stream_with_context
+import uuid
+from quart import Blueprint, request, Response
+import requests
+from base_view import BaseView
+from config import ConfigData
 from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
                            LOGGING_DEFAULT_LOG_LEVEL, \
                            LOGGING_LOG_FORMAT_STRING
+from logon_type import LogonType
+from redis_interface import RedisInterface
 
 tests = [
     {
@@ -77,33 +83,86 @@ test_sets = [
     },
 ]
 
-def create_handshake_blueprint():
-    view = View()
+def create_handshake_blueprint(config : ConfigData, sessions : RedisInterface):
+    view = View(config, sessions)
 
     blueprint = Blueprint('handshake_api', __name__)
 
     @blueprint.route('/handshake/authenticate', methods=['POST'])
-    def authenticate_user_request():
-        return view.authenticate_user_handler(request)
+    async def authenticate_user_request():
+        # pylint: disable=unused-variable
+        return await view.authenticate_user_handler(request)
 
     @blueprint.route('/handshake/logout', methods=['POST'])
-    def logout_user_request():
-        return view.logout_user_handler(request)
+    async def logout_user_request():
+        # pylint: disable=unused-variable
+        return await view.logout_user_handler(request)
+
+    @blueprint.route('/handshake/valid_token', methods=['GET'])
+    async def valid_token_request():
+        # pylint: disable=unused-variable
+        return await view.valid_token_handler(request)
 
     @blueprint.route('/handshake/get_projects', methods=['GET'])
-    def get_projects_request():
-        return view.get_projects_handler(request)
+    async def get_projects_request():
+        # pylint: disable=unused-variable
+        return await view.get_projects_handler(request)
 
     @blueprint.route('/handshake/select_project', methods=['POST'])
-    def select_project_request():
-        return view.select_projects_handler(request)
+    async def select_project_request():
+        # pylint: disable=unused-variable
+        return await view.select_projects_handler(request)
 
     return blueprint
 
-class View:
+class View(BaseView):
     ''' Handshake view container class. '''
 
-    def __init__(self):
+    basicAuthenticateRequestSchema = \
+    {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+
+        "type" : "object",
+        "additionalProperties" : False,
+
+        "properties":
+        {
+            "email_address":
+            {
+                "type" : "string"
+            },
+            "password":
+            {
+                "type" : "string"
+            },
+        },
+        "required" : ["email_address", "password"]
+    }
+
+    tokenValidationCheckRequestSchema = \
+    {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+
+        "type" : "object",
+        "additionalProperties" : False,
+
+        "properties":
+        {
+            "email_address":
+            {
+                "type" : "string"
+            },
+            "token":
+            {
+                "type" : "string"
+            },
+        },
+        "required" : ["email_address", "token"]
+    }
+
+    def __init__(self, config : ConfigData, sessions : RedisInterface):
+        self._config = config
+        self._sessions = sessions
 
         self._logger = logging.getLogger(__name__)
         log_format= logging.Formatter(LOGGING_LOG_FORMAT_STRING,
@@ -115,22 +174,104 @@ class View:
 
         mimetypes.init()
 
-    def authenticate_user_handler(self, api_request):
-        self._logger.debug("Generating fake auth response for now...")
-        resp = {
-            "status": "OK",
-            "token": "c7dd0a54-baea-11eb-8529-0242ac130003"
+    async def authenticate_user_handler(self, api_request):
 
-        }
-        return Response(json.dumps(resp), status=HTTPStatus.OK,
-                        mimetype=mimetypes.types_map['.json'])
+        request_obj, err_msg = await self._convert_json_body_to_object(
+            api_request, self.basicAuthenticateRequestSchema)
 
-    def logout_user_handler(self, api_request):
+        if not request_obj:
+
+            response_json = {
+                'status': 'BAD',
+                'error': err_msg
+            }
+            response_status = HTTPStatus.NOT_ACCEPTABLE
+
+        else:
+            auth_request = {
+                "email_address": request_obj.email_address,
+                "password": request_obj.password
+            }
+            auth_url = (f"{self._config.auth_service.base_url}"
+                         "/basic_auth/authenticate")
+
+            response = requests.post(auth_url, json=auth_request)
+
+            if response.status_code != HTTPStatus.OK:
+                self._logger.error("Auth request invalid:\n  %s\n  Reason:%s",
+                                   auth_request, response.text)
+                response_status = HTTPStatus.INTERNAL_SERVER_ERROR
+                response_json = {
+                    "status": "OK",
+                    "token": "c7dd0a54-baea-11eb-8529-0242ac130003"
+                }
+
+            else:
+                response_status = HTTPStatus.OK
+
+                body = response.json()
+                if not body.get("status"):
+                    response_json = {
+                        "status":  0,
+                        "error": body.get("error")
+                    }
+
+                else:
+                    token = uuid.uuid4().hex
+                    self._sessions.add_auth_session(
+                        request_obj.email_address, token, LogonType.BASIC)
+
+                    response_json = {
+                        "status": 1,
+                        "token": token
+                    }
+                    self._logger.info("User '%s' logged in",
+                                      request_obj.email_address)
+
+        return Response(json.dumps(response_json), status = response_status,
+                                   mimetype = mimetypes.types_map['.json'])
+
+    async def logout_user_handler(self, api_request):
+        """ PLACEHOLDER """
+        # pylint: disable=unused-argument
+
         self._logger.debug("Logout is not implemented yet")
         return Response('', status=HTTPStatus.OK,
                         mimetype=mimetypes.types_map['.txt'])
 
-    def get_projects_handler(self, api_request):
+
+    async def valid_token_handler(self, api_request):
+        """
+        Endpoint to check to see if a token is valid.
+
+        parameters:
+            api_request - Request from Quart
+
+        returns:
+            Response instance
+        """
+
+        request_obj, err_msg = await self._convert_json_body_to_object(
+            api_request, self.tokenValidationCheckRequestSchema)
+
+        if not request_obj:
+
+            response_json = { 'status': 'BAD REQUEST' }
+            response_status = HTTPStatus.NOT_ACCEPTABLE
+
+        else:
+            valid = self._sessions.is_valid_session(request_obj.email_address,
+                                                    request_obj.token)
+            response_json = { "status": "VALID" if valid else "INVALID" }
+            response_status = HTTPStatus.NOT_ACCEPTABLE
+
+        return Response(json.dumps(response_json), response_status,
+                        mimetype=mimetypes.types_map['.json'])
+
+    async def get_projects_handler(self, api_request):
+        """ PLACEHOLDER """
+        # pylint: disable=unused-argument
+
         self._logger.debug("getprojects currently returns a hard-coded list")
 
         response = {
@@ -149,7 +290,10 @@ class View:
         return Response(json.dumps(response), status=HTTPStatus.OK,
                         mimetype=mimetypes.types_map['.json'])
 
-    def select_projects_handler(self, api_request):
+    async def select_projects_handler(self, api_request):
+        """ PLACEHOLDER """
+        # pylint: disable=unused-argument
+
         self._logger.debug("selectprojects returns a hard-coded response")
 
         def generate():
