@@ -160,6 +160,27 @@ class View(BaseView):
         "required" : ["email_address", "token"]
     }
 
+    logoutRequestSchema = \
+    {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+
+        "type" : "object",
+        "additionalProperties" : False,
+
+        "properties":
+        {
+            "email_address":
+            {
+                "type" : "string"
+            },
+            "token":
+            {
+                "type" : "string"
+            },
+        },
+        "required" : ["email_address", "token"]
+    }
+
     def __init__(self, config : ConfigData, sessions : RedisInterface):
         self._config = config
         self._sessions = sessions
@@ -174,7 +195,16 @@ class View(BaseView):
 
         mimetypes.init()
 
-    async def basic_authenticate_handler(self, api_request):
+    async def basic_authenticate_handler(self, api_request) -> Response:
+        """
+        Handler method for basic user authentication endpoint.
+
+        parameters:
+            api_request - REST API request object
+
+        returns:
+            Instance of Quart Response class.
+        """
 
         request_obj, err_msg = await self._convert_json_body_to_object(
             api_request, self.basicAuthenticateRequestSchema)
@@ -231,14 +261,38 @@ class View(BaseView):
         return Response(json.dumps(response_json), status = response_status,
                                    mimetype = mimetypes.types_map['.json'])
 
-    async def logout_user_handler(self, api_request):
-        """ PLACEHOLDER """
+    async def logout_user_handler(self, api_request) -> Response:
+        """
+        Handler method for user session logout endpoint.
+
+        parameters:
+            api_request - REST API request object
+
+        returns:
+            Instance of Quart Response class.
+        """
         # pylint: disable=unused-argument
 
-        self._logger.debug("Logout is not implemented yet")
-        return Response('', status=HTTPStatus.OK,
-                        mimetype=mimetypes.types_map['.txt'])
+        request_obj, err_msg = await self._convert_json_body_to_object(
+            api_request, self.logoutRequestSchema)
 
+        if not request_obj:
+            self._logger.error("Received bad logout request")
+            response =  "BAD REQUEST"
+            response_status = HTTPStatus.NOT_ACCEPTABLE
+
+        else:
+            if self._sessions.is_valid_session(request_obj.email_address,
+                                               request_obj.token):
+                self._sessions.del_auth_session(request_obj.email_address)
+                self._logger.info("User '%s' logged out",
+                                  request_obj.email_address)
+
+            response =  "OK"
+            response_status = HTTPStatus.OK
+
+        return Response(response, status=response_status,
+                        mimetype=mimetypes.types_map['.txt'])
 
     async def valid_token_handler(self, api_request):
         """
