@@ -271,7 +271,6 @@ class View(BaseView):
         returns:
             Instance of Quart Response class.
         """
-        # pylint: disable=unused-argument
 
         request_obj, err_msg = await self._convert_json_body_to_object(
             api_request, self.logoutRequestSchema)
