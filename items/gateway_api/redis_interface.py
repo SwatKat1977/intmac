@@ -132,6 +132,16 @@ class RedisInterface:
         return status
 
     def is_valid_session(self, email_address : str, token : str) -> bool:
+        """
+        Verify if a session token for a given is valid.
+
+        parameters:
+            email_address - Email address of the user\n
+            token - Token value
+
+        returns:
+            bool - Validity boolean.
+        """
 
         status = False
 
