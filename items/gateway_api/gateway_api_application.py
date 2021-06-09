@@ -62,7 +62,8 @@ class GatewayApiApplication(Application):
 
         self._logger.info('-> REDIS database database open: SUCCESSFUL')
 
-        auth_view_blueprint = create_handshake_blueprint()
+        auth_view_blueprint = create_handshake_blueprint(self._config,
+                                                         self._redis)
         self._quart_instance.register_blueprint(auth_view_blueprint)
 
         return True

@@ -9,20 +9,27 @@
 			"name": "Auth Service",
 			"item": [
 				{
-					"name": "Placeholder",
+					"name": "Basic Logon Authenticate",
 					"request": {
 						"method": "POST",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email_address\": \"admin@localhost\",\n    \"password\": \"aa5e453f-626e\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": "http://localhost:3030/test/placeholder",
-							"protocol": "http",
+							"raw": "{{AUTH_BASE_URL}}/basic_auth/authenticate",
 							"host": [
-								"localhost"
+								"{{AUTH_BASE_URL}}"
 							],
-							"port": "3030",
 							"path": [
-								"test",
-								"placeholder"
+								"basic_auth",
+								"authenticate"
 							]
 						}
 					},
@@ -39,12 +46,10 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:2020/handshake/authenticate",
-							"protocol": "http",
+							"raw": "{{GATEWAY_BASE_URL}}/handshake/authenticate",
 							"host": [
-								"localhost"
+								"{{GATEWAY_BASE_URL}}"
 							],
-							"port": "2020",
 							"path": [
 								"handshake",
 								"authenticate"
@@ -59,12 +64,10 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:2020/handshake/logout",
-							"protocol": "http",
+							"raw": "{{GATEWAY_BASE_URL}}/handshake/logout",
 							"host": [
-								"localhost"
+								"{{GATEWAY_BASE_URL}}"
 							],
-							"port": "2020",
 							"path": [
 								"handshake",
 								"logout"
@@ -79,12 +82,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:2020/handshake/get_projects",
-							"protocol": "http",
+							"raw": "{{GATEWAY_BASE_URL}}/handshake/get_projects",
 							"host": [
-								"localhost"
+								"{{GATEWAY_BASE_URL}}"
 							],
-							"port": "2020",
 							"path": [
 								"handshake",
 								"get_projects"
@@ -99,12 +100,10 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:2020/handshake/select_project",
-							"protocol": "http",
+							"raw": "{{GATEWAY_BASE_URL}}/handshake/select_project",
 							"host": [
-								"localhost"
+								"{{GATEWAY_BASE_URL}}"
 							],
-							"port": "2020",
 							"path": [
 								"handshake",
 								"select_project"
