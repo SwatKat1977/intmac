@@ -59,4 +59,7 @@ class View(BaseView):
             Instance of Quart Response class.
         """
 
-        return Response('ok', status = HTTPStatus.OK, mimetype = mimetypes.types_map['.txt'])
+        return Response('ok',
+                        status = HTTPStatus.OK,
+                        mimetype = mimetypes.types_map['.txt']
+                       )
