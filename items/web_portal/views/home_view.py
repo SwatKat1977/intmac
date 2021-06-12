@@ -13,25 +13,31 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from http import HTTPStatus
 import logging
-from application import Application
+import mimetypes
+from quart import Blueprint, request, Response
+from base_view import BaseView
 from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
                            LOGGING_DEFAULT_LOG_LEVEL, \
                            LOGGING_LOG_FORMAT_STRING
-from version import BUILD_TAG, BUILD_VERSION, RELEASE_VERSION
-from views.home_view import create_home_blueprint
 
-class WebPortalApplication(Application):
-    ''' Web portal application class '''
+def create_home_blueprint():
+    view = View()
 
-    title_text = 'ITEMS Web Portal %s'
-    copyright_text = 'Copyright 2014-2021 Integrated Test Management Suite'
-    license_text = 'Licensed under the Apache License, Version 2.0'
+    blueprint = Blueprint('home', __name__)
 
-    def __init__(self, quart_instance):
-        super().__init__()
-        self._quart_instance = quart_instance
+    @blueprint.route('/', methods=['GET'])
+    async def home_request():
+        # pylint: disable=unused-variable
+        return await view.home_handler(request)
 
+    return blueprint
+
+class View(BaseView):
+    ''' Home view container class. '''
+
+    def __init__(self):
         self._logger = logging.getLogger(__name__)
         log_format= logging.Formatter(LOGGING_LOG_FORMAT_STRING,
                                       LOGGING_DATETIME_FORMAT_STRING)
@@ -40,22 +46,17 @@ class WebPortalApplication(Application):
         self._logger.setLevel(LOGGING_DEFAULT_LOG_LEVEL)
         self._logger.addHandler(console_stream)
 
-    def _initialise(self) -> bool:
+        mimetypes.init()
 
-        build = f"V{RELEASE_VERSION}-{BUILD_VERSION}{BUILD_TAG}"
+    async def home_handler(self, api_request) -> Response:
+        """
+        Handler method for basic user authentication endpoint.
 
-        self._logger.info(self.title_text, build)
-        self._logger.info(self.copyright_text)
-        self._logger.info(self.license_text)
+        parameters:
+            api_request - REST API request object
 
+        returns:
+            Instance of Quart Response class.
+        """
 
-        auth_view_blueprint = create_home_blueprint()
-        self._quart_instance.register_blueprint(auth_view_blueprint)
-
-        return True
-
-    def _main_loop(self) -> None:
-        ''' Abstract method for main application. '''
-
-    def _shutdown(self):
-        ''' Abstract method for application shutdown. '''
+        return Response('ok', status = HTTPStatus.OK, mimetype = mimetypes.types_map['.txt'])
