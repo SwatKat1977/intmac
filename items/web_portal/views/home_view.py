@@ -16,8 +16,8 @@ limitations under the License.
 from http import HTTPStatus
 import logging
 import mimetypes
-from quart import Blueprint, request, Response
-from base_view import BaseView
+from quart import Blueprint, request, render_template, Response
+from web_base_view import WebBaseView
 from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
                            LOGGING_DEFAULT_LOG_LEVEL, \
                            LOGGING_LOG_FORMAT_STRING
@@ -34,8 +34,10 @@ def create_home_blueprint():
 
     return blueprint
 
-class View(BaseView):
+class View(WebBaseView):
     ''' Home view container class. '''
+
+    TEMPLATE_LOGIN_PAGE = "login.html"
 
     def __init__(self):
         self._logger = logging.getLogger(__name__)
@@ -49,6 +51,16 @@ class View(BaseView):
         mimetypes.init()
 
     async def home_handler(self, api_request) -> Response:
+
+        if not self._has_auth_cookies():
+            return await render_template(self.TEMPLATE_LOGIN_PAGE)
+
+
+        return Response('ok',
+                        status = HTTPStatus.OK,
+                        mimetype = mimetypes.types_map['.txt']
+                       )
+
         """
         Handler method for basic user authentication endpoint.
 
@@ -58,8 +70,3 @@ class View(BaseView):
         returns:
             Instance of Quart Response class.
         """
-
-        return Response('ok',
-                        status = HTTPStatus.OK,
-                        mimetype = mimetypes.types_map['.txt']
-                       )

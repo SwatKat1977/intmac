@@ -18,13 +18,16 @@ from base_view import BaseView
 
 class WebBaseView(BaseView):
 
+    COOKIE_TOKEN = "items_token"
+    COOKIE_USER = "items_user"
+
     def _generate_redirect(self, request, redirect_url) -> str:
         new_url = f"{request.url_root}{redirect_url}"
         return self.REDIRECT_URL.format(new_url)
 
-    def has_auth_cookies(self) -> bool:
-        retrieved_token = request.cookies.get(self.TOKEN_USER_TOKEN)
-        retrieved_username = request.cookies.get(self.TOKEN_USER)
+    def _has_auth_cookies(self) -> bool:
+        retrieved_token = request.cookies.get(self.COOKIE_TOKEN)
+        retrieved_username = request.cookies.get(self.COOKIE_USER)
         return retrieved_token and retrieved_username
 
     def validate_cookies(self) -> bool:
