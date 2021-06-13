@@ -209,7 +209,8 @@ body
 
 #error_msg
 {
-    background: #ff4d4d;
+    color: #ff4d4d;
+    font-weight: bold;
     padding: 1rem;
     margin-bottom: 0.5rem;
     border-radius: 6px ;
