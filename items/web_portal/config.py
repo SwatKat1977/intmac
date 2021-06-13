@@ -74,9 +74,13 @@ class Config:
         else:
             self._read_config_file(config_file, gateway_data)
 
-        return ConfigData(gateway_data)
+        config = ConfigData(gateway_data)
 
-    def display_settings(self, config : ConfigData) -> None:
+        self._display_settings(config)
+
+        return config
+
+    def _display_settings(self, config : ConfigData) -> None:
 
         self._logger.info("+=== Configuration Settings ===+")
         self._logger.info("+==============================+")
