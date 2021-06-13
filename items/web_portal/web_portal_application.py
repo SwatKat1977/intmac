@@ -13,16 +13,44 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+import logging
 from application import Application
+from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
+                           LOGGING_DEFAULT_LOG_LEVEL, \
+                           LOGGING_LOG_FORMAT_STRING
+from version import BUILD_TAG, BUILD_VERSION, RELEASE_VERSION
+from views.home_view import create_home_blueprint
 
 class WebPortalApplication(Application):
     ''' Web portal application class '''
+
+    title_text = 'ITEMS Web Portal %s'
+    copyright_text = 'Copyright 2014-2021 Integrated Test Management Suite'
+    license_text = 'Licensed under the Apache License, Version 2.0'
 
     def __init__(self, quart_instance):
         super().__init__()
         self._quart_instance = quart_instance
 
+        self._logger = logging.getLogger(__name__)
+        log_format= logging.Formatter(LOGGING_LOG_FORMAT_STRING,
+                                      LOGGING_DATETIME_FORMAT_STRING)
+        console_stream = logging.StreamHandler()
+        console_stream.setFormatter(log_format)
+        self._logger.setLevel(LOGGING_DEFAULT_LOG_LEVEL)
+        self._logger.addHandler(console_stream)
+
     def _initialise(self) -> bool:
+
+        build = f"V{RELEASE_VERSION}-{BUILD_VERSION}{BUILD_TAG}"
+
+        self._logger.info(self.title_text, build)
+        self._logger.info(self.copyright_text)
+        self._logger.info(self.license_text)
+
+
+        auth_view_blueprint = create_home_blueprint()
+        self._quart_instance.register_blueprint(auth_view_blueprint)
 
         return True
 
