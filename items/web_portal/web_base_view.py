@@ -17,6 +17,8 @@ from quart import request
 from base_view import BaseView
 
 class WebBaseView(BaseView):
+    """ Base class for views that serve web pages """
+    # pylint: disable=too-few-public-methods
 
     COOKIE_TOKEN = "items_token"
     COOKIE_USER = "items_user"
@@ -32,22 +34,7 @@ class WebBaseView(BaseView):
         retrieved_username = request.cookies.get(self.COOKIE_USER)
         return retrieved_token and retrieved_username
 
-    def validate_cookies(self) -> bool:
+    def _validate_cookies(self) -> bool:
+        # pylint: disable=no-self-use
 
         return True
-
-        """
-        retrieved_token = request.cookies.get(self.TOKEN_USER_TOKEN)
-        retrieved_username = request.cookies.get(self.TOKEN_USER)
-
-        if not retrieved_token or not retrieved_username:
-            return False
-
-        cookie = self._service.cookie_jar.get(CookieFieldType.USER_TOKEN,
-                                              retrieved_token)
-
-        if not cookie or cookie.username != retrieved_username:
-            return False
-
-        return True
-        """
