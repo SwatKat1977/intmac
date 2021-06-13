@@ -21,7 +21,9 @@ class WebBaseView(BaseView):
     COOKIE_TOKEN = "items_token"
     COOKIE_USER = "items_user"
 
-    def _generate_redirect(self, request, redirect_url) -> str:
+    REDIRECT_URL = "<meta http-equiv=\"Refresh\" content=\"0; url='{0}\"/>"
+
+    def _generate_redirect(self, redirect_url) -> str:
         new_url = f"{request.url_root}{redirect_url}"
         return self.REDIRECT_URL.format(new_url)
 

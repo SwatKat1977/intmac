@@ -16,7 +16,7 @@ limitations under the License.
 from http import HTTPStatus
 import logging
 import mimetypes
-from quart import Blueprint, request, render_template, Response
+from quart import Blueprint, make_response, request, render_template, Response
 from web_base_view import WebBaseView
 from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
                            LOGGING_DEFAULT_LOG_LEVEL, \
@@ -32,12 +32,18 @@ def create_home_blueprint():
         # pylint: disable=unused-variable
         return await view.home_handler(request)
 
+    @blueprint.route('/login', methods=['POST'])
+    async def login_request():
+        # pylint: disable=unused-variable
+        return await view.login_handler(request)
+
     return blueprint
 
 class View(WebBaseView):
     ''' Home view container class. '''
 
     TEMPLATE_LOGIN_PAGE = "login.html"
+    TEMPLATE_HOME_PAGE = "home.html"
 
     def __init__(self):
         self._logger = logging.getLogger(__name__)
@@ -55,11 +61,7 @@ class View(WebBaseView):
         if not self._has_auth_cookies():
             return await render_template(self.TEMPLATE_LOGIN_PAGE)
 
-
-        return Response('ok',
-                        status = HTTPStatus.OK,
-                        mimetype = mimetypes.types_map['.txt']
-                       )
+        return await render_template(self.TEMPLATE_HOME_PAGE)
 
         """
         Handler method for basic user authentication endpoint.
@@ -70,3 +72,12 @@ class View(WebBaseView):
         returns:
             Instance of Quart Response class.
         """
+
+    async def login_handler(self, api_request) -> Response:
+
+        redirect = self._generate_redirect('')
+        response = await make_response(redirect)
+        response.set_cookie(self.COOKIE_TOKEN, "token")
+        response.set_cookie(self.COOKIE_USER, "username")
+
+        return response
