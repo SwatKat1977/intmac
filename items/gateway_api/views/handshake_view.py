@@ -316,7 +316,7 @@ class View(BaseView):
             valid = self._sessions.is_valid_session(request_obj.email_address,
                                                     request_obj.token)
             response_json = { "status": "VALID" if valid else "INVALID" }
-            response_status = HTTPStatus.NOT_ACCEPTABLE
+            response_status = HTTPStatus.OK
 
         return Response(json.dumps(response_json), response_status,
                         mimetype=mimetypes.types_map['.json'])
