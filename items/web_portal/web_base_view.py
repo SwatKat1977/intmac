@@ -13,8 +13,14 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from http import HTTPStatus
+import json
 from quart import request
+from types import SimpleNamespace
+import requests
 from base_view import BaseView
+from config import Config
+from items_exception import ItemsException
 
 class WebBaseView(BaseView):
     """ Base class for views that serve web pages """
@@ -24,6 +30,11 @@ class WebBaseView(BaseView):
     COOKIE_USER = "items_user"
 
     REDIRECT_URL = "<meta http-equiv=\"Refresh\" content=\"0; url='{0}\"/>"
+
+    def __init__(self, config : Config) -> None:
+        super().__init__()
+
+        self._config = config
 
     def _generate_redirect(self, redirect_url) -> str:
         new_url = f"{request.url_root}{redirect_url}"
@@ -35,6 +46,33 @@ class WebBaseView(BaseView):
         return retrieved_token and retrieved_username
 
     def _validate_cookies(self) -> bool:
-        # pylint: disable=no-self-use
+        return_status = False
 
-        return True
+        token = request.cookies.get(self.COOKIE_TOKEN)
+        username = request.cookies.get(self.COOKIE_USER)
+
+        url = f"{self._config.gateway_api.base_url}/handshake/valid_token"
+
+        request_body = {
+            "email_address": username,
+            "token": token
+        }
+
+        try:
+            response = requests.get(url, json = request_body)
+
+        except requests.exceptions.ConnectionError as ex:
+            raise ItemsException('Connection to gateway api timed out') from ex
+
+        data = json.loads(response.content,
+                          object_hook=lambda d: SimpleNamespace(**d))
+
+        if response.status_code == HTTPStatus.NOT_ACCEPTABLE:
+            except_str = ("Internal error communicating with gateway: "
+                          f"{data.status}")
+            raise ItemsException(except_str)
+
+        if data.status == "VALID":
+            return_status = True
+
+        return return_status

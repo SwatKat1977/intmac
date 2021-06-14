@@ -51,7 +51,7 @@ class WebPortalApplication(Application):
 
         self._config = Config().read_config("./config.ini")
 
-        auth_view_blueprint = create_home_blueprint()
+        auth_view_blueprint = create_home_blueprint(self._config)
         self._quart_instance.register_blueprint(auth_view_blueprint)
 
         return True

@@ -17,13 +17,15 @@ from http import HTTPStatus
 import logging
 import mimetypes
 from quart import Blueprint, make_response, request, render_template, Response
-from web_base_view import WebBaseView
+from config import Config
+from items_exception import ItemsException
 from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
                            LOGGING_DEFAULT_LOG_LEVEL, \
                            LOGGING_LOG_FORMAT_STRING
+from web_base_view import WebBaseView
 
-def create_home_blueprint():
-    view = View()
+def create_home_blueprint(config : Config) -> Blueprint:
+    view = View(config)
 
     blueprint = Blueprint('home', __name__)
 
@@ -44,8 +46,11 @@ class View(WebBaseView):
 
     TEMPLATE_LOGIN_PAGE = "login.html"
     TEMPLATE_HOME_PAGE = "home.html"
+    TEMPLATE_INTERNAL_ERROR_PAGE = "internal_server_error.html"
 
-    def __init__(self):
+    def __init__(self, config : Config):
+        super().__init__(config)
+
         self._logger = logging.getLogger(__name__)
         log_format= logging.Formatter(LOGGING_LOG_FORMAT_STRING,
                                       LOGGING_DATETIME_FORMAT_STRING)
@@ -58,8 +63,13 @@ class View(WebBaseView):
 
     async def home_handler(self, api_request) -> Response:
 
-        if not self._has_auth_cookies():
-            return await render_template(self.TEMPLATE_LOGIN_PAGE)
+        try:
+            if not self._has_auth_cookies() or not self._validate_cookies():
+                return await render_template(self.TEMPLATE_LOGIN_PAGE)
+
+        except ItemsException as ex:
+                self._logger.error('Internal Error: %s', ex)
+                return await render_template(self.TEMPLATE_INTERNAL_ERROR_PAGE)
 
         return await render_template(self.TEMPLATE_HOME_PAGE)
 
