@@ -89,6 +89,7 @@ class Config:
         self._logger.info("+==============================+")
 
     def _check_env_variables(self, settings : GatewayConfigData) -> None:
+        # pylint: disable=no-self-use
 
         # Check for Override Environment variables
         if (base_url := os.getenv('ITEMS_API_BASE_URL')) is not None:
@@ -96,6 +97,8 @@ class Config:
 
     def _read_config_file(self, config_file : str,
                           gateway_data : GatewayConfigData) -> None:
+        # pylint: disable=no-self-use
+
         config = ConfigParser()
 
         config.read(config_file)

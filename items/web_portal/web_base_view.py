@@ -15,8 +15,8 @@ limitations under the License.
 '''
 from http import HTTPStatus
 import json
-from quart import request
 from types import SimpleNamespace
+from quart import request
 import requests
 from base_view import BaseView
 from config import Config
