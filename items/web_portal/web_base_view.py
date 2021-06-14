@@ -43,7 +43,7 @@ class WebBaseView(BaseView):
     def _has_auth_cookies(self) -> bool:
         retrieved_token = request.cookies.get(self.COOKIE_TOKEN)
         retrieved_username = request.cookies.get(self.COOKIE_USER)
-        return retrieved_token and retrieved_username
+        return retrieved_token is not None and retrieved_username is not None
 
     def _validate_cookies(self) -> bool:
         return_status = False
