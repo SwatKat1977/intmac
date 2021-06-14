@@ -2,3 +2,4 @@ quart
 hypercorn
 redis
 requests
+jsonschema
