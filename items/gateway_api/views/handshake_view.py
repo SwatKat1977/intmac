@@ -265,7 +265,7 @@ class View(BaseView):
 
             response_json = {
                 "status":  0,
-                "error": ex
+                "error": str(ex)
             }
             response_status = HTTPStatus.INTERNAL_SERVER_ERROR
 
