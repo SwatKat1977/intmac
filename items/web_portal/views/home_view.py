@@ -14,8 +14,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 from http import HTTPStatus
+import json
 import logging
 import mimetypes
+import requests
+from types import SimpleNamespace
 from quart import Blueprint, make_response, request, render_template, Response
 from config import Config
 from items_exception import ItemsException
@@ -34,7 +37,7 @@ def create_home_blueprint(config : Config) -> Blueprint:
         # pylint: disable=unused-variable
         return await view.home_handler(request)
 
-    @blueprint.route('/login', methods=['POST'])
+    @blueprint.route('/login', methods=['GET', 'POST'])
     async def login_request():
         # pylint: disable=unused-variable
         return await view.login_handler(request)
@@ -62,19 +65,8 @@ class View(WebBaseView):
         mimetypes.init()
 
     async def home_handler(self, api_request) -> Response:
-
-        try:
-            if not self._has_auth_cookies() or not self._validate_cookies():
-                return await render_template(self.TEMPLATE_LOGIN_PAGE)
-
-        except ItemsException as ex:
-                self._logger.error('Internal Error: %s', ex)
-                return await render_template(self.TEMPLATE_INTERNAL_ERROR_PAGE)
-
-        return await render_template(self.TEMPLATE_HOME_PAGE)
-
         """
-        Handler method for basic user authentication endpoint.
+        Handler method for home page (e.g. '/').
 
         parameters:
             api_request - REST API request object
@@ -83,11 +75,89 @@ class View(WebBaseView):
             Instance of Quart Response class.
         """
 
-    async def login_handler(self, api_request) -> Response:
+        try:
+            if not self._has_auth_cookies() or not self._validate_cookies():
+                print('redirrrrr')
+                redirect = self._generate_redirect('login')
+                return await make_response(redirect)
 
-        redirect = self._generate_redirect('')
-        response = await make_response(redirect)
-        response.set_cookie(self.COOKIE_USER, "admin@localhost")
-        response.set_cookie(self.COOKIE_TOKEN, "e7275e26a4e04a2a87e9d21946842a5a")
+        except ItemsException as ex:
+                self._logger.error('Internal Error: %s', ex)
+                return await render_template(self.TEMPLATE_INTERNAL_ERROR_PAGE)
+
+        return await render_template(self.TEMPLATE_HOME_PAGE)
+
+    async def login_handler(self, api_request) -> Response:
+        """
+        Handler method for login page.
+
+        parameters:
+            api_request - REST API request object
+
+        returns:
+            Instance of Quart Response class.
+        """
+
+        try:
+            if self._has_auth_cookies() and self._validate_cookies():
+                redirect = self._generate_redirect('')
+                response = await make_response(redirect)
+                return response
+
+        except ItemsException as ex:
+                self._logger.error('Internal Error: %s', ex)
+                return await render_template(self.TEMPLATE_INTERNAL_ERROR_PAGE)
+
+        if api_request.method == "GET":
+            return await render_template(self.TEMPLATE_LOGIN_PAGE)
+
+        # If not a GET method, it can only be a POST, so handle that!
+        user_email = (await api_request.form).get('user_email')
+        password = (await api_request.form).get('password')
+
+        if user_email and password:
+            auth_body = {
+                "email_address": user_email,
+                "password": password
+            }
+            url = f"{self._config.gateway_api.base_url}/handshake/basic_authenticate"
+
+            try:
+                response = requests.post(url, json = auth_body)
+
+            except requests.exceptions.ConnectionError as ex:
+                raise ItemsException('Connection to gateway api timed out') from ex
+
+            body = json.loads(response.content,
+                              object_hook=lambda d: SimpleNamespace(**d))
+
+            if response.status_code == HTTPStatus.NOT_ACCEPTABLE:
+                except_str = ("Internal error communicating with gateway: "
+                          f"{body.error}")
+                self._logger.error(except_str)
+                return await render_template(self.TEMPLATE_INTERNAL_ERROR_PAGE)
+
+            print(body)
+            if body.status == 1:
+                redirect = self._generate_redirect('')
+                response = await make_response(redirect)
+                response.set_cookie(self.COOKIE_USER, user_email)
+                response.set_cookie(self.COOKIE_TOKEN, body.token)
+                return response
+
+            # msg='test mssg'
+            # return await render_template(self.TEMPLATE_LOGIN_PAGE,
+            #                              generate_error_msg=True, error_msg=msg)
+
+        else:
+            return self._generate_redirect('/login')
+
+        return Response("response", status=HTTPStatus.OK,
+                    mimetype=mimetypes.types_map['.txt'])
+
+
+        msg='test mssg'
+        return await render_template(self.TEMPLATE_LOGIN_PAGE,
+                                     generate_error_msg=True, error_msg=msg)
 
         return response
