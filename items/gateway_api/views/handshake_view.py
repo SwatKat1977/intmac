@@ -206,8 +206,14 @@ class View(BaseView):
             Instance of Quart Response class.
         """
 
-        request_obj, err_msg = await self._convert_json_body_to_object(
-            api_request, self.basicAuthenticateRequestSchema)
+        try:
+            request_obj, err_msg = await self._convert_json_body_to_object(
+                api_request, self.basicAuthenticateRequestSchema)
+
+        except requests.exceptions.ConnectionError as ex:
+            except_str = f"Internal erro: {ex}"
+            self._logger.error(except_str)
+            return
 
         if not request_obj:
 
