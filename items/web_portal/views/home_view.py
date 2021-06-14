@@ -87,7 +87,7 @@ class View(WebBaseView):
 
         redirect = self._generate_redirect('')
         response = await make_response(redirect)
-        response.set_cookie(self.COOKIE_TOKEN, "token")
-        response.set_cookie(self.COOKIE_USER, "username")
+        response.set_cookie(self.COOKIE_USER, "admin@localhost")
+        response.set_cookie(self.COOKIE_TOKEN, "e7275e26a4e04a2a87e9d21946842a5a")
 
         return response
