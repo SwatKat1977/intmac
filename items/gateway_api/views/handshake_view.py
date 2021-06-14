@@ -210,59 +210,64 @@ class View(BaseView):
             request_obj, err_msg = await self._convert_json_body_to_object(
                 api_request, self.basicAuthenticateRequestSchema)
 
-        except requests.exceptions.ConnectionError as ex:
-            except_str = f"Internal erro: {ex}"
-            self._logger.error(except_str)
-            return
+            if not request_obj:
 
-        if not request_obj:
-
-            response_json = {
-                'status': 'BAD',
-                'error': err_msg
-            }
-            response_status = HTTPStatus.NOT_ACCEPTABLE
-
-        else:
-            auth_request = {
-                "email_address": request_obj.email_address,
-                "password": request_obj.password
-            }
-            auth_url = (f"{self._config.auth_service.base_url}"
-                         "/basic_auth/authenticate")
-
-            response = requests.post(auth_url, json=auth_request)
-
-            if response.status_code != HTTPStatus.OK:
-                self._logger.error("Auth request invalid:\n  %s\n  Reason:%s",
-                                   auth_request, response.text)
-                response_status = HTTPStatus.INTERNAL_SERVER_ERROR
                 response_json = {
-                    "status": "OK",
-                    "token": "c7dd0a54-baea-11eb-8529-0242ac130003"
+                    'status': 'BAD',
+                    'error': err_msg
                 }
+                response_status = HTTPStatus.NOT_ACCEPTABLE
 
             else:
-                response_status = HTTPStatus.OK
+                auth_request = {
+                    "email_address": request_obj.email_address,
+                    "password": request_obj.password
+                }
+                auth_url = (f"{self._config.auth_service.base_url}"
+                             "/basic_auth/authenticate")
 
-                body = response.json()
-                if not body.get("status"):
+                response = requests.post(auth_url, json=auth_request)
+
+                if response.status_code != HTTPStatus.OK:
+                    self._logger.error("Auth request invalid:\n  %s\n  Reason:%s",
+                                       auth_request, response.text)
+                    response_status = HTTPStatus.INTERNAL_SERVER_ERROR
                     response_json = {
-                        "status":  0,
-                        "error": body.get("error")
+                        "status": "OK",
+                        "token": "c7dd0a54-baea-11eb-8529-0242ac130003"
                     }
 
                 else:
-                    token = uuid.uuid4().hex
-                    self._sessions.add_auth_session(
-                        request_obj.email_address, token, LogonType.BASIC)
+                    response_status = HTTPStatus.OK
 
-                    response_json = {
-                        "status": 1,
-                        "token": token
-                    }
-                    self._logger.info("User '%s' logged in",
-                                      request_obj.email_address)
+                    body = response.json()
+                    if not body.get("status"):
+                        response_json = {
+                            "status":  0,
+                            "error": body.get("error")
+                        }
+
+                    else:
+                        token = uuid.uuid4().hex
+                        self._sessions.add_auth_session(
+                            request_obj.email_address, token, LogonType.BASIC)
+
+                        response_json = {
+                            "status": 1,
+                            "token": token
+                        }
+                        self._logger.info("User '%s' logged in",
+                                          request_obj.email_address)
+
+        except requests.exceptions.ConnectionError as ex:
+            except_str = f"Internal error: {ex}"
+            self._logger.error(except_str)
+
+            response_json = {
+                "status":  0,
+                "error": body.get("error")
+            }
+            response_status = HTTPStatus.INTERNAL_SERVER_ERROR
 
         return Response(json.dumps(response_json), status = response_status,
                                    mimetype = mimetypes.types_map['.json'])
