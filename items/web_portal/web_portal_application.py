@@ -15,6 +15,7 @@ limitations under the License.
 '''
 import logging
 from application import Application
+from config import Config
 from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
                            LOGGING_DEFAULT_LOG_LEVEL, \
                            LOGGING_LOG_FORMAT_STRING
@@ -31,6 +32,7 @@ class WebPortalApplication(Application):
     def __init__(self, quart_instance):
         super().__init__()
         self._quart_instance = quart_instance
+        self._config = None
 
         self._logger = logging.getLogger(__name__)
         log_format= logging.Formatter(LOGGING_LOG_FORMAT_STRING,
@@ -48,8 +50,9 @@ class WebPortalApplication(Application):
         self._logger.info(self.copyright_text)
         self._logger.info(self.license_text)
 
+        self._config = Config().read_config("./config.ini")
 
-        auth_view_blueprint = create_home_blueprint()
+        auth_view_blueprint = create_home_blueprint(self._config)
         self._quart_instance.register_blueprint(auth_view_blueprint)
 
         return True

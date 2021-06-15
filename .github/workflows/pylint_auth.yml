@@ -27,4 +27,4 @@ jobs:
     - name: Run Pylint
       run: |
         export PYTHONPATH=`pwd`/items/auth:`pwd`/items/shared
-        pylint `pwd`/items/auth --rcfile=pylint-auth.rc
+        pylint `pwd`/items/auth --rcfile git_workflow/pylint-auth.rc
