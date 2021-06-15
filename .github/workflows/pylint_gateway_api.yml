@@ -27,4 +27,4 @@ jobs:
     - name: Run Pylint
       run: |
         export PYTHONPATH=`pwd`/items/gateway_api:`pwd`/items/shared
-        pylint `pwd`/items/gateway_api --rcfile=pylint-gateway_api.rc
+        pylint `pwd`/items/gateway_api --rcfile=../git_workflow/pylint-gateway_api.rc
