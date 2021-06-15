@@ -13,7 +13,7 @@ services:
   items-redis:
     build:
       context: .
-      dockerfile: Dockerfile.redis
+      dockerfile: docker/Dockerfile.redis
     container_name: items-redis
     networks:
       - items_docker_net
@@ -21,7 +21,7 @@ services:
   items-auth:
     build:
       context: .
-      dockerfile: Dockerfile.auth
+      dockerfile: docker/Dockerfile.auth
     container_name: items-auth
     ports:
       - "3030:3030"
@@ -31,7 +31,7 @@ services:
   items-cms:
     build:
       context: .
-      dockerfile: Dockerfile.cms
+      dockerfile: docker/Dockerfile.cms
     container_name: items-cms
     ports:
       - "2222:2222"
@@ -41,7 +41,7 @@ services:
   items-gateway-api:
     build:
       context: .
-      dockerfile: Dockerfile.gateway_api
+      dockerfile: docker/Dockerfile.gateway_api
     container_name: items-gateway-api
     ports:
       - "2111:2111"
@@ -51,7 +51,7 @@ services:
   items-web_portal:
     build:
       context: .
-      dockerfile: Dockerfile.web_portal
+      dockerfile: docker/Dockerfile.web_portal
     container_name: items-web_portal
     ports:
       - "2333:2333"

@@ -7,7 +7,7 @@ RUN addgroup -S items && \
     chown items:items /usr/local/items
 
 # Web Portal dependencies
-COPY requirements-web_portal.txt .
+COPY docker/requirements-web_portal.txt .
 RUN apk add --no-cache && \
     pip install --no-cache-dir -r requirements-web_portal.txt && \
     rm requirements-web_portal.txt
