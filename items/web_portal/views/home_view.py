@@ -42,6 +42,11 @@ def create_home_blueprint(config : Config) -> Blueprint:
         # pylint: disable=unused-variable
         return await view.login_handler(request)
 
+    @blueprint.route('/logout', methods=['GET'])
+    async def logout_request():
+        # pylint: disable=unused-variable
+        return await view.logout_handler(request)
+
     return blueprint
 
 class View(WebBaseView):
@@ -77,7 +82,6 @@ class View(WebBaseView):
 
         try:
             if not self._has_auth_cookies() or not self._validate_cookies():
-                print('redirrrrr')
                 redirect = self._generate_redirect('login')
                 return await make_response(redirect)
 
@@ -151,3 +155,38 @@ class View(WebBaseView):
                                              error_msg = error_msg)
 
         return self._generate_redirect('/login')
+
+    async def logout_handler(self, api_request):
+
+        try:
+            if not self._has_auth_cookies() or not self._validate_cookies():
+                redirect = self._generate_redirect('login')
+                return await make_response(redirect)
+
+        except ItemsException as ex:
+                self._logger.error('Internal Error: %s', ex)
+                return await render_template(self.TEMPLATE_INTERNAL_ERROR_PAGE)
+
+        msg_body = {
+            "email_address": request.cookies.get(self.COOKIE_USER),
+            "token": request.cookies.get(self.COOKIE_TOKEN)
+        }
+
+        url = f"{self._config.gateway_api.base_url}/handshake/logout"
+
+        try:
+            response = requests.post(url, json = msg_body)
+
+        except requests.exceptions.ConnectionError:
+            return await render_template(self.TEMPLATE_INTERNAL_ERROR_PAGE)
+
+        if response.status_code == HTTPStatus.NOT_ACCEPTABLE:
+            self._logger.error("Internal error communicating with gateway")
+            return await render_template(self.TEMPLATE_INTERNAL_ERROR_PAGE)
+
+        redirect = self._generate_redirect('')
+        response = await make_response(redirect)
+        response.set_cookie(self.COOKIE_USER, '', expires = 0)
+        response.set_cookie(self.COOKIE_TOKEN, '', expires = 0)
+
+        return response
