@@ -7,7 +7,7 @@ RUN addgroup -S items && \
     chown items:items /usr/local/items
 
 # Contents Management System (CMS) dependencies
-COPY requirements-cms.txt .
+COPY docker/requirements-cms.txt .
 RUN apk add --no-cache && \
     pip install --no-cache-dir -r requirements-cms.txt && \
     rm requirements-cms.txt

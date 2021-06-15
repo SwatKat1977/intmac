@@ -7,7 +7,7 @@ RUN addgroup -S items && \
     chown items:items /usr/local/items
 
 # Auth service dependencies
-COPY requirements-auth.txt .
+COPY docker/requirements-auth.txt .
 RUN apk add --no-cache && \
     pip install --no-cache-dir -r requirements-auth.txt && \
     rm requirements-auth.txt
