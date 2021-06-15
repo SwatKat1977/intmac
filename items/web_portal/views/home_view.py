@@ -137,7 +137,6 @@ class View(WebBaseView):
                 self._logger.error(except_str)
                 return await render_template(self.TEMPLATE_INTERNAL_ERROR_PAGE)
 
-            print(body)
             if body.status == 1:
                 redirect = self._generate_redirect('')
                 response = await make_response(redirect)
@@ -145,19 +144,10 @@ class View(WebBaseView):
                 response.set_cookie(self.COOKIE_TOKEN, body.token)
                 return response
 
-            # msg='test mssg'
-            # return await render_template(self.TEMPLATE_LOGIN_PAGE,
-            #                              generate_error_msg=True, error_msg=msg)
+            else:
+                error_msg = "Invalid username/password"
+                return await render_template(self.TEMPLATE_LOGIN_PAGE,
+                                             generate_error_msg = True,
+                                             error_msg = error_msg)
 
-        else:
-            return self._generate_redirect('/login')
-
-        return Response("response", status=HTTPStatus.OK,
-                    mimetype=mimetypes.types_map['.txt'])
-
-
-        msg='test mssg'
-        return await render_template(self.TEMPLATE_LOGIN_PAGE,
-                                     generate_error_msg=True, error_msg=msg)
-
-        return response
+        return self._generate_redirect('/login')
