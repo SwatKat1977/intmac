@@ -7,7 +7,7 @@ RUN addgroup -S items && \
     chown items:items /usr/local/items
 
 # Gateway API dependencies
-COPY requirements-gateway_api.txt .
+COPY docker/requirements-gateway_api.txt .
 RUN apk add --no-cache && \
     pip install --no-cache-dir -r requirements-gateway_api.txt && \
     rm requirements-gateway_api.txt
