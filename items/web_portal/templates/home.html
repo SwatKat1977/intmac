@@ -1,32 +1,16 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+{% extends "site_template.html" %}
+{% block title %}Integrated Test Management Suite | Home{% endblock %}
+{% block head %}{{ super() }}
+    <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+{% endblock %}
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+{% block body_params %}id="body-pd"{% endblock %}
+{% block page_body %}
+{{ super() }}
 
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css">
-
-    <title>Integrated Test Management Suite | Home</title>
-
-    <style>
-      body {
-        background-image: url("{{ url_for('static', filename='imgs/254519-P4LH8O-12.jpg') }}");
-        background-repeat: no-repeat;
-        background-attachment: fixed;
-        background-size: cover;
-      }
-      </style>
-
-  </head>
-
-  <body>
-    <div class="wrapper">
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
-  </body>
-</html>
+<!--Container Main start-->
+<div class="height-100 bg-light">
+    <h4>Main Components goes here...</h4>
+</div>
+<!--Container Main end-->
+{% endblock %}
