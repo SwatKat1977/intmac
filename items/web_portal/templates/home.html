@@ -4,7 +4,7 @@
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -13,104 +13,70 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css">
     <script defer src="https://use.fontawesome.com/releases/v5.15.3/js/v4-shims.js"></script>
 
-    <link rel="stylesheet" href="template.css">
+    <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
 
+    <link rel="stylesheet" href="template.css">
 
     <title>Integrated Test Management Suite | Home</title>
 </head>
+<body id="body-pd">
 
-<body>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-sm-auto sticky-top" id="sideNavBar">
-                <div class="d-flex flex-sm-column flex-row flex-nowrap align-items-center sticky-top">
-                    <a href="/" class="d-block p-3 link-dark text-decoration-none" title="" data-bs-toggle="tooltip"
-                        data-bs-placement="right" data-bs-original-title="Icon-only">
-                        <i class="bi-bootstrap fs-1"></i>
+    <header class="header" id="header">
+        <div class="header_toggle"> <i class='bx bx-menu' id="header-toggle"></i> </div>
+    </header>
+
+    <div class="l-navbar" id="nav-bar">
+        <nav class="nav">
+            <div>
+                <a href="#" class="nav_logo"><i class='fas fa-home nav_logo-icon'></i><span
+                        class="nav_logo-name">BBBootstrap</span></a>
+
+                <div class="nav_list">
+                    <a href="#" class="nav_link active" title="Dashboard" data-bs-toggle="tooltip">
+                        <i class='bx bx-tachometer nav_icon'></i>
+                        <span class="nav_name">Dashboard</span>
                     </a>
-                    <ul
-                        class="nav nav-pills nav-flush flex-sm-column flex-row flex-nowrap mb-auto mx-auto text-center justify-content-between w-100 px-3 align-items-center">
 
-                        <li>
-                            <a href="#" class="nav-link py-3 px-2 disabled" title="Dashboard" data-bs-toggle="tooltip"
-                                data-bs-placement="right" data-bs-original-title="Dashboard">
-                                <i class="fas fa-digital-tachograph fa-2x sideNavBarIcon"></i>
-                            </a>
-                        </li>
+                    <a href="#" class="nav_link disabled">
+                        <i class='bx bx-clipboard nav_icon'></i>
+                        <span class="nav_name">Statistics</span>
+                    </a>
 
-                        <li>
-                            <a href="#" class="nav-link py-3 px-2 disabled" title="Statistics" data-bs-toggle="tooltip"
-                                data-bs-placement="right" data-bs-original-title="Stats">
-                                <i class="fas fa-clipboard-list fa-2x sideNavBarIcon"></i>
-                            </a>
-                        </li>
+                    <a href="#" class="nav_link disabled">
+                        <i class='bx bx-table nav_icon'></i>
+                        <span class="nav_name">Test Definitions</span>
+                    </a>
 
-                        <li>
-                            <a href="#" class="nav-link py-3 px-2 disabled" title="Test Definitions" data-bs-toggle="tooltip"
-                                data-bs-placement="right" data-bs-original-title="Test Definitions">
-                                <i class="fas fa-table fa-2x sideNavBarIcon"></i>
-                            </a>
-                        </li>
+                    <a href="#" class="nav_link disabled">
+                        <i class='bx bx-run nav_icon'></i>
+                        <span class="nav_name">Test Execution</span>
+                    </a>
 
-                        <li>
-                            <a href="#" class="nav-link py-3 px-2 disabled" title="Test Execution" data-bs-toggle="tooltip"
-                                data-bs-placement="right" data-bs-original-title="Test Execution">
-                                <i class="fas fa-hourglass-start fa-2x sideNavBarIcon"></i>
-                            </a>
-                        </li>
+                    <a href="#" class="nav_link disabled">
+                        <i class='bx bx-cog nav_icon'></i>
+                        <span class="nav_name">Settings</span>
+                    </a>
 
-                        <li>
-                            <a href="#" class="nav-link py-3 px-2 disabled" title="Settings" data-bs-toggle="tooltip"
-                                data-bs-placement="right" data-bs-original-title="Settings">
-                                <i class="fas fa-cogs fa-2x sideNavBarIcon"></i>
-                            </a>
-                        </li>
+                    <a href="#" class="nav_link disabled">
+                        <i class='bx bx-user nav_icon'></i>
+                        <span class="nav_name">User Profile</span>
+                    </a>
 
-                        <li>
-                            <div class="dropdown">
-                                <a href="#"
-                                    class="d-flex align-items-center justify-content-center p-3 link-light text-decoration-none dropdown-toggle"
-                                    id="dropdownUser3" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <em class="fas fa-user fa-2x sideNavBarIcon"></em>
-                                </a>
-                                <ul class="dropdown-menu text-small shadow navbarSubMenu" aria-labelledby="dropdownUser3">
-                                    <li>
-                                        <p class="dropdown-item disabled" id="navbarSubMenuText">
-                                            Logged in as:<br>Derek Rodney Albert Trotter
-                                        </p>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item navbarSubMenupText" href="#">
-                                            Your profile
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <hr class="dropdown-divider" id="nav-dropdown-divider"></li>
-                                    <li>
-                                        <a class="dropdown-item navbarSubMenupText" href="#">
-                                            Settings
-                                        </a>
-                                    </li>
-                                    <li><hr class="dropdown-divider" id="nav-dropdown-divider"></li>
-                                    <li>
-                                        <a class="dropdown-item navbarSubMenupText" href="#">
-                                            Log out
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                    </ul>
                 </div>
             </div>
-            <div class="col-sm p-3 min-vh-100">
-                <!-- content -->
-                <h2>A glorious Bootstrap 5 icon sidebar menu!</h2>
-                <hr />
-                <h3>More content...</h3>
-            </div>
-        </div>
+
+            <a href="#" class="nav_link">
+                <i class='bx bx-log-out nav_icon'></i>
+                <span class="nav_name">Log out</span>
+            </a>
+        </nav>
     </div>
+
+    <!--Container Main start-->
+    <div class="height-100 bg-light">
+        <h4>Main Components goes here...</h4>
+    </div>
+    <!--Container Main end-->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
