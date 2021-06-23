@@ -42,6 +42,11 @@ def create_home_blueprint(config : Config) -> Blueprint:
         # pylint: disable=unused-variable
         return await view.login_handler(request)
 
+    @blueprint.route('/project_select', methods=['GET', 'POST'])
+    async def project_selection_request():
+        # pylint: disable=unused-variable
+        return await view.project_selection_handler(request)
+
     @blueprint.route('/logout', methods=['GET'])
     async def logout_request():
         # pylint: disable=unused-variable
@@ -54,6 +59,7 @@ class View(WebBaseView):
 
     TEMPLATE_LOGIN_PAGE = "login.html"
     TEMPLATE_HOME_PAGE = "home.html"
+    TEMPLATE_PROJECT_SELECTION_PAGE = "project_select.html"
     TEMPLATE_INTERNAL_ERROR_PAGE = "internal_server_error.html"
 
     def __init__(self, config : Config):
@@ -190,3 +196,16 @@ class View(WebBaseView):
         response.set_cookie(self.COOKIE_TOKEN, '', expires = 0)
 
         return response
+
+    async def project_selection_handler(self, api_request) -> Response:
+        """
+        Handler method for the project selection page.
+
+        parameters:
+            api_request - REST API request object
+
+        returns:
+            Instance of Quart Response class.
+        """
+
+        return await render_template(self.TEMPLATE_PROJECT_SELECTION_PAGE)
