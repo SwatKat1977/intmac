@@ -208,4 +208,55 @@ class View(WebBaseView):
             Instance of Quart Response class.
         """
 
+        '''
+                    <option selected>Open this select menu</option>
+            <option value="1">One</option>
+            <option value="2">Two</option>
+            <option value="3">Three</option>
+        '''
+
+        # if api_request.method == "GET":
+        #     return await render_template(self.TEMPLATE_PROJECT_SELECTION_PAGE)
+
+        project = (await api_request.form).get('project')
+        print(f'Project is: {project}')
+
+        raw_data = {
+            "projects": [
+                {
+                    "name": "test project #1",
+                    "description": "This is test project #1"
+                },
+                {
+                    "name": "test project #2",
+                    "description": "This is test project #2"
+                }
+            ]
+        }
+
+        projects_list = await self.generate_project_selection_list(raw_data)
+        await self.generate_project_selection_list(raw_data)
+
         return await render_template(self.TEMPLATE_PROJECT_SELECTION_PAGE)
+
+    async def generate_project_selection_list(self, raw_data):
+
+        first_entry = True
+        options_list = []
+        tabbed_space = "    "
+
+        for entry in raw_data.get('projects'):
+            selected = ""
+            if first_entry:
+                selected = " selected"
+                first_entry = False
+
+            project_name = entry.get('name')
+            project_description = entry.get('description')
+            entry_str = (f"{tabbed_space}"
+                         f"<option{selected} data-toggle=\"tooltip\""
+                         f"title=\"{project_description}\">"
+                         f"{project_name}</option>")
+            options_list.append(entry_str)
+
+        return "\n".join(options_list)

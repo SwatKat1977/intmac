@@ -10,14 +10,14 @@
 
     <div class="wrapper">
       <div class="card">
-        <form action="/login" class="d-flex flex-column" method="POST">
+        <form action="/project_select" class="d-flex flex-column" method="POST">
           <div class="h3 text-center text-white">Select Project</div>
 
           <div> <span class="text-light-white">Project Name:</span> </div>
 
           <div class="d-flex align-items-center input-field dropdown">
-          <select class="form-select" aria-label="Default select example">
-            <option selected>Open this select menu</option>
+          <select class="form-select" aria-label="Default select example" name="project">
+            <option data-toggle="tooltip" title="tooltip 1" selected>Open this select menu</option>
             <option value="1">One</option>
             <option value="2">Two</option>
             <option value="3">Three</option>
