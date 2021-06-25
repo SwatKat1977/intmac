@@ -219,7 +219,6 @@ class View(WebBaseView):
         #     return await render_template(self.TEMPLATE_PROJECT_SELECTION_PAGE)
 
         project = (await api_request.form).get('project')
-        print(f'Project is: {project}')
 
         raw_data = {
             "projects": [
@@ -234,29 +233,26 @@ class View(WebBaseView):
             ]
         }
 
-        projects_list = await self.generate_project_selection_list(raw_data)
-        await self.generate_project_selection_list(raw_data)
+        projects_list = await self._generate_project_selection_list(raw_data)
 
-        return await render_template(self.TEMPLATE_PROJECT_SELECTION_PAGE)
+        return await render_template(self.TEMPLATE_PROJECT_SELECTION_PAGE,
+                                     projects = projects_list, has_error = True,
+                                     error_msg="ERROR: No selectable projects!")
 
-    async def generate_project_selection_list(self, raw_data):
+    async def _generate_project_selection_list(self, raw_data):
 
         first_entry = True
-        options_list = []
-        tabbed_space = "    "
+        built_projects = {}
 
         for entry in raw_data.get('projects'):
-            selected = ""
+            project_name = entry.get('name')
+            project_entry = {'name': project_name}
+
             if first_entry:
-                selected = " selected"
+                project_entry['selected'] = True
                 first_entry = False
 
-            project_name = entry.get('name')
-            project_description = entry.get('description')
-            entry_str = (f"{tabbed_space}"
-                         f"<option{selected} data-toggle=\"tooltip\""
-                         f"title=\"{project_description}\">"
-                         f"{project_name}</option>")
-            options_list.append(entry_str)
+            built_projects[project_name] = project_entry
 
-        return "\n".join(options_list)
+        return built_projects
+## 270
