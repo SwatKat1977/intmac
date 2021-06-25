@@ -157,6 +157,15 @@ body
     }
 }
 
+#error_msg
+{
+    color: #ff4d4d;
+    font-weight: bold;
+    padding-top: 1rem;
+    padding-left: 1rem;
+    border-radius: 6px ;
+}
+
 @media(max-width: 350px)
 {
     .wrapper
