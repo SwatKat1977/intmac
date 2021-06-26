@@ -208,36 +208,33 @@ class View(WebBaseView):
             Instance of Quart Response class.
         """
 
-        '''
-                    <option selected>Open this select menu</option>
-            <option value="1">One</option>
-            <option value="2">Two</option>
-            <option value="3">Three</option>
-        '''
+        if api_request.method == "GET":
+            bob = await self._handle_project_select_get(api_request)
+            print(bob)
 
-        # if api_request.method == "GET":
-        #     return await render_template(self.TEMPLATE_PROJECT_SELECTION_PAGE)
+            raw_data = {
+                "projects": [
+                    {
+                        "name": "test project #1",
+                        "description": "This is test project #1"
+                    },
+                    {
+                        "name": "test project #2",
+                        "description": "This is test project #2"
+                    }
+                ]
+            }
 
-        project = (await api_request.form).get('project')
+            projects_list = await self._generate_project_selection_list(raw_data)
 
-        raw_data = {
-            "projects": [
-                {
-                    "name": "test project #1",
-                    "description": "This is test project #1"
-                },
-                {
-                    "name": "test project #2",
-                    "description": "This is test project #2"
-                }
-            ]
-        }
+            return await render_template(self.TEMPLATE_PROJECT_SELECTION_PAGE,
+                                         projects = projects_list, has_error = False,
+                                         error_msg="ERROR: No selectable projects!")
 
-        projects_list = await self._generate_project_selection_list(raw_data)
+        elif api_request.method == "POST":
+            return await render_template(self.TEMPLATE_PROJECT_SELECTION_PAGE)
 
-        return await render_template(self.TEMPLATE_PROJECT_SELECTION_PAGE,
-                                     projects = projects_list, has_error = True,
-                                     error_msg="ERROR: No selectable projects!")
+        return await render_template(self.TEMPLATE_INTERNAL_ERROR_PAGE)
 
     async def _generate_project_selection_list(self, raw_data):
 
@@ -255,4 +252,6 @@ class View(WebBaseView):
             built_projects[project_name] = project_entry
 
         return built_projects
-## 270
+
+    async def _handle_project_select_get(self, api_request):
+        return await render_template(self.TEMPLATE_INTERNAL_ERROR_PAGE)
