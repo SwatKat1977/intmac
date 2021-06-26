@@ -27,19 +27,6 @@
             {% if has_error == False %}<input type="submit" value="Select" class="btn btn-primary">{% endif %}
             {% if has_error == True %}<a href="#" class="btn btn-primary btn-md" tabindex="-1" role="button" aria-disabled="true">Log out</a>{% endif %}
           </div>
-
-          <!--
-          {% if has_error == True %}
-              <div class="jumbotron" id="error_msg" class="jumbotron text-black">{{ error_msg }}</div>
-          {% endif %}
-          <div class="mt-3">
-            <input type="submit" {% if has_error == True %}disabled{% endif %} value="Select" class="btn btn-primary">
-            {% if has_error == True %}
-            <input type="submit" value="Select" class="btn btn-primary">
-            <a href="#" class="btn btn-primary btn-md" tabindex="-1" role="button" aria-disabled="true">Log out</a>
-            {% endif %}
-          </div>
-          -->
         </form>
       </div>
     </div>
