@@ -214,7 +214,16 @@ class View(WebBaseView):
             response = await self._handle_project_select_get(api_request)
 
         elif api_request.method == "POST":
+            selected_project = (await api_request.form).get('project')
+            print('selected project: ', selected_project)
+
+            response = await self._handle_project_select_post(api_request)
+
+            return response
+
             return await render_template(self.TEMPLATE_PROJECT_SELECTION_PAGE)
+
+            response = await self._handle_project_select_post(api_request)
 
         return response
 
@@ -269,5 +278,39 @@ class View(WebBaseView):
             response = await render_template(
                 self.TEMPLATE_PROJECT_SELECTION_PAGE, projects = {},
                 has_error = True, error_msg = err_msg)
+
+        return response
+
+    async def _handle_project_select_post(self, api_request):
+
+        selected_project = (await api_request.form).get('project')
+
+        if not selected_project:
+            redirect = self._generate_redirect('project_select')
+            response = await make_response(redirect)
+
+        else:
+            url = (f"{self._config.gateway_api.base_url}"
+                    "/handshake/select_project")
+
+            try:
+                response = requests.post(url)
+
+                if response.status_code == HTTPStatus.OK:
+
+                    redirect = self._generate_redirect('')
+                    response = await make_response(redirect)
+
+                else:
+                    err_msg = "Internal error, please refresh to try again"
+                    response = await render_template(
+                        self.TEMPLATE_PROJECT_SELECTION_PAGE, projects = {},
+                        has_error = True, error_msg = err_msg)
+
+            except requests.exceptions.ConnectionError:
+                err_msg = "Internal error, please refresh to try again"
+                response = await render_template(
+                    self.TEMPLATE_PROJECT_SELECTION_PAGE, projects = {},
+                    has_error = True, error_msg = err_msg)
 
         return response
