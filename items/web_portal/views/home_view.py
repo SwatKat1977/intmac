@@ -208,33 +208,15 @@ class View(WebBaseView):
             Instance of Quart Response class.
         """
 
+        response = await render_template(self.TEMPLATE_INTERNAL_ERROR_PAGE)
+
         if api_request.method == "GET":
-            bob = await self._handle_project_select_get(api_request)
-            print(bob)
-
-            raw_data = {
-                "projects": [
-                    {
-                        "name": "test project #1",
-                        "description": "This is test project #1"
-                    },
-                    {
-                        "name": "test project #2",
-                        "description": "This is test project #2"
-                    }
-                ]
-            }
-
-            projects_list = await self._generate_project_selection_list(raw_data)
-
-            return await render_template(self.TEMPLATE_PROJECT_SELECTION_PAGE,
-                                         projects = projects_list, has_error = False,
-                                         error_msg="ERROR: No selectable projects!")
+            response = await self._handle_project_select_get(api_request)
 
         elif api_request.method == "POST":
             return await render_template(self.TEMPLATE_PROJECT_SELECTION_PAGE)
 
-        return await render_template(self.TEMPLATE_INTERNAL_ERROR_PAGE)
+        return response
 
     async def _generate_project_selection_list(self, raw_data):
 
@@ -254,4 +236,21 @@ class View(WebBaseView):
         return built_projects
 
     async def _handle_project_select_get(self, api_request):
-        return await render_template(self.TEMPLATE_INTERNAL_ERROR_PAGE)
+        raw_data = {
+            "projects": [
+                {
+                    "name": "test project #1",
+                    "description": "This is test project #1"
+                },
+                {
+                    "name": "test project #2",
+                    "description": "This is test project #2"
+                }
+            ]
+        }
+
+        projects_list = await self._generate_project_selection_list(raw_data)
+
+        return await render_template(self.TEMPLATE_PROJECT_SELECTION_PAGE,
+                                     projects = projects_list, has_error = False,
+                                     error_msg="ERROR: No selectable projects!")
