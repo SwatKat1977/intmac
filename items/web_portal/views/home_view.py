@@ -42,6 +42,11 @@ def create_home_blueprint(config : Config) -> Blueprint:
         # pylint: disable=unused-variable
         return await view.login_handler(request)
 
+    @blueprint.route('/project_select', methods=['GET', 'POST'])
+    async def project_selection_request():
+        # pylint: disable=unused-variable
+        return await view.project_selection_handler(request)
+
     @blueprint.route('/logout', methods=['GET'])
     async def logout_request():
         # pylint: disable=unused-variable
@@ -54,6 +59,7 @@ class View(WebBaseView):
 
     TEMPLATE_LOGIN_PAGE = "login.html"
     TEMPLATE_HOME_PAGE = "home.html"
+    TEMPLATE_PROJECT_SELECTION_PAGE = "project_select.html"
     TEMPLATE_INTERNAL_ERROR_PAGE = "internal_server_error.html"
 
     def __init__(self, config : Config):
@@ -188,5 +194,123 @@ class View(WebBaseView):
         response = await make_response(redirect)
         response.set_cookie(self.COOKIE_USER, '', expires = 0)
         response.set_cookie(self.COOKIE_TOKEN, '', expires = 0)
+
+        return response
+
+    async def project_selection_handler(self, api_request) -> Response:
+        """
+        Handler method for the project selection page.
+
+        parameters:
+            api_request - REST API request object
+
+        returns:
+            Instance of Quart Response class.
+        """
+
+        response = await render_template(self.TEMPLATE_INTERNAL_ERROR_PAGE)
+
+        if api_request.method == "GET":
+            response = await self._handle_project_select_get(api_request)
+
+        elif api_request.method == "POST":
+            selected_project = (await api_request.form).get('project')
+            print('selected project: ', selected_project)
+
+            response = await self._handle_project_select_post(api_request)
+
+            return response
+
+            return await render_template(self.TEMPLATE_PROJECT_SELECTION_PAGE)
+
+            response = await self._handle_project_select_post(api_request)
+
+        return response
+
+    async def _generate_project_selection_list(self, raw_data):
+
+        first_entry = True
+        built_projects = {}
+
+        for entry in raw_data.get('projects'):
+            project_name = entry.get('name')
+            project_entry = {'name': project_name}
+
+            if first_entry:
+                project_entry['selected'] = True
+                first_entry = False
+
+            built_projects[project_name] = project_entry
+
+        return built_projects
+
+    async def _handle_project_select_get(self, api_request):
+
+        url = f"{self._config.gateway_api.base_url}/handshake/get_projects"
+
+        try:
+            response = requests.get(url)
+
+            if response.status_code == HTTPStatus.OK:
+                projects_list = await self._generate_project_selection_list(
+                    response.json())
+
+                has_error = False
+                error_msg = ""
+
+                if not projects_list:
+                    has_error = True
+                    error_msg="ERROR: No selectable projects!"
+
+                response = await render_template(
+                    self.TEMPLATE_PROJECT_SELECTION_PAGE,
+                    projects = projects_list, has_error = has_error,
+                    error_msg = error_msg)
+
+            else:
+                err_msg = "Internal error, please refresh to try again"
+                response = await render_template(
+                    self.TEMPLATE_PROJECT_SELECTION_PAGE, projects = {},
+                    has_error = True, error_msg = err_msg)
+
+        except requests.exceptions.ConnectionError:
+            err_msg = "Internal error, please refresh to try again"
+            response = await render_template(
+                self.TEMPLATE_PROJECT_SELECTION_PAGE, projects = {},
+                has_error = True, error_msg = err_msg)
+
+        return response
+
+    async def _handle_project_select_post(self, api_request):
+
+        selected_project = (await api_request.form).get('project')
+
+        if not selected_project:
+            redirect = self._generate_redirect('project_select')
+            response = await make_response(redirect)
+
+        else:
+            url = (f"{self._config.gateway_api.base_url}"
+                    "/handshake/select_project")
+
+            try:
+                response = requests.post(url)
+
+                if response.status_code == HTTPStatus.OK:
+
+                    redirect = self._generate_redirect('')
+                    response = await make_response(redirect)
+
+                else:
+                    err_msg = "Internal error, please refresh to try again"
+                    response = await render_template(
+                        self.TEMPLATE_PROJECT_SELECTION_PAGE, projects = {},
+                        has_error = True, error_msg = err_msg)
+
+            except requests.exceptions.ConnectionError:
+                err_msg = "Internal error, please refresh to try again"
+                response = await render_template(
+                    self.TEMPLATE_PROJECT_SELECTION_PAGE, projects = {},
+                    has_error = True, error_msg = err_msg)
 
         return response
