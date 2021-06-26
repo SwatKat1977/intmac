@@ -236,21 +236,38 @@ class View(WebBaseView):
         return built_projects
 
     async def _handle_project_select_get(self, api_request):
-        raw_data = {
-            "projects": [
-                {
-                    "name": "test project #1",
-                    "description": "This is test project #1"
-                },
-                {
-                    "name": "test project #2",
-                    "description": "This is test project #2"
-                }
-            ]
-        }
 
-        projects_list = await self._generate_project_selection_list(raw_data)
+        url = f"{self._config.gateway_api.base_url}/handshake/get_projects"
 
-        return await render_template(self.TEMPLATE_PROJECT_SELECTION_PAGE,
-                                     projects = projects_list, has_error = False,
-                                     error_msg="ERROR: No selectable projects!")
+        try:
+            response = requests.get(url)
+
+            if response.status_code == HTTPStatus.OK:
+                projects_list = await self._generate_project_selection_list(
+                    response.json())
+
+                has_error = False
+                error_msg = ""
+
+                if not projects_list:
+                    has_error = True
+                    error_msg="ERROR: No selectable projects!"
+
+                response = await render_template(
+                    self.TEMPLATE_PROJECT_SELECTION_PAGE,
+                    projects = projects_list, has_error = has_error,
+                    error_msg = error_msg)
+
+            else:
+                err_msg = "Internal error, please refresh to try again"
+                response = await render_template(
+                    self.TEMPLATE_PROJECT_SELECTION_PAGE, projects = {},
+                    has_error = True, error_msg = err_msg)
+
+        except requests.exceptions.ConnectionError:
+            err_msg = "Internal error, please refresh to try again"
+            response = await render_template(
+                self.TEMPLATE_PROJECT_SELECTION_PAGE, projects = {},
+                has_error = True, error_msg = err_msg)
+
+        return response
