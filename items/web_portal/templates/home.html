@@ -1,7 +1,8 @@
 {% extends "site_template.html" %}
 {% block title %}Integrated Test Management Suite | Home{% endblock %}
 {% block head %}{{ super() }}
-    <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+    <script src="{{ url_for('static', filename='scripts/home.js') }}"></script>
 {% endblock %}
 
 {% block body_params %}id="body-pd"{% endblock %}
@@ -9,8 +10,20 @@
 {{ super() }}
 
 <!--Container Main start-->
+<!-- 
 <div class="height-100 bg-light">
     <h4>Main Components goes here...</h4>
 </div>
+-->
+<div class="container height-100 bg-light">
+
+  <div id="content">
+    <div class="row">
+      <div id="nav" class="tab">nav</div>
+      <div id="form" class="tab">form</div>
+    </div>
+  </div>
+</div>
+
 <!--Container Main end-->
 {% endblock %}
