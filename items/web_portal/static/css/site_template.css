@@ -19,12 +19,11 @@
 
 body {
     position: relative;
-    margin: 70 0 0 0;
-    /*padding: 0 1rem;*/
+    margin: var(--header-height) 0 0 0;
+    padding: 0 1rem;
     font-family: var(--body-font);
     font-size: var(--normal-font-size);
-    transition: .5s;
-    padding-top: 700px;
+    transition: .5s
 }
 
 a {
