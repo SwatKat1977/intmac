@@ -21,6 +21,7 @@ from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
                            LOGGING_LOG_FORMAT_STRING
 from version import BUILD_TAG, BUILD_VERSION, RELEASE_VERSION
 from views.home_view import create_home_blueprint
+from views.data_view import create_data_view_blueprint
 
 class WebPortalApplication(Application):
     ''' Web portal application class '''
@@ -54,6 +55,9 @@ class WebPortalApplication(Application):
 
         auth_view_blueprint = create_home_blueprint(self._config)
         self._quart_instance.register_blueprint(auth_view_blueprint)
+
+        data_view_blueprint = create_data_view_blueprint(self._config)
+        self._quart_instance.register_blueprint(data_view_blueprint)
 
         return True
 

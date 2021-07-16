@@ -1,0 +1,42 @@
+{% extends "site_template.html" %}
+{% block title %}Integrated Test Management Suite | Test Cases{% endblock %}
+{% block head %}{{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/test_cases.css') }}">
+{% endblock %}
+
+{% block body_params %}id="body-pd"{% endblock %}
+{% block page_body %}
+{{ super() }}
+
+<div class="wrapper mx-2 height-100">
+
+  <div id="content">
+    <div class="row">
+      <p class="lead mb-0"><strong>Test Cases</strong></p>
+      <hr>
+    </div>
+    <div class="row m-2">
+
+      <div id="no_data_msg_jumbo" class="jumbotron text-black border border-dark w-100">
+        <div class="container mt-1 mx-0" id="no_data_msg_container">
+          <div class="row w-100">
+            <div class="col-1 text-center d-flex justify-content-center align-items-center">
+              <i class='lead bx bx-message-error'></i> 
+            </div>
+            <div class="col">
+              <p>There aren't any filters or test cases. Use the following buttons to create a test case or filter.</p>
+              <p>
+                <a class="btn btn-primary btn-sm no_data_msg_button" role="button"><strong>+</strong> Add Filter</a>
+                <a class="btn btn-primary btn-sm no_data_msg_button" role="button"><strong>+</strong> Add Test Case</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Container Main end-->
+{% endblock %}
