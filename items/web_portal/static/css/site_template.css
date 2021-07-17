@@ -44,7 +44,7 @@ a {
 }
 
 .header_toggle {
-    color: var(--first-color);
+    color: var(--white-color);
     font-size: 1.5rem;
     cursor: pointer
 }
