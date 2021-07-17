@@ -25,13 +25,26 @@
         <h7 class="modal-title" id="addFilterModalLabel">Add Filter</h7>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body">
-        ...
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Add Filter</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-      </div>
+      <form method="POST">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="recipient-name" class="col-form-label">
+              <strong>Name</strong>
+            </label>
+            <input type="text" class="form-control" id="filter-name">
+          </div>
+          <div class="mb-3">
+            <label for="message-text" class="col-form-label">
+              <strong>Description</strong>
+            </label>
+            <textarea class="form-control" id="filter-description"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <input type="submit" value="Add Filter" class="btn btn-primary">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
