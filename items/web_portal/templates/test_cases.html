@@ -10,7 +10,7 @@
 {{ super() }}
 
 <!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="addFilterModalLabel" aria-hidden="true">
+<div class="modal fade" id="addFilterModal" tabindex="-1" aria-labelledby="addFilterModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header addFilterHeader">
@@ -46,10 +46,12 @@
             <div class="col">
               <p>There aren't any filters or test cases. Use the following buttons to create a test case or filter.</p>
               <p>
-                <button type="button" class="btn-sm btn-default" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                <button type="button" class="btn-sm btn-default" data-bs-toggle="modal"
+                        data-bs-target="#addFilterModal">
                   <strong>+</strong> Add Filter
                 </button>
-                <button type="button" class="btn-sm btn-default" data-bs-toggle="modal" data-bs-target="#exampleModalna">
+                <button type="button" class="btn-sm btn-default" data-bs-toggle="modal" 
+                        data-bs-target="#addTestCaseModal">
                   <strong>+</strong> Add Test Case
                 </button>
               </p>
