@@ -17,7 +17,7 @@
   });
 </script>
 
-<!-- Modal -->
+<!-- Add Filter Modal -->
 <div class="modal fade" id="addFilterModal" tabindex="-1" aria-labelledby="addFilterModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -41,7 +41,33 @@
           </div>
         </div>
         <div class="modal-footer">
-          <input type="submit" value="Add Filter" class="btn btn-primary">
+          <input type="submit" value="Add" class="btn btn-primary">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Add Test Case Modal -->
+<div class="modal fade" id="addTestCaseModal" tabindex="-1" aria-labelledby="addTestCaseModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header addFilterHeader">
+        <h7 class="modal-title" id="addTestCaseModalLabel">Add Test Case</h7>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="POST">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="recipient-name" class="col-form-label">
+              <strong>Test Case Name</strong>
+            </label>
+            <input type="text" class="form-control" id="filter-name">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <input type="submit" value="Add" class="btn btn-primary">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
         </div>
       </form>
