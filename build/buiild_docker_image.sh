@@ -61,5 +61,5 @@ docker build \
    --tag "$fullTag" \
    .
 
-echo "$registryCredential_PSW"
+echo "CREDS = $registryCredential"
 docker push $fullTag
