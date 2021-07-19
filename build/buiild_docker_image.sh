@@ -37,24 +37,28 @@ if [ ! -f $composeFile ]; then
    exit 1
 fi
 
-dockerTag=$(python build/find_branch.py $gitBranch)
-if [ -z "$dockerTag" ]
+version=$(python build/find_branch.py $gitBranch)
+if [ -z "$version" ]
 then
-   echo "[ERROR] Unable to make docker tag!"
+   echo "[ERROR] Unable to make docker tag"
    exit 1
 fi
 
+dockerItem="items-$componant"
+fullTag="paulmorriss/$dockerItem:$version"
+
 echo "Building docker image..."
 echo "Build Parameters:"
-echo "compose file : $composeFile"
-echo "git branch   : $gitBranch"
-echo "tag          : $dockerTag"
+echo "\tcompose file    : $composeFile"
+echo "\tgit branch      : $gitBranch"
+echo "\tfull docker tag : $fullTag"
+echo "\tdocker item     : $dockerItem"
 
 docker build \
    --file $composeFile \
    --label items.git_branch="$gitBranch" \
    --label items.git_commit="GIT_COMMIT" \
-   --tag "$dockerTag" \
+   --tag "$fullTag" \
    .
 
-docker push paulmorriss/items:tagname
+docker push $fullTag
