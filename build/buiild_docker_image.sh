@@ -37,7 +37,7 @@ if [ ! -f $composeFile ]; then
    exit 1
 fi
 
-version=$(python build/find_branch.py $gitBranch)
+version=$(python3 build/find_branch.py $gitBranch)
 if [ -z "$version" ]
 then
    echo "[ERROR] Unable to make docker tag"
