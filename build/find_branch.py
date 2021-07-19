@@ -33,18 +33,18 @@ def main():
         return
 
     branch = sys.argv[1]
-    branch_tag = "UNKNOWN"
+    branch_tag = "unknown"
 
     release_matches = RELEASE_REGEX.findall(branch)
     if release_matches:
-        branch_tag = release_matches[0].upper()
+        branch_tag = release_matches[0].lower()
 
     release_matches = BRANCH_REGEX.findall(branch)
     if release_matches:
-        branch_tag = release_matches[0].upper()
+        branch_tag = release_matches[0].lower()
 
     if branch in dev_branches:
-        branch_tag = "DEV"
+        branch_tag = "dev"
 
     print(branch_tag)
 
