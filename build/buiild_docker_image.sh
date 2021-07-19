@@ -62,4 +62,5 @@ docker build \
    .
 
 echo "CREDS = $registryCredential"
+echo $registryCredential | docker login --username foo --password-stdin
 docker push $fullTag
