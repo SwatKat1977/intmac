@@ -19,11 +19,17 @@ pipeline
             }
         }
 
-        stage('git test')
+        stage('build Web Portal docker image')
         {
             agent any
             steps
             {
+                sh """
+                    sh build/buiild_docker_image.sh \
+                        -b $GIT_BRANCH \
+                        -c web_portal
+                """
+
                 echo "GIT_COMMIT '$GIT_COMMIT'"
                 echo "GIT_BRANCH '$GIT_BRANCH'"
             }
