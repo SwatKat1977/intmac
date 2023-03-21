@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 import logging
-from application import Application
+from base_application import BaseApplication
 from config import Config
 from redis_interface import RedisInterface
 from views.handshake_view import create_handshake_blueprint
@@ -23,7 +23,7 @@ from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
                            LOGGING_LOG_FORMAT_STRING
 from version import BUILD_TAG, BUILD_VERSION, RELEASE_VERSION
 
-class GatewayApiApplication(Application):
+class GatewayApiApplication(BaseApplication):
     """ Gateway API application class """
 
     title_text = 'ITEMS Gateway-API Microservice %s'
