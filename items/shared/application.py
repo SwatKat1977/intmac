@@ -1,5 +1,5 @@
 '''
-Copyright 2014-2021 Integrated Test Management Suite
+Copyright 2014-2023 Integrated Test Management Suite
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -13,50 +13,37 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
-from abc import ABCMeta, abstractmethod
-from items_exception import ItemsException
+import asyncio
+import logging
 
-class Application(metaclass=ABCMeta):
+class BaseApplication:
     ''' Application framework class. '''
+    __slots__ = ["_is_initialised", "_logger", "_shutdown_requested"]
 
     @property
-    def is_running(self) -> bool:
-        '''
-        Getter for is_running property.
+    def logger(self) -> logging.Logger:
+        """
+        Property getter for logger instance.
 
         returns:
-            Is running flag (boolean).
-        '''
-        return self._is_running
+            Returns the logger instance.
+        """
+        return self._logger
 
-    @is_running.setter
-    def is_running(self, is_running : bool) -> None:
-        '''
-        Setter for is_running property.
+    @logger.setter
+    def logger(self, logger : logging.Logger) -> None:
+        """
+        Property setter for logger instance.
 
         parameters:
-            is_running New value for property.
-        '''
-        self._is_running = is_running
+            logger (logging.Logger) : Logger instance.
+        """
+        self._logger = logger
 
     def __init__(self):
-        self._is_initialised = False
-        self._is_running = False
-
-    async def run(self) -> None:
-        '''
-        Start the main application, this is a looping method.
-        '''
-
-        if not self._is_initialised:
-            raise ItemsException('Application not initialised')
-
-        # Run the main loop.
-        while self._is_running:
-            self._main_loop()
-
-        # Perform any shutdown required once the application has ended.
-        self._shutdown()
+        self._is_initialised : bool = False
+        self._logger : logging.Logger = None
+        self._shutdown_requested : bool = False
 
     def initialise(self) -> bool:
         '''
@@ -76,21 +63,48 @@ class Application(metaclass=ABCMeta):
 
         return init_status
 
-    @abstractmethod
+    async def run(self) -> None:
+        '''
+        Start the application.
+        '''
+
+        while not self._shutdown_requested and self._is_initialised:
+            try:
+                await self._main_loop()
+                await asyncio.sleep(0.1)
+
+            except KeyboardInterrupt:
+                break
+
+        self._logger.info("Exiting application entrypoint...")
+
+    def stop(self) -> None:
+        '''
+        Stop the application, it will wait until shutdown has been marked as
+        completed before calling the shutdown method.
+        '''
+
+        self._logger.info("Stopping application...")
+        self._logger.info('Waiting for application shutdown to complete')
+
+        self._shutdown_requested = True
+
+
+        self._shutdown()
+
     def _initialise(self) -> bool:
         '''
-        Abstract method for the application initialisation.  It should return
-        a boolean (True => Successful, False => Unsuccessful).
+        Application initialisation.  It should return a boolean
+        (True => Successful, False => Unsuccessful).
 
         returns:
             Boolean: True => Successful, False => Unsuccessful.
         '''
         return True
 
-    @abstractmethod
-    def _main_loop(self) -> None:
+    async def _main_loop(self) -> None:
         ''' Abstract method for main application. '''
+        raise NotImplementedError("Requires implementing")
 
-    @abstractmethod
     def _shutdown(self):
         ''' Abstract method for application shutdown. '''

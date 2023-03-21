@@ -17,13 +17,24 @@ import configparser
 import os
 from configuration import configuration_setup
 
-class ConfigurationManager(configparser.ConfigParser):
+class ConfigurationManager():
     """
     Class that wraps the functionality of configparser to support additional
     features such as trying multiple sources for the configuration item.
     """
 
-    def __init__(self, layout : configuration_setup.ConfigurationSetup,
+    def __init__(self):
+        """ Constructor for the configuration manager class. """
+
+        self._parser = configparser.ConfigParser()
+
+        self._config_file : str = ''
+        self._has_config_file = False
+        self._config_file_required = False
+        self._layout : configuration_setup.ConfigurationSetup = None
+        self._config_items = {}
+
+    def configure(self, layout : configuration_setup.ConfigurationSetup,
                  config_file : str = None, file_required : bool = False):
         """
         Constructor for the configuration base class, it take in a layout
@@ -45,13 +56,9 @@ class ConfigurationManager(configparser.ConfigParser):
             file_required : Is the file required (optional, default = False)
             required_files : Dict of required item (optional, default = None)
         """
-        super().__init__()
-
-        self._config_file : str = config_file
-        self._has_config_file = False
+        self._config_file = config_file
         self._config_file_required = file_required
         self._layout = layout
-        self._config_items = {}
 
     def process_config(self):
         """
@@ -62,7 +69,7 @@ class ConfigurationManager(configparser.ConfigParser):
 
         if self._config_file:
             try:
-                files_read = self.read(self._config_file)
+                files_read = self._parser.read(self._config_file)
 
             except configparser.ParsingError as ex:
                 raise ValueError(
@@ -93,7 +100,7 @@ class ConfigurationManager(configparser.ConfigParser):
             raise ValueError(f"Invalid section '{section}'")
 
         if item not in self._config_items[section]:
-            raise ValueError(f"Invalid config item '{item}'")
+            raise ValueError(f"Invalid config item {section}::{item}'")
 
         return self._config_items[section][item]
 
@@ -147,7 +154,7 @@ class ConfigurationManager(configparser.ConfigParser):
         # If no environment variable is found, check config file (if exits)
         if not value and self._has_config_file:
             try:
-                value = self.get(section, option)
+                value = self._parser.get(section, option)
 
             except configparser.NoOptionError:
                 value = None
@@ -158,7 +165,8 @@ class ConfigurationManager(configparser.ConfigParser):
         value = value if value else fmt.default_value
 
         if not value and fmt.is_required:
-            raise ValueError(f"Missing required config option '{option}'")
+            raise ValueError("Missing required config option "
+                             f"'{section}::{fmt.item_name}'")
 
         if fmt.valid_values and value not in fmt.valid_values:
             raise ValueError(f"Value of '{value} for {fmt.item_name} is invalid")
@@ -188,7 +196,7 @@ class ConfigurationManager(configparser.ConfigParser):
         # If no environment variable is found, check config file (if exits)
         if not value and self._has_config_file:
             try:
-                value = self.getint(section, fmt.item_name)
+                value = self._parser.getint(section, fmt.item_name)
 
             except configparser.NoOptionError:
                 value = None
