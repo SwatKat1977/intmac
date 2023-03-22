@@ -14,8 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 import logging
-from base_application import BaseApplication
-from config import Config
+from base_application import BaseApplication, COPYRIGHT_TEXT, LICENSE_TEXT
+from config import Configuration
+from configuration_layout import CONFIGURATION_LAYOUT
 from redis_interface import RedisInterface
 from views.handshake_view import create_handshake_blueprint
 from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
@@ -25,10 +26,6 @@ from version import BUILD_TAG, BUILD_VERSION, RELEASE_VERSION
 
 class GatewayApiApplication(BaseApplication):
     """ Gateway API application class """
-
-    title_text = 'ITEMS Gateway-API Microservice %s'
-    copyright_text = 'Copyright 2014-2021 Integrated Test Management Suite'
-    license_text = 'Licensed under the Apache License, Version 2.0'
 
     def __init__(self, quart_instance):
         super().__init__()
@@ -48,11 +45,33 @@ class GatewayApiApplication(BaseApplication):
 
         build = f"V{RELEASE_VERSION}-{BUILD_VERSION}{BUILD_TAG}"
 
-        self._logger.info(self.title_text, build)
-        self._logger.info(self.copyright_text)
-        self._logger.info(self.license_text)
+        self._logger.info('ITEMS Gateway-API Service %s', build)
+        self._logger.info(COPYRIGHT_TEXT)
+        self._logger.info(LICENSE_TEXT)
 
-        self._config = Config().read_config("./config.ini")
+        config_file = os.getenv("DEX_GATEWAY_SVC_CONFIG_FILE", None)
+
+        config_file_required : bool = os.getenv(
+            "DEX_GATEWAY_SVC_CONFIG_FILE_REQUIRED", None)
+        config_file_required = False if not config_file_required \
+                               else config_file_required
+
+        if not config_file and config_file_required:
+            print("[FATAL ERROR] Configuration file missing!")
+            return False
+
+        Configuration().configure(CONFIGURATION_LAYOUT, config_file,
+                                  config_file_required)
+
+        try:
+            Configuration().process_config()
+
+        except ValueError as ex:
+            self._logger.critical("Configuration error : %s", ex)
+            return False
+
+        self._logger.setLevel(Configuration().get_entry("logging",
+                                                        "log_level"))
 
         self._logger.info('Opening REDIS database...')
 
@@ -91,3 +110,27 @@ class GatewayApiApplication(BaseApplication):
             status = True
 
         return status
+
+    def _display_configuration_items(self):
+        self._logger.info("Configuration")
+        self._logger.info("=============")
+        self._logger.info("[logging]")
+        self._logger.info("=> Logging log level : %s",
+                          Configuration().get_entry("logging", "log_level"))
+        self._logger.info("[REDIS]")
+        self._logger.info("=> Host : %s",
+                          Configuration().get_entry("sessions_redis",
+                                                    "host"))
+        self._logger.info("=> Port : %s",
+                          Configuration().get_entry("sessions_redis",
+                                                    "port"))
+        self._logger.info("=> Retries : %s",
+                          Configuration().get_entry("sessions_redis",
+                                                    "retries"))
+        self._logger.info("[Internal APIs]")
+        self._logger.info("=> accounts svc : %s",
+                          Configuration().get_entry("internal_apis",
+                                                    "accounts_svc"))
+        self._logger.info("=> CMS svc : %s",
+                          Configuration().get_entry("internal_apis",
+                                                    "cms_svc"))
