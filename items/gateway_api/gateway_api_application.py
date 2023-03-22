@@ -13,6 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+import asyncio
 import logging
 import os
 import time
@@ -50,7 +51,8 @@ class GatewayApiApplication(BaseApplication):
         self._logger.info(COPYRIGHT_TEXT)
         self._logger.info(LICENSE_TEXT)
 
-        self._manage_configuration()
+        if not self._manage_configuration():
+            return False
 
         self._logger.info('Setting logging level to %s',
                           Configuration().get_entry("logging", "log_level"))
@@ -156,3 +158,5 @@ class GatewayApiApplication(BaseApplication):
         self._logger.info("=> CMS svc      : %s",
                           Configuration().get_entry("internal_apis",
                                                     "cms_svc"))
+
+        return True
