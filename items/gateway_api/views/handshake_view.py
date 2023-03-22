@@ -83,8 +83,8 @@ test_sets = [
     },
 ]
 
-def create_handshake_blueprint(config : ConfigData, sessions : RedisInterface):
-    view = View(config, sessions)
+def create_handshake_blueprint(sessions : RedisInterface):
+    view = View(sessions)
 
     blueprint = Blueprint('handshake_api', __name__)
 
@@ -181,8 +181,7 @@ class View(BaseView):
         "required" : ["email_address", "token"]
     }
 
-    def __init__(self, config : ConfigData, sessions : RedisInterface):
-        self._config = config
+    def __init__(self, sessions : RedisInterface):
         self._sessions = sessions
 
         self._logger = logging.getLogger(__name__)

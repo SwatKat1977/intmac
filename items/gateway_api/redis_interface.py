@@ -21,8 +21,8 @@ from uuid import uuid4
 import redis
 from authentication_type import AuthenticationType
 
-class RedisClient:
-    """ REDIS client wrapper class """
+class RedisInterface:
+    """ REDIS inteface wrapper class """
     __slots__ = ['_host', '_logger', '_password', '_port', '_redis']
 
     def __init__(self, logger : logging.Logger, host : str, port : int,

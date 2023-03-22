@@ -14,6 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 import logging
+import os
+import time
 from base_application import BaseApplication, COPYRIGHT_TEXT, LICENSE_TEXT
 from config import Configuration
 from configuration_layout import CONFIGURATION_LAYOUT
@@ -29,9 +31,8 @@ class GatewayApiApplication(BaseApplication):
 
     def __init__(self, quart_instance):
         super().__init__()
-        self._config = None
         self._quart_instance = quart_instance
-        self._redis = None
+        self._sessions : RedisInterface = None
 
         self._logger = logging.getLogger(__name__)
         log_format= logging.Formatter(LOGGING_LOG_FORMAT_STRING,
@@ -45,14 +46,80 @@ class GatewayApiApplication(BaseApplication):
 
         build = f"V{RELEASE_VERSION}-{BUILD_VERSION}{BUILD_TAG}"
 
-        self._logger.info('ITEMS Gateway-API Service %s', build)
+        self._logger.info('ITEMS Gateway Service %s', build)
         self._logger.info(COPYRIGHT_TEXT)
         self._logger.info(LICENSE_TEXT)
 
-        config_file = os.getenv("DEX_GATEWAY_SVC_CONFIG_FILE", None)
+        self._manage_configuration()
+
+        self._logger.info('Setting logging level to %s',
+                          Configuration().get_entry("logging", "log_level"))
+        self._logger.setLevel(Configuration().get_entry("logging",
+                                                        "log_level"))
+
+        self._logger.info('Opening REDIS database...')
+
+        if not self._connect_to_sessions_redis():
+            return False
+
+        auth_view_blueprint = create_handshake_blueprint(self._config,
+                                                         self._redis)
+        self._quart_instance.register_blueprint(auth_view_blueprint)
+
+        return True
+
+    def _main_loop(self) -> None:
+        """ Abstract method for main application. """
+
+    def _shutdown(self):
+        """ Abstract method for application shutdown. """
+
+    def _connect_to_sessions_redis(self) -> bool:
+        """
+        Open a connection to the REDIS database.
+
+        returns:
+            bool - Status of database open.
+        """
+
+        self._sessions = RedisInterface(
+            self._logger,
+            Configuration().get_entry("sessions_redis", "host"),
+            Configuration().get_entry("sessions_redis", "port"),
+            Configuration().get_entry("sessions_redis", "password"))
+
+        redis_connected : bool = False
+        redis_connect_tries : int = Configuration().get_entry(
+            "sessions_redis", "retries")
+        redis_connect_wait : int = 10
+
+        while not redis_connected and redis_connect_tries != 0:
+            redis_connected = self._sessions.initialise()
+
+            if not redis_connected:
+                self._logger.error(
+                    "Failed to connect to redis, retrying in %s seconds",
+                    redis_connect_wait)
+                time.sleep(redis_connect_wait)
+                redis_connect_wait = redis_connect_wait * 2
+                redis_connect_tries -= 1
+
+        if not redis_connected:
+            self._logger.critical("Failed to connect to redis, aborting...")
+            return False
+
+        self._logger.info("Connected to sessions redis database")
+        return True
+
+    def _manage_configuration(self) -> None:
+        """
+        Manage the service configuration.
+        """
+
+        config_file = os.getenv("ITEMS_GATEWAY_SVC_CONFIG_FILE", None)
 
         config_file_required : bool = os.getenv(
-            "DEX_GATEWAY_SVC_CONFIG_FILE_REQUIRED", None)
+            "ITEMS_GATEWAY_SVC_CONFIG_FILE_REQUIRED", None)
         config_file_required = False if not config_file_required \
                                else config_file_required
 
@@ -70,58 +137,16 @@ class GatewayApiApplication(BaseApplication):
             self._logger.critical("Configuration error : %s", ex)
             return False
 
-        self._logger.setLevel(Configuration().get_entry("logging",
-                                                        "log_level"))
-
-        self._logger.info('Opening REDIS database...')
-
-        if not self._open_database():
-            self._logger.critical('-> REDIS database database open: FAILED')
-            return False
-
-        self._logger.info('-> REDIS database database open: SUCCESSFUL')
-
-        auth_view_blueprint = create_handshake_blueprint(self._config,
-                                                         self._redis)
-        self._quart_instance.register_blueprint(auth_view_blueprint)
-
-        return True
-
-    def _main_loop(self) -> None:
-        """ Abstract method for main application. """
-
-    def _shutdown(self):
-        """ Abstract method for application shutdown. """
-
-    def _open_database(self) -> bool:
-        """
-        Open a connection to the REDIS database.
-
-        returns:
-            bool - Status of database open.
-        """
-
-        status = False
-
-        self._redis = RedisInterface(self._config.database.database_host_name,
-                                     self._config.database.database_host_port)
-
-        if self._redis.initialise():
-            status = True
-
-        return status
-
-    def _display_configuration_items(self):
         self._logger.info("Configuration")
         self._logger.info("=============")
         self._logger.info("[logging]")
         self._logger.info("=> Logging log level : %s",
                           Configuration().get_entry("logging", "log_level"))
         self._logger.info("[REDIS]")
-        self._logger.info("=> Host : %s",
+        self._logger.info("=> Host    : %s",
                           Configuration().get_entry("sessions_redis",
                                                     "host"))
-        self._logger.info("=> Port : %s",
+        self._logger.info("=> Port    : %s",
                           Configuration().get_entry("sessions_redis",
                                                     "port"))
         self._logger.info("=> Retries : %s",
@@ -131,6 +156,6 @@ class GatewayApiApplication(BaseApplication):
         self._logger.info("=> accounts svc : %s",
                           Configuration().get_entry("internal_apis",
                                                     "accounts_svc"))
-        self._logger.info("=> CMS svc : %s",
+        self._logger.info("=> CMS svc      : %s",
                           Configuration().get_entry("internal_apis",
                                                     "cms_svc"))
