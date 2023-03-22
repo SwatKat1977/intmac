@@ -22,7 +22,7 @@ import uuid
 from quart import Blueprint, request, Response
 import requests
 from base_view import BaseView
-from config import ConfigData
+#from config import ConfigData
 from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
                            LOGGING_DEFAULT_LOG_LEVEL, \
                            LOGGING_LOG_FORMAT_STRING

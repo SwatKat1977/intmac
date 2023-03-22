@@ -16,6 +16,9 @@ limitations under the License.
 import asyncio
 import logging
 
+COPYRIGHT_TEXT = 'Copyright 2014-2023 Integrated Test Management Suite'
+LICENSE_TEXT = 'Licensed under the Apache License, Version 2.0'
+
 class BaseApplication:
     ''' Application framework class. '''
     __slots__ = ["_is_initialised", "_logger", "_shutdown_requested"]

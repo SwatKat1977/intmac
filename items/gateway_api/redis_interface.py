@@ -19,33 +19,23 @@ from time import sleep, time
 from typing import Union
 from uuid import uuid4
 import redis
-from items_exception import ItemsException
-from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
-                           LOGGING_DEFAULT_LOG_LEVEL, \
-                           LOGGING_LOG_FORMAT_STRING
-from logon_type import LogonType
+from authentication_type import AuthenticationType
 
-class RedisInterface:
-    """ REDIS interface wrapper class for ITEMS project """
-    __slots__ = ["_host", "_logger", "_port", "_redis"]
+class RedisClient:
+    """ REDIS client wrapper class """
+    __slots__ = ['_host', '_logger', '_password', '_port', '_redis']
 
-    def __init__(self, host : str, port : int) -> None:
+    def __init__(self, logger : logging.Logger, host : str, port : int,
+                 password : str = None) -> None:
         self._host = host
+        self._password = password
         self._port = port
         self._redis = None
-
-        self._logger = logging.getLogger(__name__)
-        log_format= logging.Formatter(LOGGING_LOG_FORMAT_STRING,
-                                      LOGGING_DATETIME_FORMAT_STRING)
-        console_stream = logging.StreamHandler()
-        console_stream.setFormatter(log_format)
-        self._logger.setLevel(LOGGING_DEFAULT_LOG_LEVEL)
-        self._logger.addHandler(console_stream)
+        self._logger = logger.getChild(__name__)
 
     def initialise(self) -> bool:
         """
-        Initialise the REDIS interface, it returns a boolean status.
-
+        Initialise the REDIS client, it returns a boolean status.
         returns:
             bool - Initialisation status boolean
         """
@@ -53,26 +43,25 @@ class RedisInterface:
         status = False
 
         try:
-            self._redis = redis.Redis(host = self._host, port = self._port)
+            self._redis = redis.StrictRedis(host = self._host, port = self._port,
+                                      password = self._password)
             self._redis.get('invalid_key')
             status = True
 
         except redis.exceptions.ConnectionError as ex:
-            self._logger.critical('Unable to commect to redis, reason: %s', ex)
+            self._logger.critical('Unable to connect to redis, reason: %s', ex)
 
         return status
 
     def add_auth_session(self, email_address : str, token : str,
-                               logon_type : LogonType) -> bool:
+                         auth_type : AuthenticationType) -> bool:
         """
         Add an authentication session to the REDIS database. It will attempt to
         lock the record before adding it to ensure concurrency consistency.
-
         parameters:
             email_address - Email address of the user\n
             token - Unique token specific for the session\n
-            logon_type - Type of logon that occurred - currently only BASIC
-
+            auth_type - Type of authentication that occurred
         returns:
             bool - Success status of the add.
         """
@@ -84,7 +73,7 @@ class RedisInterface:
 
         session_data = {
             "email" : email_address,
-            "logon type" : logon_type.value,
+            "authentication type" : auth_type.value,
             "session expiry" : 0,
             "token" : token
         }
@@ -107,10 +96,8 @@ class RedisInterface:
         """
         Remove an authentication session. It will attempt to lock the record
         before deleting it to ensure concurrency consistency.
-
         parameters:
             email_address - Email address of the user
-
         returns:
             bool - Success status of the del.
         """
@@ -133,12 +120,10 @@ class RedisInterface:
 
     def is_valid_session(self, email_address : str, token : str) -> bool:
         """
-        Verify if a session token for a given is valid.
-
+        Verify if a session token for a given email address is valid.
         parameters:
             email_address - Email address of the user\n
             token - Token value
-
         returns:
             bool - Validity boolean.
         """
@@ -154,14 +139,24 @@ class RedisInterface:
 
         return status
 
+    def has_session(self, email_address : str) -> bool:
+        """
+        Verify if a session exits for a given email address.
+        parameters:
+            email_address - Email address of the user\n
+        returns:
+            bool - Validity boolean.
+        """
+
+        session = self._redis.get(email_address)
+        return session is not None
+
     def _acquire_lock(self, name : str, timeout : int = 2) -> Union[None, bytes]:
         """
         Acquire a lock, retrying for timeout number of seconds.
-
         parameters:
             name - Name of lock\n
             timeout - Amount of time in seconds to try acquiring the lock
-
         returns:
           str | None - The unique lock identifier string is returned if the
                        call was successful, otherwise None is returned.
@@ -185,11 +180,9 @@ class RedisInterface:
         """
         Attempt to release a lock. If the lock name doesn't exist or the
         identifier doesn't match then an exception is raised.
-
         parameters:
             lock - Name of the lock (usually record key)\n
             identifier - Lock identifier UUID
-
         returns:
             bool - Status of lock release attempt, True is success.
         """
@@ -206,6 +199,6 @@ class RedisInterface:
         else:
             self._logger.error(("Failed attempt releasing REDIS lock '%s' "
                                 "with id '%s'"), lock_name, identifier)
-            raise ItemsException('Invalid REDIS lock')
+            raise RuntimeError('Invalid REDIS lock')
 
         return status
