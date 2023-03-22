@@ -67,11 +67,9 @@ class GatewayApiApplication(BaseApplication):
 
         return True
 
-    def _main_loop(self) -> None:
-        """ Abstract method for main application. """
-
-    def _shutdown(self):
-        """ Abstract method for application shutdown. """
+    async def _main_loop(self) -> None:
+        ''' Method for main application. '''
+        await asyncio.sleep(0.1)
 
     def _connect_to_sessions_redis(self) -> bool:
         """
