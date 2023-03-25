@@ -1,5 +1,5 @@
 '''
-Copyright 2014-2021 Integrated Test Management Suite
+Copyright 2014-2023 Integrated Test Management Suite
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -13,10 +13,30 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from dataclasses import dataclass
 import json
 from types import SimpleNamespace
-from typing import Tuple, Union
+from typing import Optional, Tuple, Union
+import aiohttp
 import jsonschema
+
+@dataclass(init=True)
+class ApiResponse:
+    """ Class for keeping track of api return data. """
+    status_code: int
+    body: dict | str
+    contents_type : str
+    exception_msg : str
+
+    def __init__(self,
+                 status_code: int = 0,
+                 body: dict | str = None,
+                 contents_type : str = None,
+                 exception_msg : str = None):
+        self.status_code = status_code
+        self.body = body
+        self.contents_type = contents_type
+        self.exception_msg = exception_msg
 
 class BaseView:
     """ Base view class """
@@ -57,3 +77,61 @@ class BaseView:
         obj_instance = json.loads(await request_instance.get_data(),
                                   object_hook=lambda d: SimpleNamespace(**d))
         return obj_instance, ''
+
+    async def _call_api_post(self, url : str, json_data : dict = None) -> ApiResponse:
+        """
+        Make an API call using the POST method.
+
+        parameters:
+            url - URL of the endpoint
+            json_data - Optional Json body.
+
+        returns:
+            ApiResponse which will will contain response data or just
+            exception_msg if something went wrong.
+        """
+
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.post(url, json=json_data) as resp:
+                    body = await resp.json() \
+                        if resp.content_type == 'application/json' \
+                        else await resp.text()
+                    api_return = ApiResponse(
+                        status_code = resp.status,
+                        body = body,
+                        contents_type = resp.content_type)
+
+        except Exception as ex:
+            api_return = ApiResponse(exception_msg = ex)
+
+        return api_return
+
+    async def _call_api_get(self, url : str, json_data : dict = None) -> ApiResponse:
+        """
+        Make an API call using the GET method.
+
+        parameters:
+            url - URL of the endpoint
+            json_data - Optional Json body.
+
+        returns:
+            ApiResponse which will will contain response data or just
+            exception_msg if something went wrong.
+        """
+
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, json=json_data) as resp:
+                    body = await resp.json() \
+                        if resp.content_type == 'application/json' \
+                        else await resp.text()
+                    api_return = ApiResponse(
+                        status_code = resp.status,
+                        body = body,
+                        contents_type = resp.content_type)
+
+        except Exception as ex:
+            api_return = ApiResponse(exception_msg = ex)
+
+        return api_return
