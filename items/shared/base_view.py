@@ -25,17 +25,17 @@ class ApiResponse:
     """ Class for keeping track of api return data. """
     status_code: int
     body: dict | str
-    contents_type : str
+    content_type : str
     exception_msg : str
 
     def __init__(self,
                  status_code: int = 0,
                  body: dict | str = None,
-                 contents_type : str = None,
+                 content_type : str = None,
                  exception_msg : str = None):
         self.status_code = status_code
         self.body = body
-        self.contents_type = contents_type
+        self.content_type = content_type
         self.exception_msg = exception_msg
 
 class BaseView:
@@ -100,7 +100,7 @@ class BaseView:
                     api_return = ApiResponse(
                         status_code = resp.status,
                         body = body,
-                        contents_type = resp.content_type)
+                        content_type = resp.content_type)
 
         except Exception as ex:
             api_return = ApiResponse(exception_msg = ex)
@@ -129,7 +129,7 @@ class BaseView:
                     api_return = ApiResponse(
                         status_code = resp.status,
                         body = body,
-                        contents_type = resp.content_type)
+                        content_type = resp.content_type)
 
         except Exception as ex:
             api_return = ApiResponse(exception_msg = ex)
