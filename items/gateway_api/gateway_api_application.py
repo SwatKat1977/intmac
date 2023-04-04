@@ -110,7 +110,7 @@ class GatewayApiApplication(BaseApplication):
         self._logger.info("Connected to sessions redis database")
         return True
 
-    def _manage_configuration(self) -> None:
+    def _manage_configuration(self) -> bool:
         """
         Manage the service configuration.
         """
