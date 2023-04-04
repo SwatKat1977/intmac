@@ -20,24 +20,28 @@ namespace gateway_svc
     {
         static void Main(string[] args)
         {
-
-            Console.WriteLine("Gateway Service");
-
             var currentMethod = System.Reflection.MethodBase.GetCurrentMethod();
 
-            log4net.ILog log = log4net.LogManager.GetLogger(currentMethod.DeclaringType);
-            //log4net.ILog log = LogManager.GetLogger(typeof(Program));
+            if (currentMethod == null)
+            {
+                Console.WriteLine("[ERROR] Unable to initialise logging system!");
+                return;
+            }
+
+            log4net.ILog logger = log4net.LogManager.GetLogger(
+                currentMethod.DeclaringType);
             log4net.Config.XmlConfigurator.Configure();
 
-            log.Info("Test Log4Net info");
+            //log.Info("Test Log4Net info");
 
-            Application application = new Application(log);
+            Application application = new Application(logger);
 
-            application.Initialise();
+            if (!application.Initialise())
+            {
+                return;
+            }
+
             application.Run();
-
-            Console.WriteLine("Console log should have been shown...");
-
         }
     }
 

@@ -25,6 +25,14 @@ namespace gateway_svc
 
         protected override bool InitialiseApplication()
         {
+            String buildDetails = $"V{VersionInformation.RELEASE_VERSION}-" +
+                                  $"{VersionInformation.BUILD_VERSION}" +
+                                  $"{VersionInformation.BUILD_TAG}";
+
+            logger.Info($"ITEMS Gateway Service {buildDetails}");
+            logger.Info(COPYRIGHT_TEXT);
+            logger.Info(LICENSE_TEXT);
+
             return true;
         }
 
