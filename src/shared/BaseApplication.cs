@@ -48,8 +48,6 @@ namespace shared
 
         public void Run()
         {
-            ConsoleKeyInfo cki;
-
             while (!shutdownRequested && isInitialised)
             {
                 MainLoop();

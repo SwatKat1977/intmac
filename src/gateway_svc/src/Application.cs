@@ -14,11 +14,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 using shared;
+using shared.src;
+using StackExchange.Redis;
+using System.Configuration;
 
 namespace gateway_svc
 {
     public class Application : BaseApplication
     {
+        readonly private int MILLISECONDS_TO_SECONDS = 1000;
+
+        private RedisClient sessionsClient;
+
         public Application(log4net.ILog loggerInstance) : base(loggerInstance)
         {
         }
@@ -33,6 +40,13 @@ namespace gateway_svc
             logger.Info(COPYRIGHT_TEXT);
             logger.Info(LICENSE_TEXT);
 
+            logger.Info("Opening REDIS sessions database...");
+
+            if (!ConnectToSessionsRedis())
+            {
+                return false;
+            }
+
             return true;
         }
 
@@ -44,6 +58,46 @@ namespace gateway_svc
         // Method for application shutdown.
         protected override void Shutdown()
         {
+        }
+
+        private bool ConnectToSessionsRedis()
+        {
+            bool isConnected = false;
+            int redisConnectWait = 10;
+
+            /* TEMPORARY */
+            string redisHostname = "localhost";
+            int redisPort = 2020;
+            string redisPassword = "xxx";
+            int redisRetries = 10;
+
+            sessionsClient = new RedisClient(logger, redisHostname, redisPort,
+                                             redisPassword);
+
+            while (!isConnected && redisRetries != 0)
+            {
+                logger.Info("Attempting to connect to redis...");
+
+                isConnected = sessionsClient.Initialise();
+
+                if (!isConnected)
+                {
+                    logger.Error("Failed to connect to redis, retrying in" +
+                                 $" {redisConnectWait} seconds...");
+                    Thread.Sleep(redisConnectWait * MILLISECONDS_TO_SECONDS);
+                    redisConnectWait *= 2;
+                    redisRetries -= 1;
+                }
+            }
+
+            if (!isConnected)
+            {
+                logger.Fatal("Failed to connect to sessions, aborting...");
+                return false;
+            }
+
+            logger.Info("Connected to sessions redis database");
+            return true;
         }
     };
 }
