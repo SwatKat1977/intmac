@@ -14,7 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 using shared;
-using shared.src;
 
 namespace gateway_svc
 {
@@ -22,7 +21,7 @@ namespace gateway_svc
     {
         readonly private int MILLISECONDS_TO_SECONDS = 1000;
 
-        private RedisClient sessionsClient;
+        private RedisClient? sessionsClient;
 
         public Application(log4net.ILog loggerInstance) : base(loggerInstance)
         {
