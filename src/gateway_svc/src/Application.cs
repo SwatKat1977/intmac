@@ -15,8 +15,6 @@ limitations under the License.
 */
 using shared;
 using shared.src;
-using StackExchange.Redis;
-using System.Configuration;
 
 namespace gateway_svc
 {
@@ -67,8 +65,8 @@ namespace gateway_svc
 
             /* TEMPORARY */
             string redisHostname = "localhost";
-            int redisPort = 2020;
-            string redisPassword = "xxx";
+            int redisPort = 6379;
+            string redisPassword = "change-this-password";
             int redisRetries = 10;
 
             sessionsClient = new RedisClient(logger, redisHostname, redisPort,
