@@ -23,6 +23,7 @@ from quart import Blueprint, request, Response
 import requests
 from base_view import BaseView
 #from config import ConfigData
+from config import Configuration
 from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
                            LOGGING_DEFAULT_LOG_LEVEL, \
                            LOGGING_LOG_FORMAT_STRING
@@ -218,18 +219,21 @@ class View(BaseView):
                 response_status = HTTPStatus.NOT_ACCEPTABLE
 
             else:
-                auth_request = {
+                base_accounts_svc : str = Configuration().get_entry(
+                    "internal_apis", "accounts_svc")
+
+                auth_request : dict = {
                     "email_address": request_obj.email_address,
                     "password": request_obj.password
                 }
-                auth_url = (f"{self._config.auth_service.base_url}"
-                             "/basic_auth/authenticate")
+                auth_url : str = (f"{base_accounts_svc}"
+                                  "/basic_auth/authenticate")
 
-                response = requests.post(auth_url, json=auth_request)
+                response = await self._call_api_get(auth_url, auth_request)
 
                 if response.status_code != HTTPStatus.OK:
-                    self._logger.error("Auth request invalid:\n  %s\n  Reason:%s",
-                                       auth_request, response.text)
+                    self._logger.critical("Auth request invalid - Reason: %s",
+                                          response.exception_msg)
                     response_status = HTTPStatus.INTERNAL_SERVER_ERROR
                     response_json = {
                         "status": "OK",

@@ -16,7 +16,7 @@ limitations under the License.
 from dataclasses import dataclass
 import json
 from types import SimpleNamespace
-from typing import Optional, Tuple, Union
+from typing import Tuple, Union
 import aiohttp
 import jsonschema
 
