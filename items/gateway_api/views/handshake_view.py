@@ -22,11 +22,7 @@ import uuid
 from quart import Blueprint, request, Response
 import requests
 from base_view import BaseView
-#from config import ConfigData
 from config import Configuration
-from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
-                           LOGGING_DEFAULT_LOG_LEVEL, \
-                           LOGGING_LOG_FORMAT_STRING
 from logon_type import LogonType
 from redis_interface import RedisInterface
 
@@ -84,8 +80,9 @@ test_sets = [
     },
 ]
 
-def create_handshake_blueprint(sessions : RedisInterface):
-    view = View(sessions)
+def create_handshake_blueprint(sessions : RedisInterface,
+                               logger : logging.Logger):
+    view = View(sessions, logger)
 
     blueprint = Blueprint('handshake_api', __name__)
 
@@ -182,16 +179,10 @@ class View(BaseView):
         "required" : ["email_address", "token"]
     }
 
-    def __init__(self, sessions : RedisInterface):
+    def __init__(self, sessions : RedisInterface, logger : logging.Logger):
         self._sessions = sessions
 
-        self._logger = logging.getLogger(__name__)
-        log_format= logging.Formatter(LOGGING_LOG_FORMAT_STRING,
-                                      LOGGING_DATETIME_FORMAT_STRING)
-        console_stream = logging.StreamHandler()
-        console_stream.setFormatter(log_format)
-        self._logger.setLevel(LOGGING_DEFAULT_LOG_LEVEL)
-        self._logger.addHandler(console_stream)
+        self._logger : logging.Logger = logger.getChild(__name__)
 
         mimetypes.init()
 

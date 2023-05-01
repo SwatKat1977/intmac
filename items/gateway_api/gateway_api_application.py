@@ -61,10 +61,11 @@ class GatewayApiApplication(BaseApplication):
 
         self._logger.info('Opening REDIS database...')
 
-        if not self._connect_to_sessions_redis():
-            return False
+        # if not self._connect_to_sessions_redis():
+        #     return False
 
-        auth_view_blueprint = create_handshake_blueprint(self._sessions)
+        auth_view_blueprint = create_handshake_blueprint(self._sessions,
+                                                         self._logger)
         self._quart_instance.register_blueprint(auth_view_blueprint)
 
         return True
