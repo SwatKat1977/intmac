@@ -15,8 +15,9 @@ limitations under the License.
 '''
 from dataclasses import dataclass
 import json
+import http
 from types import SimpleNamespace
-from typing import Tuple, Union
+import typing
 import aiohttp
 import jsonschema
 
@@ -41,42 +42,58 @@ class ApiResponse:
 class BaseView:
     """ Base view class """
 
-    async def _convert_json_body_to_object(self, request_instance,
-                                           json_schema = None) -> \
-              Tuple[Union[str, None], str]:
+    ERR_MSG_INVALID_BODY_TYPE : str = "Invalid body type, not JSON"
+    ERR_MSG_MISSING_INVALID_JSON_BODY : str = "Missing/invalid json body"
+    ERR_MSG_BODY_SCHEMA_MISMATCH : str = "Message body failed schema validation"
+
+    CONTENT_TYPE_JSON : str = 'application/json'
+    CONTENT_TYPE_TEXT : str = 'text/plain'
+
+    def _validate_json_body(self, data : str, json_schema : dict = None) \
+        -> typing.Optional[ApiResponse]:
         """
-        Convert JSON  Validate the authentication key for a request.
+        Validate response body is JSON.
+
+        NOTE: This has not been optimised, it can and should be in the future!
 
         parameters:
-            equest_instance - Instance of a message request to be converted.\n
-            json_schema - Optional Json schema to validate the body against.
+            data : Response body to validate.
+            json_schema : Optional Json schema to validate the body against.
 
         returns:
-            object, error_string.  If successful then object is a valid object
-            and error_string is empty. On failure the object is None and
-            error_string is set to an appropriate error message.
+            ApiResponse : If successful then object is a valid object.
         """
 
-        # Check for that the message body is of type application/json and that
-        # there is one, if not report a 400 error status with a human-readable.
-        body = await request_instance.get_json()
-        if not body:
-            return None, 'Missing/invalid json body'
+        if data is None:
+            return ApiResponse(self.ERR_MSG_MISSING_INVALID_JSON_BODY,
+                               status_code=http.HTTPStatus.BAD_REQUEST,
+                               content_type=self.CONTENT_TYPE_TEXT)
 
+        try:
+            json_data = json.loads(data)
+
+        except (TypeError, json.JSONDecodeError):
+            return ApiResponse(body=self.ERR_MSG_INVALID_BODY_TYPE,
+                               status_code=http.HTTPStatus.BAD_REQUEST,
+                               content_type=self.CONTENT_TYPE_TEXT)
+
+        # If there is a JSON schema then validate that the json body conforms
+        # to the expected schema. If the body isn't valid then a 400 error
+        # should be generated.
         if json_schema:
-            # Validate that the json body conforms to the expected schema.  If
-            # the body isn't valid then an error should be generated and object
-            # returned as None.
             try:
-                jsonschema.validate(instance=body, schema=json_schema)
+                jsonschema.validate(instance=json_data,
+                                    schema=json_schema)
 
-            except jsonschema.exceptions.ValidationError:
-                return None, 'Message body validation failed.'
+            except jsonschema.exceptions.ValidationError as ex:
+                print(ex)
+                return ApiResponse(body=self.ERR_MSG_BODY_SCHEMA_MISMATCH,
+                                   status_code=http.HTTPStatus.BAD_REQUEST,
+                                   content_type=self.CONTENT_TYPE_TEXT)
 
-        # Parse JSON into an object with attributes corresponding to dict keys.
-        obj_instance = json.loads(await request_instance.get_data(),
-                                  object_hook=lambda d: SimpleNamespace(**d))
-        return obj_instance, ''
+        return ApiResponse(body=json.loads(
+            data, object_hook=lambda d: SimpleNamespace(**d)),
+                           content_type=self.CONTENT_TYPE_JSON)
 
     async def _call_api_post(self, url : str, json_data : dict = None) -> ApiResponse:
         """
@@ -95,7 +112,7 @@ class BaseView:
             async with aiohttp.ClientSession() as session:
                 async with session.post(url, json=json_data) as resp:
                     body = await resp.json() \
-                        if resp.content_type == 'application/json' \
+                        if resp.content_type == self.CONTENT_TYPE_JSON \
                         else await resp.text()
                     api_return = ApiResponse(
                         status_code = resp.status,
@@ -124,7 +141,7 @@ class BaseView:
             async with aiohttp.ClientSession() as session:
                 async with session.get(url, json=json_data) as resp:
                     body = await resp.json() \
-                        if resp.content_type == 'application/json' \
+                        if resp.content_type == self.CONTENT_TYPE_JSON \
                         else await resp.text()
                     api_return = ApiResponse(
                         status_code = resp.status,
