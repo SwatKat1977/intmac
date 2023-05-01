@@ -93,6 +93,7 @@ class BaseView:
 
         return ApiResponse(body=json.loads(
             data, object_hook=lambda d: SimpleNamespace(**d)),
+                           status_code=http.HTTPStatus.OK,
                            content_type=self.CONTENT_TYPE_JSON)
 
     async def _call_api_post(self, url : str, json_data : dict = None) -> ApiResponse:
