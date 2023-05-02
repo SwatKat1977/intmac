@@ -17,4 +17,5 @@ from configuration.configuration_manager import ConfigurationManager
 from thread_safe_singleton import ThreadSafeSingleton
 
 class Configuration(ConfigurationManager, metaclass = ThreadSafeSingleton):
+    # pylint: disable=too-few-public-methods
     """ Thread-safe singleton for the config """

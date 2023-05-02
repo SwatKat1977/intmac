@@ -65,7 +65,7 @@ class BaseView:
         """
 
         if data is None:
-            return ApiResponse(self.ERR_MSG_MISSING_INVALID_JSON_BODY,
+            return ApiResponse(exception_msg=self.ERR_MSG_MISSING_INVALID_JSON_BODY,
                                status_code=http.HTTPStatus.BAD_REQUEST,
                                content_type=self.CONTENT_TYPE_TEXT)
 
@@ -73,7 +73,7 @@ class BaseView:
             json_data = json.loads(data)
 
         except (TypeError, json.JSONDecodeError):
-            return ApiResponse(body=self.ERR_MSG_INVALID_BODY_TYPE,
+            return ApiResponse(exception_msg=self.ERR_MSG_INVALID_BODY_TYPE,
                                status_code=http.HTTPStatus.BAD_REQUEST,
                                content_type=self.CONTENT_TYPE_TEXT)
 
@@ -85,9 +85,8 @@ class BaseView:
                 jsonschema.validate(instance=json_data,
                                     schema=json_schema)
 
-            except jsonschema.exceptions.ValidationError as ex:
-                print(ex)
-                return ApiResponse(body=self.ERR_MSG_BODY_SCHEMA_MISMATCH,
+            except jsonschema.exceptions.ValidationError:
+                return ApiResponse(exception_msg=self.ERR_MSG_BODY_SCHEMA_MISMATCH,
                                    status_code=http.HTTPStatus.BAD_REQUEST,
                                    content_type=self.CONTENT_TYPE_TEXT)
 
@@ -121,7 +120,7 @@ class BaseView:
                         content_type = resp.content_type)
 
         except Exception as ex:
-            api_return = ApiResponse(exception_msg = ex)
+            api_return = ApiResponse(status_code=resp.status, exception_msg = ex)
 
         return api_return
 

@@ -29,6 +29,7 @@ from version import BUILD_TAG, BUILD_VERSION, RELEASE_VERSION
 
 class GatewayApiApplication(BaseApplication):
     """ Gateway API application class """
+     # pylint: disable=too-few-public-methods
 
     def __init__(self, quart_instance):
         super().__init__()
