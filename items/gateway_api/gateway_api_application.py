@@ -18,7 +18,7 @@ import logging
 import os
 import time
 from base_application import BaseApplication, COPYRIGHT_TEXT, LICENSE_TEXT
-from config import Configuration
+from threadsafe_configuration import ThreadafeConfiguration
 from configuration_layout import CONFIGURATION_LAYOUT
 from redis_interface import RedisInterface
 from views.handshake_view import create_handshake_blueprint
@@ -56,9 +56,10 @@ class GatewayApiApplication(BaseApplication):
             return False
 
         self._logger.info('Setting logging level to %s',
-                          Configuration().get_entry("logging", "log_level"))
-        self._logger.setLevel(Configuration().get_entry("logging",
-                                                        "log_level"))
+                          ThreadafeConfiguration().get_entry("logging",
+                                                             "log_level"))
+        self._logger.setLevel(ThreadafeConfiguration().get_entry("logging",
+                                                                 "log_level"))
 
         self._logger.info('Opening REDIS database...')
 
@@ -128,11 +129,11 @@ class GatewayApiApplication(BaseApplication):
             print("[FATAL ERROR] Configuration file missing!")
             return False
 
-        Configuration().configure(CONFIGURATION_LAYOUT, config_file,
-                                  config_file_required)
+        ThreadafeConfiguration().configure(CONFIGURATION_LAYOUT, config_file,
+                                           config_file_required)
 
         try:
-            Configuration().process_config()
+            ThreadafeConfiguration().process_config()
 
         except ValueError as ex:
             self._logger.critical("Configuration error : %s", ex)
@@ -142,23 +143,23 @@ class GatewayApiApplication(BaseApplication):
         self._logger.info("=============")
         self._logger.info("[logging]")
         self._logger.info("=> Logging log level : %s",
-                          Configuration().get_entry("logging", "log_level"))
+                          ThreadafeConfiguration().get_entry("logging", "log_level"))
         self._logger.info("[REDIS]")
         self._logger.info("=> Host    : %s",
-                          Configuration().get_entry("sessions_redis",
+                          ThreadafeConfiguration().get_entry("sessions_redis",
                                                     "host"))
         self._logger.info("=> Port    : %s",
-                          Configuration().get_entry("sessions_redis",
+                          ThreadafeConfiguration().get_entry("sessions_redis",
                                                     "port"))
         self._logger.info("=> Retries : %s",
-                          Configuration().get_entry("sessions_redis",
+                          ThreadafeConfiguration().get_entry("sessions_redis",
                                                     "retries"))
         self._logger.info("[Internal APIs]")
         self._logger.info("=> accounts svc : %s",
-                          Configuration().get_entry("internal_apis",
+                          ThreadafeConfiguration().get_entry("internal_apis",
                                                     "accounts_svc"))
         self._logger.info("=> CMS svc      : %s",
-                          Configuration().get_entry("internal_apis",
+                          ThreadafeConfiguration().get_entry("internal_apis",
                                                     "cms_svc"))
 
         return True
