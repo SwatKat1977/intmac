@@ -21,8 +21,8 @@ import mimetypes
 import uuid
 from quart import Blueprint, request, Response
 import requests
-from base_view import BaseView
-from config import Configuration
+from base_view import ApiResponse, BaseView
+from threadsafe_configuration import ThreadafeConfiguration
 from logon_type import LogonType
 from redis_interface import RedisInterface
 
@@ -198,60 +198,77 @@ class View(BaseView):
         """
 
         try:
-            request_obj, err_msg = await self._convert_json_body_to_object(
-                api_request, self.basicAuthenticateRequestSchema)
+            '''
+            STEP 1:
+            Validate the message body:
+            1) Is JSON format
+            2) Validates against JSON schema
+            '''
+            request_obj : ApiResponse = self._validate_json_body(
+                await api_request.get_data(), self.basicAuthenticateRequestSchema)
 
-            if not request_obj:
-
+            if request_obj.status_code != HTTPStatus.OK:
                 response_json = {
                     'status': 'BAD',
-                    'error': err_msg
+                    'error': request_obj.exception_msg
                 }
-                response_status = HTTPStatus.NOT_ACCEPTABLE
+                return Response(json.dumps(response_json),
+                                status=HTTPStatus.INTERNAL_SERVER_ERROR,
+                                mimetype=mimetypes.types_map['.json'])
+
+            '''
+            STEP 2:
+            Request authentication verification from accounts service.
+            '''
+            base_accounts_svc : str = ThreadafeConfiguration().get_entry(
+                "internal_apis", "accounts_svc")
+
+            auth_request : dict = {
+                "email_address": request_obj.body.email_address,
+                "password": request_obj.body.password
+            }
+            auth_url : str = (f"{base_accounts_svc}"
+                              "/basic_auth/authenticate")
+
+            response = await self._call_api_get(auth_url, auth_request)
+
+            if response.status_code != HTTPStatus.OK:
+                self._logger.critical("Auth request invalid - Reason: %s",
+                                      response.exception_msg)
+                response_status = HTTPStatus.INTERNAL_SERVER_ERROR
+                response_json = {
+                    "status": 'BAD',
+                    'error': 'Internal error!'
+                }
+                return Response(json.dumps(response_json),
+                                status=HTTPStatus.INTERNAL_SERVER_ERROR,
+                                mimetype=mimetypes.types_map['.json'])
+
+                # response_json = {
+                #     "status": "OK",
+                #     "token": "c7dd0a54-baea-11eb-8529-0242ac130003"
+                # }
+
+            response_status = HTTPStatus.OK
+
+            body = response.json()
+            if not body.get("status"):
+                response_json = {
+                    "status":  0,
+                    "error": body.get("error")
+                }
 
             else:
-                base_accounts_svc : str = Configuration().get_entry(
-                    "internal_apis", "accounts_svc")
+                token = uuid.uuid4().hex
+                self._sessions.add_auth_session(
+                    request_obj.email_address, token, LogonType.BASIC)
 
-                auth_request : dict = {
-                    "email_address": request_obj.email_address,
-                    "password": request_obj.password
+                response_json = {
+                    "status": 1,
+                    "token": token
                 }
-                auth_url : str = (f"{base_accounts_svc}"
-                                  "/basic_auth/authenticate")
-
-                response = await self._call_api_get(auth_url, auth_request)
-
-                if response.status_code != HTTPStatus.OK:
-                    self._logger.critical("Auth request invalid - Reason: %s",
-                                          response.exception_msg)
-                    response_status = HTTPStatus.INTERNAL_SERVER_ERROR
-                    response_json = {
-                        "status": "OK",
-                        "token": "c7dd0a54-baea-11eb-8529-0242ac130003"
-                    }
-
-                else:
-                    response_status = HTTPStatus.OK
-
-                    body = response.json()
-                    if not body.get("status"):
-                        response_json = {
-                            "status":  0,
-                            "error": body.get("error")
-                        }
-
-                    else:
-                        token = uuid.uuid4().hex
-                        self._sessions.add_auth_session(
-                            request_obj.email_address, token, LogonType.BASIC)
-
-                        response_json = {
-                            "status": 1,
-                            "token": token
-                        }
-                        self._logger.info("User '%s' logged in",
-                                          request_obj.email_address)
+                self._logger.info("User '%s' logged in",
+                                  request_obj.email_address)
 
         except requests.exceptions.ConnectionError as ex:
             except_str = f"Internal error: {ex}"
