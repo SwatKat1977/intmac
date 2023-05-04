@@ -27,7 +27,7 @@ from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
                            LOGGING_LOG_FORMAT_STRING
 from version import BUILD_TAG, BUILD_VERSION, RELEASE_VERSION
 
-class GatewayApiApplication(BaseApplication):
+class Application(BaseApplication):
     """ Gateway API application class """
      # pylint: disable=too-few-public-methods
 

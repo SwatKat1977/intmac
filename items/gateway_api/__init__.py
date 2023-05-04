@@ -17,12 +17,12 @@ limitations under the License.
 import asyncio
 import sys
 from quart import Quart
-from gateway_api_application import GatewayApiApplication
+from application import Application
 
 ## Quart application instance
 app = Quart(__name__)
 
-api_application = GatewayApiApplication(app)
+api_application = Application(app)
 
 @app.before_serving
 async def startup() -> None:
