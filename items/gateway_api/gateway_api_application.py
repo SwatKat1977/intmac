@@ -86,12 +86,12 @@ class GatewayApiApplication(BaseApplication):
 
         self._sessions = RedisInterface(
             self._logger,
-            Configuration().get_entry("sessions_redis", "host"),
-            Configuration().get_entry("sessions_redis", "port"),
-            Configuration().get_entry("sessions_redis", "password"))
+            ThreadafeConfiguration().get_entry("sessions_redis", "host"),
+            ThreadafeConfiguration().get_entry("sessions_redis", "port"),
+            ThreadafeConfiguration().get_entry("sessions_redis", "password"))
 
         redis_connected : bool = False
-        redis_connect_tries : int = Configuration().get_entry(
+        redis_connect_tries : int = ThreadafeConfiguration().get_entry(
             "sessions_redis", "retries")
         redis_connect_wait : int = 10
 
