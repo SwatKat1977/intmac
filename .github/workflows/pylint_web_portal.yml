@@ -1,4 +1,4 @@
-name: Lint Web Portal Microservice
+name: Lint Web Portal Service
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the development branch

@@ -28,10 +28,11 @@ Notes:
 
 Service | Tag | Build Parameters | Run Parameters
 ------------ | ------------- | ------------- | -------------
-auth | items_auth | --file Dockerfile.auth . -t service_tag | -d -p 3030:3030 <Tag>
-cms | items_cms | --file Dockerfile.cms . -t service_tag | -d -p 2222:2222 <Tag>
-gateway-api | items_gateway-api | --file Dockerfile.gateway-api . -t service_tag | -d -p 2111:2111 <Tag>
-web portal | items_web_portal | --file Dockerfile.web_portal . -t service_tag | -d -p 2333:2333 <Tag>
+auth | items_auth | --file Dockerfile.auth . -t items_auth | -d -p 3030:3030 <Tag>
+cms | items_cms | --file Dockerfile.cms . -t items_cms | -d -p 2222:2222 <Tag>
+gateway-api | items_gateway_api | --file Dockerfile.gateway-api . -t items_gateway_api | -d -p 2111:2111 <Tag>
+web portal | items_web_portal | --file Dockerfile.web_portal . -t items_web_portal | -d -p 2333:2333 <Tag>
+redis | items_redis | --file Dockerfile.redis . -t items_redis | -d -p 6379:6379 <Tag>
 
 Example of building Auth: docker image build --file Dockerfile.auth . -t items_auth
 

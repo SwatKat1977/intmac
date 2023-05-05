@@ -1,4 +1,4 @@
-name: Lint CMS Microservice
+name: Lint Gateway Service
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the development branch
@@ -23,8 +23,8 @@ jobs:
         python -m pip install --upgrade pip
         pip install pylint
         pip install quart
+        pip install redis
     - name: Run Pylint
       run: |
-        cd items
-        export PYTHONPATH=`pwd`/cms:`pwd`/shared
-        pylint `pwd`/cms
+        export PYTHONPATH=`pwd`/items/gateway_api:`pwd`/items/shared
+        pylint `pwd`/items/gateway_api --rcfile git_workflow/pylint-gateway_api.rc
