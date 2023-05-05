@@ -327,7 +327,6 @@ class SqliteInterface:
         returns:
             None.
         """
-        # pylint: disable=R0201
 
         try:
             cursor.execute(table_schema)

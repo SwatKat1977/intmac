@@ -13,23 +13,21 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+import asyncio
 import logging
 import os
-from application import Application
+from base_application import BaseApplication, COPYRIGHT_TEXT, LICENSE_TEXT
 from config import Config
-from sqlite_interface import SqliteInterface
-from views.basic_auth_view import create_basic_auth_blueprint
 from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
                            LOGGING_DEFAULT_LOG_LEVEL, \
                            LOGGING_LOG_FORMAT_STRING
+from sqlite_interface import SqliteInterface
+from version import BUILD_TAG, BUILD_VERSION, RELEASE_VERSION
+from views.basic_auth_view import create_basic_auth_blueprint
 
-class AuthApplication(Application):
+class Application(BaseApplication):
     """ ITEMS Authentication Service """
-    __slots__ = ["_config", "_db", "_logger"]
-
-    title_text = 'ITEMS Auth Microservice %s'
-    copyright_text = 'Copyright 2014-2021 Integrated Test Management Suite'
-    license_text = 'Licensed under the Apache License, Version 2.0'
+    __slots__ = ["_config", '_db', '_quart_instance']
 
     def __init__(self, quart_instance):
         super().__init__()
@@ -49,11 +47,11 @@ class AuthApplication(Application):
 
         return_status = False
 
-        build = "V0.0.0-MVP"
+        build = f"V{RELEASE_VERSION}-{BUILD_VERSION}{BUILD_TAG}"
 
-        self._logger.info(self.title_text, build)
-        self._logger.info(self.copyright_text)
-        self._logger.info(self.license_text)
+        self._logger.info('ITEMS Accounts Microservice %s', build)
+        self._logger.info(COPYRIGHT_TEXT)
+        self._logger.info(LICENSE_TEXT)
 
         config_mgr = Config()
         self._config = config_mgr.read_config("./config.ini")
@@ -66,13 +64,14 @@ class AuthApplication(Application):
 
         return return_status
 
-    def _main_loop(self) -> None:
+    async def _main_loop(self) -> None:
         ''' Abstract method for main application. '''
+        await asyncio.sleep(0.1)
 
     def _shutdown(self):
         ''' Abstract method for application shutdown. '''
 
-    def _open_database(self):
+    def _open_database(self) -> bool:
 
         self._db = SqliteInterface(self._config.database.database_file)
 
