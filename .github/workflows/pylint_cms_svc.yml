@@ -26,5 +26,5 @@ jobs:
     - name: Run Pylint
       run: |
         cd items
-        export PYTHONPATH=`pwd`/cms:`pwd`/shared
-        pylint `pwd`/cms
+        export PYTHONPATH=`pwd`/cms_svc:`pwd`/shared
+        pylint `pwd`/cms_svc
