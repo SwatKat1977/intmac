@@ -22,21 +22,25 @@ class ThreadafeConfiguration(ConfigurationManager, metaclass = ThreadSafeSinglet
 
     @property
     def logging_log_level(self) -> str:
+        """ Configuration property : Logging | log level """
         return ThreadafeConfiguration().get_entry(
             consts.SECTION_LOGGING, consts.ITEM_LOGGING_LOG_LEVEL)
 
     @property
     def backend_engine(self) -> str:
+        """ Configuration property : Backend | engine """
         return ThreadafeConfiguration().get_entry(
             consts.SECTION_BACKEND, consts.ITEM_BACKEND_ENGINE)
 
     @property
     def backend_internal_db_filename(self) -> str:
+        """ Configuration property : Backend | internal database filename """
         return ThreadafeConfiguration().get_entry(
             consts.SECTION_BACKEND, consts.ITEM_BACKEND_INTERNAL_DB_FILENAME)
 
     @property
     def backend_create_db_if_missing(self) -> bool:
+        """ Configuration property : Backend | create db if missing """
         item_str : str = ThreadafeConfiguration().get_entry(
             consts.SECTION_BACKEND, consts.ITEM_BACKEND_CREATE_DB_IF_MISSING)
         return item_str == 'YES'
