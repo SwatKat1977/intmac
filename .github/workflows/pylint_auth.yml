@@ -1,4 +1,4 @@
-name: Lint Auth Microservice
+name: Lint Accounts Microservice
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the development branch
@@ -26,5 +26,5 @@ jobs:
         pip install quart
     - name: Run Pylint
       run: |
-        export PYTHONPATH=`pwd`/items/auth:`pwd`/items/shared
-        pylint `pwd`/items/auth --rcfile git_workflow/pylint-auth.rc
+        export PYTHONPATH=`pwd`/items/accounts_svc:`pwd`/items/shared
+        pylint `pwd`/items/accounts_svc --rcfile git_workflow/pylint-auth.rc
