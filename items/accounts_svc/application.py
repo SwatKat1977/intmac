@@ -17,11 +17,12 @@ import asyncio
 import logging
 import os
 from base_application import BaseApplication, COPYRIGHT_TEXT, LICENSE_TEXT
-from config import Config
+from configuration_layout import CONFIGURATION_LAYOUT
 from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
                            LOGGING_DEFAULT_LOG_LEVEL, \
                            LOGGING_LOG_FORMAT_STRING
 from sqlite_interface import SqliteInterface
+from threadsafe_configuration import ThreadafeConfiguration
 from version import BUILD_TAG, BUILD_VERSION, RELEASE_VERSION
 from views.basic_auth_view import create_basic_auth_blueprint
 
@@ -52,6 +53,15 @@ class Application(BaseApplication):
         self._logger.info('ITEMS Accounts Microservice %s', build)
         self._logger.info(COPYRIGHT_TEXT)
         self._logger.info(LICENSE_TEXT)
+
+        if not self._manage_configuration():
+            return False
+
+        self._logger.info('Setting logging level to %s',
+                          ThreadafeConfiguration().get_entry("logging",
+                                                             "log_level"))
+        self._logger.setLevel(ThreadafeConfiguration().get_entry("logging",
+                                                                 "log_level"))
 
         config_mgr = Config()
         self._config = config_mgr.read_config("./config.ini")
@@ -118,3 +128,49 @@ class Application(BaseApplication):
                                        self._config.database.database_file)
 
         return db_status
+
+    def _manage_configuration(self) -> bool:
+        """
+        Manage the service configuration.
+        """
+
+        config_file = os.getenv("ITEMS_ACCOUNTS_SVC_CONFIG_FILE", None)
+
+        config_file_required : bool = os.getenv(
+            "ITEMS_ACCOUNTS_SVC_CONFIG_FILE_REQUIRED", None)
+        config_file_required = False if not config_file_required \
+                               else config_file_required
+
+        if not config_file and config_file_required:
+            print("[FATAL ERROR] Configuration file missing!")
+            return False
+
+        ThreadafeConfiguration().configure(CONFIGURATION_LAYOUT, config_file,
+                                           config_file_required)
+
+        try:
+            ThreadafeConfiguration().process_config()
+
+        except ValueError as ex:
+            self._logger.critical("Configuration error : %s", ex)
+            return False
+
+        self._logger.info("Configuration")
+        self._logger.info("=============")
+        self._logger.info("[logging]")
+        self._logger.info("=> Logging log level : %s",
+                          ThreadafeConfiguration().get_entry("logging", "log_level"))
+        self._logger.info("[Backend]")
+        engine : str = ThreadafeConfiguration().get_entry("backend", "engine")
+        self._logger.info("=> Engine            : %s", engine)
+
+        if engine == "internalDB":
+            self._logger.info("=> Database filename : %s",
+                              ThreadafeConfiguration().get_entry(
+                                "backend", "internal_db_filename"))
+
+            self._logger.info("=> create if missing : %s",
+                              ThreadafeConfiguration().get_entry(
+                                'backend', 'create_internal_db_if_missing'))
+
+        return True
