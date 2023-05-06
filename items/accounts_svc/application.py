@@ -90,7 +90,7 @@ class Application(BaseApplication):
                 self._logger.critical("Database file '%s' is not valid!",
                                       filename)
             else:
-                return True
+                status = True
 
         else:
             if Configuration().backend_create_db_if_missing:
@@ -99,11 +99,21 @@ class Application(BaseApplication):
                     self._logger.critical(err_str)
 
                 else:
-                    return True
+                    status = True
 
             else:
                 self._logger.critical(("Database file '%s' doesn't exist and "
                                        "won't get created!"), filename)
+
+        if status:
+            open_status, err_str = self._db.open()
+            if not open_status:
+                self._logger.critical(err_str)
+
+            else:
+                status = True
+                self._logger.info("Database '%s' opened successful",
+                                  Configuration().backend_internal_db_filename)
 
         return status
 

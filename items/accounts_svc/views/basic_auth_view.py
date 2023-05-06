@@ -18,7 +18,7 @@ import json
 import logging
 import mimetypes
 from quart import Blueprint, request, Response
-from base_view import BaseView
+from base_view import ApiResponse, BaseView
 from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
                            LOGGING_DEFAULT_LOG_LEVEL, \
                            LOGGING_LOG_FORMAT_STRING
@@ -74,54 +74,54 @@ class View(BaseView):
 
     async def authenticate(self, api_request):
 
-        request_obj, err_msg = await self._convert_json_body_to_object(
-            api_request, AuthenticateRequest.schema)
+        response : ApiResponse = self._validate_json_body(
+            await api_request.get_data(), AuthenticateRequest.schema)
 
-        if not request_obj:
-
+        if response.status_code != HTTPStatus.OK:
             response_json = {
                 'status': 0,
-                'error': err_msg
+                'error': response.exception_msg
             }
-            response_status = HTTPStatus.NOT_ACCEPTABLE
+            return Response(json.dumps(response_json),
+                            status=HTTPStatus.INTERNAL_SERVER_ERROR,
+                            mimetype=mimetypes.types_map['.json'])
 
-        else:
-            try:
-                user_id, _ = self._sql_interface.valid_user_to_logon(
-                    request_obj.email_address, LogonType.BASIC)
+        try:
+            user_id, _ = self._sql_interface.valid_user_to_logon(
+                response.body.email_address, LogonType.BASIC)
 
-                if user_id:
-                    status, err_str = self._sql_interface.basic_user_authenticate(
-                        user_id, request_obj.password)
+            if user_id:
+                status, err_str = self._sql_interface.basic_user_authenticate(
+                    user_id, response.body.password)
 
-                    response_status = HTTPStatus.OK
+                response_status = HTTPStatus.OK
 
-                    if status:
-                        response_json = {
-                            'status': 1,
-                            'error': ''
-                        }
-
-                    else:
-                        response_json = {
-                            'status': 0,
-                            'error': err_str
-                        }
+                if status:
+                    response_json = {
+                        'status': 1,
+                        'error': ''
+                    }
 
                 else:
                     response_json = {
                         'status': 0,
-                        'error': 'Invalid username/password'
+                        'error': err_str
                     }
-                    response_status = HTTPStatus.OK
 
-            except RuntimeError as ex:
-                self._logger.critical(ex)
+            else:
                 response_json = {
                     'status': 0,
-                    'error': "Internal server error"
+                    'error': 'Invalid username/password'
                 }
-                response_status = HTTPStatus.INTERNAL_SERVER_ERROR
+                response_status = HTTPStatus.OK
+
+        except RuntimeError as ex:
+            self._logger.critical(ex)
+            response_json = {
+                'status': 0,
+                'error': "Internal server error"
+            }
+            response_status = HTTPStatus.INTERNAL_SERVER_ERROR
 
         return Response(json.dumps(response_json), status = response_status,
                                    mimetype = mimetypes.types_map['.json'])

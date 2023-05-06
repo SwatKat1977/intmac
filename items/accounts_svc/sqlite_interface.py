@@ -87,6 +87,10 @@ class SqliteInterface:
         self._is_connected = False
         self._logger = logger.getChild(__name__)
 
+    def __del__(self):
+        self._logger.info("Cleaning up SQLite interface...")
+        self.close()
+
     def valid_database(self) -> bool:
         """
         Check to see if the database is valid.  We verify that:
@@ -131,6 +135,7 @@ class SqliteInterface:
 
             try:
                 self._connection = sqlite3.connect(self._database_filename)
+                print("conny ", self._connection)
 
                 cursor = self._connection.cursor()
 
