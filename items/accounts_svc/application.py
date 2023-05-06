@@ -27,14 +27,13 @@ from version import BUILD_TAG, BUILD_VERSION, RELEASE_VERSION
 from views.basic_auth_view import create_basic_auth_blueprint
 
 class Application(BaseApplication):
-    """ ITEMS Authentication Service """
-    __slots__ = ["_config", '_db', '_quart_instance']
+    """ ITEMS Accounts Service """
+    __slots__ = ['_db', '_quart_instance']
 
     def __init__(self, quart_instance):
         super().__init__()
         self._quart_instance = quart_instance
-        self._config = None
-        self._db = None
+        self._db : SqliteInterface = None
 
         self._logger = logging.getLogger(__name__)
         log_format= logging.Formatter(LOGGING_LOG_FORMAT_STRING,
@@ -45,8 +44,6 @@ class Application(BaseApplication):
         self._logger.addHandler(console_stream)
 
     def _initialise(self) -> bool:
-
-        return_status = False
 
         build = f"V{RELEASE_VERSION}-{BUILD_VERSION}{BUILD_TAG}"
 
@@ -63,16 +60,14 @@ class Application(BaseApplication):
         self._logger.setLevel(ThreadafeConfiguration().get_entry("logging",
                                                                  "log_level"))
 
-        config_mgr = Config()
-        self._config = config_mgr.read_config("./config.ini")
+        engine : str = ThreadafeConfiguration().get_entry("backend", "engine")
+        if engine == 'internalDB' and not self._open_internal_database():
+            return False
 
-        if self._check_database() and self._open_database():
-            basic_auth_blueprint = create_basic_auth_blueprint(self._db)
-            self._quart_instance.register_blueprint(basic_auth_blueprint)
+        basic_auth_blueprint = create_basic_auth_blueprint(self._db)
+        self._quart_instance.register_blueprint(basic_auth_blueprint)
 
-            return_status = True
-
-        return return_status
+        return True
 
     async def _main_loop(self) -> None:
         ''' Abstract method for main application. '''
@@ -81,53 +76,41 @@ class Application(BaseApplication):
     def _shutdown(self):
         ''' Abstract method for application shutdown. '''
 
-    def _open_database(self) -> bool:
+    def _open_internal_database(self) -> bool:
+        self._logger.info("Back-end is using internal database...")
 
-        self._db = SqliteInterface(self._config.database.database_file)
+        status : bool = False
 
-        status = False
+        filename : str = ThreadafeConfiguration().get_entry(
+            'backend', 'internal_db_filename')
+        create_if_missing : str = ThreadafeConfiguration().get_entry(
+            'backend', 'create_db_if_missing')
 
-        open_status, err_str = self._db.open()
-        if not open_status:
-            self._logger.critical(err_str)
+        self._db = SqliteInterface(self._logger, filename)
 
-        else:
-            status = True
-            self._logger.info("Database '%s' opened successful",
-                              self._config.database.database_file)
-
-        return status
-
-    def _check_database(self) -> bool:
-
-        db_status = False
-
-        self._db = SqliteInterface(self._config.database.database_file)
-
-        if os.path.isfile(self._config.database.database_file):
+        if os.path.isfile(filename):
 
             if not self._db.valid_database():
                 self._logger.critical("Database file '%s' is not valid!",
-                                      self._config.database.database_file)
+                                      filename)
             else:
-                db_status = True
+                return True
 
         else:
-            if self._config.database.create_when_missing:
+            if create_if_missing == 'YES':
                 status, err_str = self._db.build_database()
                 if not status:
                     self._logger.critical(err_str)
 
                 else:
-                    self._logger.info("Database created successfully")
-                    db_status = True
+                    self._logger.info('Database created successfully')
+                    return True
 
             else:
                 self._logger.critical(("Database file '%s' doesn't exist and "
-                                       "won't get created!"),
-                                       self._config.database.database_file)
+                                       "won't get created!"), filename)
 
-        return db_status
+        return status
 
     def _manage_configuration(self) -> bool:
         """
@@ -171,6 +154,6 @@ class Application(BaseApplication):
 
             self._logger.info("=> create if missing : %s",
                               ThreadafeConfiguration().get_entry(
-                                'backend', 'create_internal_db_if_missing'))
+                                'backend', 'create_db_if_missing'))
 
         return True

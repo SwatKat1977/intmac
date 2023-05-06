@@ -15,25 +15,44 @@ limitations under the License.
 '''
 from configuration import configuration_setup
 
+class ConfigurationConstants:
+    SECTION_LOGGING : str = 'logging'
+    SECTION_BACKEND : str = 'backend'
+
+    ITEM_LOGGING_LOG_LEVEL : str = 'log_level'
+    LOG_LEVEL_DEBUG : str = 'DEBUG'
+    LOG_LEVEL_INFO : str = 'INFO'
+
+    ITEM_BACKEND_ENGINE : str = 'engine'
+    ENGINE_INTERNAL : str = 'internalDB'
+
+    ITEM_BACKEND_INTERNAL_DB_FILENAME : str = 'internal_db_filename'
+    ITEM_BACKEND_CREATE_DB_IF_MISSING = "create_db_if_missing"
+
 CONFIGURATION_LAYOUT = configuration_setup.ConfigurationSetup(
     {
-        "logging": [
+        ConfigurationConstants.SECTION_LOGGING: [
             configuration_setup.ConfigurationSetupItem(
-                "log_level", configuration_setup.ConfigItemDataType.STRING,
-                valid_values=['DEBUG', 'INFO'], default_value="INFO")
+                ConfigurationConstants.ITEM_LOGGING_LOG_LEVEL,
+                configuration_setup.ConfigItemDataType.STRING,
+                valid_values=[ConfigurationConstants.LOG_LEVEL_DEBUG,
+                              ConfigurationConstants.LOG_LEVEL_INFO],
+                              default_value=ConfigurationConstants.LOG_LEVEL_INFO)
         ],
-        "backend": [
+        ConfigurationConstants.SECTION_BACKEND: [
             configuration_setup.ConfigurationSetupItem(
-                "engine", configuration_setup.ConfigItemDataType.STRING,
-                valid_values=['internalDB'], default_value="internalDB"),
+                ConfigurationConstants.ITEM_BACKEND_ENGINE,
+                configuration_setup.ConfigItemDataType.STRING,
+                valid_values=[ConfigurationConstants.ENGINE_INTERNAL],
+                              default_value=ConfigurationConstants.ENGINE_INTERNAL),
 
             configuration_setup.ConfigurationSetupItem(
-                "internal_db_filename",
+                ConfigurationConstants.ITEM_BACKEND_INTERNAL_DB_FILENAME,
                 configuration_setup.ConfigItemDataType.STRING,
                 default_value="items_accounts_svc.db"),
 
             configuration_setup.ConfigurationSetupItem(
-                "create_internal_db_if_missing",
+                ConfigurationConstants.ITEM_BACKEND_CREATE_DB_IF_MISSING,
                 configuration_setup.ConfigItemDataType.STRING,
                 valid_values=['YES', 'NO'], default_value="NO")
         ]
