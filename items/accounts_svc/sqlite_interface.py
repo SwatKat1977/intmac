@@ -21,9 +21,6 @@ from uuid import uuid4
 import sqlite3
 import logging
 from account_status import AccountStatus
-from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
-                           LOGGING_DEFAULT_LOG_LEVEL, \
-                           LOGGING_LOG_FORMAT_STRING
 from logon_type import LogonType
 
 class SqliteInterfaceException(Exception):
@@ -74,7 +71,7 @@ class SqliteInterface:
         """
         return self._is_connected and self._connection is not None
 
-    def __init__(self, database_filename : str) -> None:
+    def __init__(self, logger : logging.Logger, database_filename : str) -> None:
         """
         Class constructor.
 
@@ -88,14 +85,11 @@ class SqliteInterface:
         self._connection = None
         self._database_filename = database_filename
         self._is_connected = False
+        self._logger = logger.getChild(__name__)
 
-        self._logger = logging.getLogger(__name__)
-        log_format= logging.Formatter(LOGGING_LOG_FORMAT_STRING,
-                                      LOGGING_DATETIME_FORMAT_STRING)
-        console_stream = logging.StreamHandler()
-        console_stream.setFormatter(log_format)
-        self._logger.setLevel(LOGGING_DEFAULT_LOG_LEVEL)
-        self._logger.addHandler(console_stream)
+    def __del__(self):
+        self._logger.info("Cleaning up SQLite interface...")
+        self.close()
 
     def valid_database(self) -> bool:
         """
@@ -141,6 +135,7 @@ class SqliteInterface:
 
             try:
                 self._connection = sqlite3.connect(self._database_filename)
+                print("conny ", self._connection)
 
                 cursor = self._connection.cursor()
 
@@ -327,7 +322,6 @@ class SqliteInterface:
         returns:
             None.
         """
-        # pylint: disable=R0201
 
         try:
             cursor.execute(table_schema)
