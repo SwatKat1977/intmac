@@ -18,7 +18,6 @@ from configuration.configuration_manager import ConfigurationManager
 from thread_safe_singleton import ThreadSafeSingleton
 
 class ThreadafeConfiguration(ConfigurationManager, metaclass = ThreadSafeSingleton):
-    # pylint: disable=too-few-public-methods
     """ Thread-safe singleton for the config """
 
     def logging_log_level(self) -> str:
@@ -29,7 +28,11 @@ class ThreadafeConfiguration(ConfigurationManager, metaclass = ThreadSafeSinglet
         return ThreadafeConfiguration().get_entry(
             consts.SECTION_BACKEND, consts.ITEM_BACKEND_ENGINE)
 
+    def backend_internal_db_filename(self) -> str:
+        return ThreadafeConfiguration().get_entry(
+            consts.SECTION_BACKEND, consts.ITEM_BACKEND_INTERNAL_DB_FILENAME)
+
     def backend_create_db_if_missing(self) -> bool:
         item_str : str = ThreadafeConfiguration().get_entry(
             consts.SECTION_BACKEND, consts.ITEM_BACKEND_CREATE_DB_IF_MISSING)
-        return True if item_str == 'YES' else False
+        return item_str == 'YES'

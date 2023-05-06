@@ -142,18 +142,17 @@ class Application(BaseApplication):
         self._logger.info("=============")
         self._logger.info("[logging]")
         self._logger.info("=> Logging log level : %s",
-                          ThreadafeConfiguration().get_entry("logging", "log_level"))
+                          ThreadafeConfiguration().logging_log_level())
         self._logger.info("[Backend]")
-        engine : str = ThreadafeConfiguration().get_entry("backend", "engine")
-        self._logger.info("=> Engine            : %s", engine)
+        self._logger.info("=> Engine            : %s",
+                          ThreadafeConfiguration().backend_engine())
 
-        if engine == "internalDB":
+        if ThreadafeConfiguration().backend_engine() == "internalDB":
             self._logger.info("=> Database filename : %s",
                               ThreadafeConfiguration().get_entry(
                                 "backend", "internal_db_filename"))
 
             self._logger.info("=> create if missing : %s",
-                              ThreadafeConfiguration().get_entry(
-                                'backend', 'create_db_if_missing'))
+                              ThreadafeConfiguration().backend_create_db_if_missing())
 
         return True

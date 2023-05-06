@@ -15,7 +15,11 @@ limitations under the License.
 '''
 from configuration import configuration_setup
 
+# pylint: disable=too-few-public-methods
+
 class ConfigurationConstants:
+    ''' Constants for the microservice configuration. '''
+
     SECTION_LOGGING : str = 'logging'
     SECTION_BACKEND : str = 'backend'
 
