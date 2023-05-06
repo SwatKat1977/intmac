@@ -98,7 +98,6 @@ class Application(BaseApplication):
                     self._logger.critical(err_str)
 
                 else:
-                    self._logger.info('Database created successfully')
                     return True
 
             else:
