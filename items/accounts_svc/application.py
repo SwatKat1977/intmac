@@ -22,7 +22,7 @@ from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
                            LOGGING_DEFAULT_LOG_LEVEL, \
                            LOGGING_LOG_FORMAT_STRING
 from sqlite_interface import SqliteInterface
-from threadsafe_configuration import ThreadafeConfiguration
+from threadsafe_configuration import ThreadafeConfiguration as Configuration
 from version import BUILD_TAG, BUILD_VERSION, RELEASE_VERSION
 from views.basic_auth_view import create_basic_auth_blueprint
 
@@ -55,12 +55,10 @@ class Application(BaseApplication):
             return False
 
         self._logger.info('Setting logging level to %s',
-                          ThreadafeConfiguration().get_entry("logging",
-                                                             "log_level"))
-        self._logger.setLevel(ThreadafeConfiguration().get_entry("logging",
-                                                                 "log_level"))
+                          Configuration().logging_log_level)
+        self._logger.setLevel(Configuration().logging_log_level)
 
-        engine : str = ThreadafeConfiguration().get_entry("backend", "engine")
+        engine : str = Configuration().get_entry("backend", "engine")
         if engine == 'internalDB' and not self._open_internal_database():
             return False
 
@@ -81,10 +79,7 @@ class Application(BaseApplication):
 
         status : bool = False
 
-        filename : str = ThreadafeConfiguration().get_entry(
-            'backend', 'internal_db_filename')
-        create_if_missing : str = ThreadafeConfiguration().get_entry(
-            'backend', 'create_db_if_missing')
+        filename : str = Configuration().backend_internal_db_filename
 
         self._db = SqliteInterface(self._logger, filename)
 
@@ -97,7 +92,7 @@ class Application(BaseApplication):
                 return True
 
         else:
-            if create_if_missing == 'YES':
+            if Configuration().backend_create_db_if_missing:
                 status, err_str = self._db.build_database()
                 if not status:
                     self._logger.critical(err_str)
@@ -128,11 +123,11 @@ class Application(BaseApplication):
             print("[FATAL ERROR] Configuration file missing!")
             return False
 
-        ThreadafeConfiguration().configure(CONFIGURATION_LAYOUT, config_file,
-                                           config_file_required)
+        Configuration().configure(CONFIGURATION_LAYOUT, config_file,
+                                  config_file_required)
 
         try:
-            ThreadafeConfiguration().process_config()
+            Configuration().process_config()
 
         except ValueError as ex:
             self._logger.critical("Configuration error : %s", ex)
@@ -142,17 +137,16 @@ class Application(BaseApplication):
         self._logger.info("=============")
         self._logger.info("[logging]")
         self._logger.info("=> Logging log level : %s",
-                          ThreadafeConfiguration().logging_log_level())
+                          Configuration().logging_log_level)
         self._logger.info("[Backend]")
         self._logger.info("=> Engine            : %s",
-                          ThreadafeConfiguration().backend_engine())
+                          Configuration().backend_engine)
 
-        if ThreadafeConfiguration().backend_engine() == "internalDB":
+        if Configuration().backend_engine == "internalDB":
             self._logger.info("=> Database filename : %s",
-                              ThreadafeConfiguration().get_entry(
-                                "backend", "internal_db_filename"))
+                              Configuration().backend_internal_db_filename)
 
             self._logger.info("=> create if missing : %s",
-                              ThreadafeConfiguration().backend_create_db_if_missing())
+                              Configuration().backend_create_db_if_missing)
 
         return True

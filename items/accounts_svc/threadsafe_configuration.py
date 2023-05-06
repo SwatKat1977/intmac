@@ -20,18 +20,22 @@ from thread_safe_singleton import ThreadSafeSingleton
 class ThreadafeConfiguration(ConfigurationManager, metaclass = ThreadSafeSingleton):
     """ Thread-safe singleton for the config """
 
+    @property
     def logging_log_level(self) -> str:
         return ThreadafeConfiguration().get_entry(
             consts.SECTION_LOGGING, consts.ITEM_LOGGING_LOG_LEVEL)
 
+    @property
     def backend_engine(self) -> str:
         return ThreadafeConfiguration().get_entry(
             consts.SECTION_BACKEND, consts.ITEM_BACKEND_ENGINE)
 
+    @property
     def backend_internal_db_filename(self) -> str:
         return ThreadafeConfiguration().get_entry(
             consts.SECTION_BACKEND, consts.ITEM_BACKEND_INTERNAL_DB_FILENAME)
 
+    @property
     def backend_create_db_if_missing(self) -> bool:
         item_str : str = ThreadafeConfiguration().get_entry(
             consts.SECTION_BACKEND, consts.ITEM_BACKEND_CREATE_DB_IF_MISSING)
