@@ -25,8 +25,9 @@ from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
 from logon_type import LogonType
 from sqlite_interface import SqliteInterface
 
-def create_basic_auth_blueprint(sql_interface : SqliteInterface):
-    view = View(sql_interface)
+def create_basic_auth_blueprint(sql_interface : SqliteInterface,
+                                logger : logging.Logger):
+    view = View(sql_interface, logger)
 
     blueprint = Blueprint('basic_auth_api', __name__)
 
@@ -66,16 +67,10 @@ class AuthenticateRequest:
 class View(BaseView):
     __slots__ = ['_logger', '_sql_interface']
 
-    def __init__(self, sql_interface : SqliteInterface) -> None:
+    def __init__(self, sql_interface : SqliteInterface,
+                 logger : logging.Logger) -> None:
         self._sql_interface = sql_interface
- 
-        self._logger = logging.getLogger(__name__)
-        log_format= logging.Formatter(LOGGING_LOG_FORMAT_STRING,
-                                      LOGGING_DATETIME_FORMAT_STRING)
-        console_stream = logging.StreamHandler()
-        console_stream.setFormatter(log_format)
-        self._logger.setLevel(LOGGING_DEFAULT_LOG_LEVEL)
-        self._logger.addHandler(console_stream)
+        self._logger = logger.getChild(__name__)
 
     async def authenticate(self, api_request):
 

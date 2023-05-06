@@ -62,7 +62,8 @@ class Application(BaseApplication):
         if engine == 'internalDB' and not self._open_internal_database():
             return False
 
-        basic_auth_blueprint = create_basic_auth_blueprint(self._db)
+        basic_auth_blueprint = create_basic_auth_blueprint(self._db,
+                                                           self._logger)
         self._quart_instance.register_blueprint(basic_auth_blueprint)
 
         return True
