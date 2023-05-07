@@ -1,5 +1,5 @@
 '''
-Copyright 2014-2021 Integrated Test Management Suite
+Copyright 2014-2023 Integrated Test Management Suite
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -13,16 +13,15 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
-
 import asyncio
 import sys
 from quart import Quart
-from cms_application import CMSApplication
+from application import Application
 
 ## Quart application instance
 app = Quart(__name__)
 
-application = CMSApplication(app)
+application = Application(app)
 
 @app.before_serving
 async def startup() -> None:

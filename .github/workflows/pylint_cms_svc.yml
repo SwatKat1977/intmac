@@ -1,4 +1,4 @@
-name: Lint CMS Service
+name: Lint CMS Microservice
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the development branch
@@ -26,5 +26,5 @@ jobs:
     - name: Run Pylint
       run: |
         cd items
-        export PYTHONPATH=`pwd`/cms:`pwd`/shared
-        pylint `pwd`/cms
+        export PYTHONPATH=`pwd`/cms_svc:`pwd`/shared
+        pylint `pwd`/cms_svc
