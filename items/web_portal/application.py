@@ -1,5 +1,5 @@
 '''
-Copyright 2014-2021 Integrated Test Management Suite
+Copyright 2014-2023 Integrated Test Management Suite
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 import logging
-from application import Application
+from base_application import BaseApplication, COPYRIGHT_TEXT, LICENSE_TEXT
 from config import Config
 from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
                            LOGGING_DEFAULT_LOG_LEVEL, \
@@ -23,12 +23,8 @@ from version import BUILD_TAG, BUILD_VERSION, RELEASE_VERSION
 from views.home_view import create_home_blueprint
 from views.data_view import create_data_view_blueprint
 
-class WebPortalApplication(Application):
+class Application(BaseApplication):
     ''' Web portal application class '''
-
-    title_text = 'ITEMS Web Portal %s'
-    copyright_text = 'Copyright 2014-2021 Integrated Test Management Suite'
-    license_text = 'Licensed under the Apache License, Version 2.0'
 
     def __init__(self, quart_instance):
         super().__init__()
@@ -47,9 +43,9 @@ class WebPortalApplication(Application):
 
         build = f"V{RELEASE_VERSION}-{BUILD_VERSION}{BUILD_TAG}"
 
-        self._logger.info(self.title_text, build)
-        self._logger.info(self.copyright_text)
-        self._logger.info(self.license_text)
+        self._logger.info('ITEMS Web Portal Service %s', build)
+        self._logger.info(COPYRIGHT_TEXT)
+        self._logger.info(LICENSE_TEXT)
 
         self._config = Config().read_config("./config.ini")
 
@@ -61,7 +57,7 @@ class WebPortalApplication(Application):
 
         return True
 
-    def _main_loop(self) -> None:
+    async def _main_loop(self) -> None:
         ''' Abstract method for main application. '''
 
     def _shutdown(self):
