@@ -44,7 +44,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          file: docker/Dockerfile.gateway
+          file: docker/Dockerfile.gateway_svc
           push: true
           no-cache: true
           tags: intmac/nightly:gateway-svc-nightly
