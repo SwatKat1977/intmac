@@ -122,13 +122,15 @@ class View(WebBaseView):
                 "email_address": user_email,
                 "password": password
             }
-            url = f"{self._config.gateway_api.base_url}/handshake/basic_authenticate"
+            url = f"{Configuration().internal_api_gateway}/handshake/basic_authenticate"
 
             try:
                 response = requests.post(url, json = auth_body)
 
             except requests.exceptions.ConnectionError as ex:
-                raise ItemsException('Connection to gateway api timed out') from ex
+                self._logger.error('Connection to gateway api timed out: %s',
+                                   str(ex))
+                return await render_template(self.TEMPLATE_INTERNAL_ERROR_PAGE)
 
             body = json.loads(response.content,
                               object_hook=lambda d: SimpleNamespace(**d))
