@@ -19,6 +19,7 @@ from types import SimpleNamespace
 from quart import request
 import requests
 from base_view import BaseView
+from threadsafe_configuration import ThreadafeConfiguration as Configuration
 from items_exception import ItemsException
 
 class WebBaseView(BaseView):
@@ -48,7 +49,7 @@ class WebBaseView(BaseView):
         token = request.cookies.get(self.COOKIE_TOKEN)
         username = request.cookies.get(self.COOKIE_USER)
 
-        url = f"{self._config.gateway_api.base_url}/handshake/valid_token"
+        url = f"{Configuration().internal_api_gateway}/handshake/valid_token"
 
         request_body = {
             "email_address": username,
