@@ -31,9 +31,6 @@ class WebBaseView(BaseView):
 
     REDIRECT_URL = "<meta http-equiv=\"Refresh\" content=\"0; url='{0}\"/>"
 
-    def __init__(self) -> None:
-        super().__init__()
-
     def _generate_redirect(self, redirect_url) -> str:
         new_url = f"{request.url_root}{redirect_url}"
         return self.REDIRECT_URL.format(new_url)
@@ -57,7 +54,7 @@ class WebBaseView(BaseView):
         }
 
         try:
-            response = requests.get(url, json = request_body)
+            response = requests.get(url, json = request_body, timeout=0)
 
         except requests.exceptions.ConnectionError as ex:
             raise ItemsException('Connection to gateway api timed out') from ex
