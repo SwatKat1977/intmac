@@ -1,5 +1,5 @@
 '''
-Copyright 2014-2021 Integrated Test Management Suite
+Copyright 2014-2023 Integrated Test Management Suite
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -20,15 +20,13 @@ import mimetypes
 import requests
 from types import SimpleNamespace
 from quart import Blueprint, make_response, request, render_template, Response
-from config import Config
+from threadsafe_configuration import ThreadafeConfiguration as Configuration
 from items_exception import ItemsException
-from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
-                           LOGGING_DEFAULT_LOG_LEVEL, \
-                           LOGGING_LOG_FORMAT_STRING
+
 from web_base_view import WebBaseView
 
-def create_data_view_blueprint(config : Config) -> Blueprint:
-    view = View(config)
+def create_data_view_blueprint(logger : logging.Logger) -> Blueprint:
+    view = View(logger)
 
     blueprint = Blueprint('data_view', __name__)
 
@@ -45,16 +43,10 @@ class View(WebBaseView):
     TEST_CASES_LOGIN_PAGE = "test_cases.html"
     TEMPLATE_INTERNAL_ERROR_PAGE = "internal_server_error.html"
 
-    def __init__(self, config : Config):
-        super().__init__(config)
+    def __init__(self, logger : logging.Logger):
+        super().__init__()
 
-        self._logger = logging.getLogger(__name__)
-        log_format= logging.Formatter(LOGGING_LOG_FORMAT_STRING,
-                                      LOGGING_DATETIME_FORMAT_STRING)
-        console_stream = logging.StreamHandler()
-        console_stream.setFormatter(log_format)
-        self._logger.setLevel(LOGGING_DEFAULT_LOG_LEVEL)
-        self._logger.addHandler(console_stream)
+        self._logger = logger.getChild(__name__)
 
         mimetypes.init()
 

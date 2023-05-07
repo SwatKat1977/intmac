@@ -19,7 +19,7 @@ from types import SimpleNamespace
 from quart import request
 import requests
 from base_view import BaseView
-from config import Config
+from threadsafe_configuration import ThreadafeConfiguration as Configuration
 from items_exception import ItemsException
 
 class WebBaseView(BaseView):
@@ -30,11 +30,6 @@ class WebBaseView(BaseView):
     COOKIE_USER = "items_user"
 
     REDIRECT_URL = "<meta http-equiv=\"Refresh\" content=\"0; url='{0}\"/>"
-
-    def __init__(self, config : Config) -> None:
-        super().__init__()
-
-        self._config = config
 
     def _generate_redirect(self, redirect_url) -> str:
         new_url = f"{request.url_root}{redirect_url}"
@@ -51,7 +46,7 @@ class WebBaseView(BaseView):
         token = request.cookies.get(self.COOKIE_TOKEN)
         username = request.cookies.get(self.COOKIE_USER)
 
-        url = f"{self._config.gateway_api.base_url}/handshake/valid_token"
+        url = f"{Configuration().internal_api_gateway}/handshake/valid_token"
 
         request_body = {
             "email_address": username,
@@ -59,7 +54,7 @@ class WebBaseView(BaseView):
         }
 
         try:
-            response = requests.get(url, json = request_body)
+            response = requests.get(url, json = request_body, timeout=0)
 
         except requests.exceptions.ConnectionError as ex:
             raise ItemsException('Connection to gateway api timed out') from ex
