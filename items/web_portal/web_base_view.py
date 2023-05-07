@@ -19,7 +19,6 @@ from types import SimpleNamespace
 from quart import request
 import requests
 from base_view import BaseView
-from config import Config
 from items_exception import ItemsException
 
 class WebBaseView(BaseView):
@@ -31,10 +30,8 @@ class WebBaseView(BaseView):
 
     REDIRECT_URL = "<meta http-equiv=\"Refresh\" content=\"0; url='{0}\"/>"
 
-    def __init__(self, config : Config) -> None:
+    def __init__(self) -> None:
         super().__init__()
-
-        self._config = config
 
     def _generate_redirect(self, redirect_url) -> str:
         new_url = f"{request.url_root}{redirect_url}"
