@@ -31,7 +31,7 @@ Build:
 docker build --file docker/Dockerfile.accounts_svc . -t items_accounts_svc
 
 Run:
-docker run -d -p 5050:5000 --volume=<CONFIG WITH FULL PATH>:/usr/local/items/accounts_svc.config  items_accounts_svc  
+docker run -d --name items_accounts_svc --net items_net -p 5050:5000 --volume={CONFIG WITH FULL PATH}:/usr/local/items/accounts_svc.config items_accounts_svc  
 
 Service | Tag | Build Parameters | Run Parameters
 ------------ | ------------- | ------------- | -------------
