@@ -1,4 +1,4 @@
-FROM python:3.9.5-alpine
+FROM python:3.10.11-alpine
 
 # Add a user and group for ITEMS and then setup file paths.
 RUN addgroup -S items && \
@@ -7,21 +7,23 @@ RUN addgroup -S items && \
     chown items:items /usr/local/items
 
 # Auth service dependencies
-COPY docker/requirements-auth.txt .
+COPY docker/requirements-accounts_svc.txt .
 RUN apk add --no-cache && \
-    pip install --no-cache-dir -r requirements-auth.txt && \
-    rm requirements-auth.txt
+    pip install --no-cache-dir -r requirements-accounts_svc.txt && \
+    rm requirements-accounts_svc.txt
 
 USER items
 
 # Copy base files into Docker image.
-COPY --chown=items:items items/auth /usr/local/items/auth
+COPY --chown=items:items items/accounts_svc /usr/local/items/accounts_svc
 COPY --chown=items:items items/shared /usr/local/items/shared
 
 # Configure the environment
 WORKDIR /usr/local/items
-ENV PYTHONPATH="${PYTHONPATH}:/usr/local/items/auth:/usr/local/items/shared"
+ENV PYTHONPATH="${PYTHONPATH}:/usr/local/items/accounts_svc:/usr/local/items/shared"
+ENV ITEMS_ACCOUNTS_SVC_CONFIG_FILE=/usr/local/items/accounts_svc.config
+ENV ITEMS_ACCOUNTS_SVC_CONFIG_FILE_REQUIRED=1
 
 EXPOSE 3030
 
-CMD hypercorn auth:app --bind '0.0.0.0:3030'
+CMD uvicorn accounts_svc:app --host 0.0.0.0 --port 5050

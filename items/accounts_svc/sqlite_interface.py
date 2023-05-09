@@ -135,7 +135,6 @@ class SqliteInterface:
 
             try:
                 self._connection = sqlite3.connect(self._database_filename)
-                print("conny ", self._connection)
 
                 cursor = self._connection.cursor()
 
