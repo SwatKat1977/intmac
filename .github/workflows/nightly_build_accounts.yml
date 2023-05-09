@@ -33,7 +33,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          file: docker/Dockerfile.ga___teway_svc
+          file: docker/Dockerfile.accounts_svc
           push: true
           no-cache: true
           tags: intmac/nightly:accounts-svc-nightly
