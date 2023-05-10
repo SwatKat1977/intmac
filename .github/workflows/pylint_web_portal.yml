@@ -27,5 +27,5 @@ jobs:
     - name: Run Pylint
       run: |
         cd items
-        export PYTHONPATH=`pwd`/web_portal:`pwd`/shared
-        pylint `pwd`/web_portal --rcfile ../git_workflow/pylint-web_portal.rc 
+        export PYTHONPATH=`pwd`/web_portal_svc:`pwd`/shared
+        pylint `pwd`/web_portal_svc --rcfile ../git_workflow/pylint-web_portal.rc
