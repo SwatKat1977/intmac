@@ -17,9 +17,39 @@ help()
    echo
 }
 
-echo 'gateway svc config'
-echo 'accounts svc config'
-echo 'web portal svc config'
+############################################################
+# Verify the configuration file content is valid           #
+############################################################
+verify_configuration_file()
+{
+    if [ ! -f $1 ]; then
+        die "Configuration file '$1' not found!"
+    fi
+
+    source $1
+    invalid_config=0
+
+    if [ -z "$GATEWAY_SVC_CONFIG" ]; then
+        warn "Configuration item missing : GATEWAY_SVC_CONFIG"
+        invalid_config=1
+    fi
+
+    if [ -z "$ACCOUNTS_SVC_CONFIG" ]; then
+        warn "Configuration item missing : ACCOUNTS_SVC_CONFIG"
+        invalid_config=1
+    fi
+
+    if [ -z "$PORTAL_SVC_CONFIG" ]; then
+        warn "Configuration item missing : PORTAL_SVC_CONFIG"
+        invalid_config=1
+    fi
+
+    if [ $invalid_config -eq 1 ]; then
+        die "Required configuration item(s) missing"
+    fi
+
+    die "tmp"
+}
 
 config_file='items_deployment.config'
 
@@ -33,14 +63,14 @@ do
             help 
             exit ;;
         *)
-           die '[ERROR] Invalid command line option'
+           die 'Invalid command line option'
     esac
 done
 
-echo "Configuration file : $config_file"
+msg "Configuration file : $config_file"
 
 if [ "$pull_images" ] && [ -z "$release" ]; then
-    die "[ERROR] Release tag required with pull images option"
+    die "Release tag required with pull images option"
 fi
 
 if [ "$pull_images" ]; then
@@ -54,3 +84,5 @@ if [ "$pull_images" ]; then
 
     msg "Docker images successfully pulled..."
 fi
+
+verify_configuration_file $config_file
