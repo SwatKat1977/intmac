@@ -13,6 +13,7 @@ help()
    echo "options:"
    echo "p     Pull images - requires 'r' option."
    echo "r     Release tag to use."
+   echo "s     Clean up Docker before running"
    echo "h     Print this help."
    echo
 }
@@ -51,14 +52,35 @@ verify_configuration_file()
     msg "Configuration file is valid"
 }
 
+start_docker_images()
+{
+    msg "Creating Docker network 'items_docker_network' ..."
+    docker network create --driver bridge items_docker_network || exit 1
+
+    msg "Starting Web Portal Service..."
+
+    msg "Starting Accounts Service..."
+
+    docker run -d \
+        --name items_accounts_svc \
+        --net items_docker_network \
+        -p 5050:5000 \
+        --volume=$ACCOUNTS_SVC_CONFIG:/usr/local/items/accounts_svc.config \
+        items_accounts_svc || exit 1
+
+    msg "keep trucking"
+
+}
+
 config_file='items_deployment.config'
 
-while getopts c:phr: flag
+while getopts c:phr:s flag
 do
     case "${flag}" in
         c) config_file=${OPTARG} ;;
         p) pull_images=1 ;;
         r) release=${OPTARG} ;;
+        s) sweep=1 ;;
         h) 
             help 
             exit ;;
@@ -86,3 +108,4 @@ if [ "$pull_images" ]; then
 fi
 
 verify_configuration_file $config_file
+start_docker_images
