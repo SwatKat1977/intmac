@@ -29,18 +29,18 @@ verify_configuration_file()
     source $1
     invalid_config=0
 
-    if [ -z "$GATEWAY_SVC_CONFIG" ]; then
-        warn "Configuration item missing : GATEWAY_SVC_CONFIG"
+    if [ -z "$GATEWAY_SVC_CONFIG" ] || [ ! -f $GATEWAY_SVC_CONFIG ] ; then
+        warn "GATEWAY_SVC_CONFIG configuration item missing or file invalid"
         invalid_config=1
     fi
 
-    if [ -z "$ACCOUNTS_SVC_CONFIG" ]; then
-        warn "Configuration item missing : ACCOUNTS_SVC_CONFIG"
+    if [ -z "$ACCOUNTS_SVC_CONFIG" ] || [ ! -f $ACCOUNTS_SVC_CONFIG ] ; then
+        warn "ACCOUNTS_SVC_CONFIG configuration item missing or file invalid"
         invalid_config=1
     fi
 
-    if [ -z "$PORTAL_SVC_CONFIG" ]; then
-        warn "Configuration item missing : PORTAL_SVC_CONFIG"
+    if [ -z "$PORTAL_SVC_CONFIG" ] || [ ! -f $PORTAL_SVC_CONFIG ] ; then
+        warn "PORTAL_SVC_CONFIG configuration item missing or file invalid"
         invalid_config=1
     fi
 
@@ -48,7 +48,7 @@ verify_configuration_file()
         die "Required configuration item(s) missing"
     fi
 
-    die "tmp"
+    msg "Configuration file is valid"
 }
 
 config_file='items_deployment.config'
