@@ -2,7 +2,8 @@
 	"info": {
 		"_postman_id": "adce5943-473f-44c4-9acb-8b4ddef95e40",
 		"name": "ITEMS",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "10935426"
 	},
 	"item": [
 		{
@@ -23,13 +24,18 @@
 							}
 						},
 						"url": {
-							"raw": "{{AUTH_BASE_URL}}/basic_auth/authenticate",
+							"raw": "http://127.0.0.1:3030/handshake/basic_authenticate",
+							"protocol": "http",
 							"host": [
-								"{{AUTH_BASE_URL}}"
+								"127",
+								"0",
+								"0",
+								"1"
 							],
+							"port": "3030",
 							"path": [
-								"basic_auth",
-								"authenticate"
+								"handshake",
+								"basic_authenticate"
 							]
 						}
 					},
@@ -41,18 +47,60 @@
 			"name": "Gateway API",
 			"item": [
 				{
-					"name": "Authenticate",
+					"name": "Basic User Authenticate",
 					"request": {
 						"method": "POST",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email_address\": \"admin@localhost\",\n    \"password\": \"aa5e453f-626e\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": "{{GATEWAY_BASE_URL}}/handshake/authenticate",
+							"raw": "{{GATEWAY_BASE_URL}}/handshake/basic_authenticate",
 							"host": [
 								"{{GATEWAY_BASE_URL}}"
 							],
 							"path": [
 								"handshake",
-								"authenticate"
+								"basic_authenticate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Valid Token",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email_address\": \"admin@localhost\",\n    \"token\": \"589c73deadd74a189189b24af3a19755\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://items-dev.internal:2111/handshake/valid_token",
+							"protocol": "http",
+							"host": [
+								"items-dev",
+								"internal"
+							],
+							"port": "2111",
+							"path": [
+								"handshake",
+								"valid_token"
 							]
 						}
 					},
@@ -63,6 +111,15 @@
 					"request": {
 						"method": "POST",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email_address\": \"admin@localhost\",\n    \"token\": \"589c73deadd74a189189b24af3a19755\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
 							"raw": "{{GATEWAY_BASE_URL}}/handshake/logout",
 							"host": [
@@ -82,31 +139,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{GATEWAY_BASE_URL}}/handshake/get_projects",
+							"raw": "{{GATEWAY_SVC_URL}}/handshake/get_projects",
 							"host": [
-								"{{GATEWAY_BASE_URL}}"
+								"{{GATEWAY_SVC_URL}}"
 							],
 							"path": [
 								"handshake",
 								"get_projects"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Select Project",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "{{GATEWAY_BASE_URL}}/handshake/select_project",
-							"host": [
-								"{{GATEWAY_BASE_URL}}"
-							],
-							"path": [
-								"handshake",
-								"select_project"
 							]
 						}
 					},
