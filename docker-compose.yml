@@ -1,7 +1,7 @@
 version: "3.8"
 
 networks:
-  items_docker_net:
+  items_docker_network:
     driver: bridge
 
 services:
@@ -10,50 +10,51 @@ services:
   ## Core services
   ################
 
-  items-redis:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.redis
-    container_name: items-redis
-    networks:
-      - items_docker_net
+  # items-redis:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/Dockerfile.redis
+  #   container_name: items-redis
+  #   networks:
+  #     - items_docker_net
 
   items-auth:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.auth
-    container_name: items-auth
+    image: "${ITEMS_ACCOUNTS_SVC_IMAGE}"
+    container_name: items_accounts_svc
     ports:
-      - "3030:3030"
+      - "5050:5050"
     networks:
-      - items_docker_net
+      - items_docker_network
+    volumes:
+      - ${ACCOUNTS_SVC_CONFIG}:/usr/local/items/accounts_svc.config:ro
+      - ${ACCOUNTS_SVC_INTERNAL_DB}:/usr/local/items/items_accounts_svc.db
 
-  items-cms:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.cms
-    container_name: items-cms
-    ports:
-      - "2222:2222"
-    networks:
-      - items_docker_net
+  # items-cms:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/Dockerfile.cms
+  #   container_name: items-cms
+  #   ports:
+  #     - "2222:2222"
+  #   networks:
+  #     - items_docker_net
 
-  items-gateway-api:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.gateway_api
-    container_name: items-gateway-api
-    ports:
-      - "2111:2111"
-    networks:
-      - items_docker_net
+  # items-gateway-api:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/Dockerfile.gateway_api
+  #   container_name: items-gateway-api
+  #   ports:
+  #     - "2111:2111"
+  #   networks:
+  #     - items_docker_net
 
-  items-web_portal:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.web_portal
-    container_name: items-web_portal
-    ports:
-      - "2333:2333"
-    networks:
-      - items_docker_net
+  # items-web_portal:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/Dockerfile.web_portal
+  #   container_name: items-web_portal
+  #   ports:
+  #     - "2333:2333"
+  #   networks:
+  #     - items_docker_net
