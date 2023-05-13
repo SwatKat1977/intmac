@@ -91,21 +91,12 @@ start_docker_images()
     docker network create --driver bridge items_docker_network || exit 1
 
     export ITEMS_ACCOUNTS_SVC_IMAGE="intmac/nightly:accounts-svc-$1"
+    export ITEMS_GATEWAY_SVC_IMAGE="intmac/nightly:gateway-svc-$1"
+    msg "Starting Docker containers..."
 
-    docker compose up
+    docker compose up || exit 1
 
-    msg "Starting Web Portal Service..."
 
-    msg "Starting Accounts Service..."
-
-    die "before"
-
-    docker run -d \
-        --name items_accounts_svc \
-        --net items_docker_network \
-        -p 5050:5000 \
-        --volume=$ACCOUNTS_SVC_CONFIG:/usr/local/items/accounts_svc.config \
-        items_accounts_svc || exit 1
 }
 
 config_file='items_deployment.config'

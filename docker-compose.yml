@@ -18,7 +18,7 @@ services:
   #   networks:
   #     - items_docker_net
 
-  items-auth:
+  items-accounts-svc:
     image: "${ITEMS_ACCOUNTS_SVC_IMAGE}"
     container_name: items_accounts_svc
     ports:
@@ -39,15 +39,15 @@ services:
   #   networks:
   #     - items_docker_net
 
-  # items-gateway-api:
-  #   build:
-  #     context: .
-  #     dockerfile: docker/Dockerfile.gateway_api
-  #   container_name: items-gateway-api
-  #   ports:
-  #     - "2111:2111"
-  #   networks:
-  #     - items_docker_net
+  items-gateway-svc:
+    image: "${ITEMS_GATEWAY_SVC_IMAGE}"
+    container_name: items_gateway_svc
+    ports:
+      - "4050:4050"
+    networks:
+      - items_docker_network
+    volumes:
+      - ${GATEWAY_SVC_CONFIG}:/usr/local/items/gateway_svc.config:ro
 
   # items-web_portal:
   #   build:
