@@ -120,7 +120,7 @@ class BaseView:
                         content_type = resp.content_type)
 
         except Exception as ex:
-            api_return = ApiResponse(status_code=resp.status, exception_msg = ex)
+            api_return = ApiResponse(exception_msg = ex)
 
         return api_return
 
