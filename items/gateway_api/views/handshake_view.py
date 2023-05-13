@@ -251,7 +251,7 @@ class View(BaseView):
 
             response_status = HTTPStatus.OK
 
-            body = response.json()
+            body = response.body.json()
             if not body.get("status"):
                 response_json = {
                     "status":  0,
