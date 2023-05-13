@@ -26,8 +26,8 @@ services:
     networks:
       - items_docker_network
     volumes:
-      - ${ACCOUNTS_SVC_CONFIG}:/usr/local/items/accounts_svc.config:ro
-      - ${ACCOUNTS_SVC_INTERNAL_DB}:/usr/local/items/items_accounts_svc.db
+      - ${ITEMS_ACCOUNTS_SVC_CONFIG}:/usr/local/items/accounts_svc.config:ro
+      - ${ITEMS_ACCOUNTS_SVC_INTERNAL_DB}:/usr/local/items/items_accounts_svc.db
 
   # items-cms:
   #   build:
@@ -47,14 +47,14 @@ services:
     networks:
       - items_docker_network
     volumes:
-      - ${GATEWAY_SVC_CONFIG}:/usr/local/items/gateway_svc.config:ro
+      - ${ITEMS_GATEWAY_SVC_CONFIG}:/usr/local/items/gateway_svc.config:ro
 
-  # items-web_portal:
-  #   build:
-  #     context: .
-  #     dockerfile: docker/Dockerfile.web_portal
-  #   container_name: items-web_portal
-  #   ports:
-  #     - "2333:2333"
-  #   networks:
-  #     - items_docker_net
+  items-web_portal-svc:
+    image: "${ITEMS_WEB_PORTAL_SVC_IMAGE}"
+    container_name: items_web_portal_svc
+    ports:
+      - "7050:7050"
+    networks:
+      - items_docker_network
+    volumes:
+      - ${ITEMS_WEB_PORTAL_SVC_CONFIG}:/usr/local/items/web_portal_svc.config:ro

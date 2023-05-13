@@ -36,23 +36,24 @@ verify_configuration_file()
         warn "GATEWAY_SVC_CONFIG configuration item missing or file invalid"
         invalid_config=1
     fi
-    export GATEWAY_SVC_CONFIG=$GATEWAY_SVC_CONFIG
+    export ITEMS_GATEWAY_SVC_CONFIG=$GATEWAY_SVC_CONFIG
 
     if [ -z "$ACCOUNTS_SVC_CONFIG" ] || [ ! -f $ACCOUNTS_SVC_CONFIG ] ; then
         warn "ACCOUNTS_SVC_CONFIG configuration item missing or file invalid"
         invalid_config=1
     fi
-    export ACCOUNTS_SVC_CONFIG=$ACCOUNTS_SVC_CONFIG
+    export ITEMS_ACCOUNTS_SVC_CONFIG=$ACCOUNTS_SVC_CONFIG
 
     if [ "$ACCOUNTS_SVC_INTERNAL_DB" ] ; then
         internal_db_file=$ACCOUNTS_SVC_INTERNAL_DB
     fi
-    export ACCOUNTS_SVC_INTERNAL_DB=$internal_db_file
+    export ITEMS_ACCOUNTS_SVC_INTERNAL_DB=$internal_db_file
 
     if [ -z "$PORTAL_SVC_CONFIG" ] || [ ! -f $PORTAL_SVC_CONFIG ] ; then
         warn "PORTAL_SVC_CONFIG configuration item missing or file invalid"
         invalid_config=1
     fi
+    export ITEMS_WEB_PORTAL_SVC_CONFIG=$PORTAL_SVC_CONFIG
 
     if [ $invalid_config -eq 1 ]; then
         die "Required configuration item(s) missing"
