@@ -7,10 +7,10 @@ RUN addgroup -S items && \
     chown items:items /usr/local/items
 
 # Gateway API dependencies
-COPY docker/requirements-gateway_api.txt .
+COPY docker/requirements-gateway_svc.txt .
 RUN apk add --no-cache && \
-    pip install --no-cache-dir -r requirements-gateway_api.txt && \
-    rm requirements-gateway_api.txt
+    pip install --no-cache-dir -r requirements-gateway_svc.txt && \
+    rm requirements-gateway_svc.txt
 
 USER items
 
@@ -24,4 +24,4 @@ ENV PYTHONPATH="${PYTHONPATH}:/usr/local/items/gateway_api:/usr/local/items/shar
 
 EXPOSE 2111
 
-CMD hypercorn gateway_api:app --bind '0.0.0.0:2111'
+CMD uvicorn gateway_api:app --host 0.0.0.0 --port 4050
