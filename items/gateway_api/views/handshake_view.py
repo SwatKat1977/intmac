@@ -230,7 +230,7 @@ class View(BaseView):
             auth_url : str = (f"{base_accounts_svc}"
                               "/basic_auth/authenticate")
 
-            response = await self._call_api_get(auth_url, auth_request)
+            response = await self._call_api_post(auth_url, auth_request)
 
             if response.status_code != HTTPStatus.OK:
                 self._logger.critical("Auth request invalid - Reason: %s",
