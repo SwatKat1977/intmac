@@ -1,5 +1,6 @@
+aiohttp
+jsonschema
 quart
-hypercorn
 redis
 requests
-jsonschema
+uvicorn
