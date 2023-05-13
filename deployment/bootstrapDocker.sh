@@ -92,11 +92,11 @@ start_docker_images()
 
     export ITEMS_ACCOUNTS_SVC_IMAGE="intmac/nightly:accounts-svc-$1"
     export ITEMS_GATEWAY_SVC_IMAGE="intmac/nightly:gateway-svc-$1"
+    export ITEMS_WEB_PORTAL_SVC_IMAGE="intmac/nightly:web-portal-svc-$1"
+
     msg "Starting Docker containers..."
 
     docker compose up || exit 1
-
-
 }
 
 config_file='items_deployment.config'
