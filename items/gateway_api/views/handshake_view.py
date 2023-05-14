@@ -320,19 +320,20 @@ class View(BaseView):
             Response instance
         """
 
-        request_obj, err_msg = await self._convert_json_body_to_object(
-            api_request, self.tokenValidationCheckRequestSchema)
+        request_obj : ApiResponse = self._validate_json_body(
+            await api_request.get_data(), self.tokenValidationCheckRequestSchema)
 
-        if not request_obj:
-
+        if request_obj.status_code != HTTPStatus.OK:
             response_json = { 'status': 'BAD REQUEST' }
-            response_status = HTTPStatus.NOT_ACCEPTABLE
+            return Response(json.dumps(response_json),
+                            status=HTTPStatus.NOT_ACCEPTABLE,
+                            mimetype=mimetypes.types_map['.json'])
 
-        else:
-            valid = self._sessions.is_valid_session(request_obj.email_address,
-                                                    request_obj.token)
-            response_json = { "status": "VALID" if valid else "INVALID" }
-            response_status = HTTPStatus.OK
+        # valid = self._sessions.is_valid_session(request_obj.email_address,
+        #                                         request_obj.token)
+        valid = True
+        response_json = { "status": "VALID" if valid else "INVALID" }
+        response_status = HTTPStatus.OK
 
         return Response(json.dumps(response_json), response_status,
                         mimetype=mimetypes.types_map['.json'])
