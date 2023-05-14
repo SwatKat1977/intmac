@@ -1,6 +1,6 @@
-#/bin/bash
+#!/bin/bash
 
-source $(dirname $0)/log_functions.sh
+source "$(dirname "$0")/log_functions.sh"
 
 ############################################################
 # Display Help information                                 #
@@ -23,22 +23,22 @@ help()
 ############################################################
 verify_configuration_file()
 {
-    if [ ! -f $1 ]; then
+    if [ ! -f "$1" ]; then
         die "Configuration file '$1' not found!"
     fi
 
-    source $1
+    source "$1"
 
     invalid_config=0
-    internal_db_file=`pwd`/items_accounts_svc.db
+    internal_db_file=$(pwd)/items_accounts_svc.db
 
-    if [ -z "$GATEWAY_SVC_CONFIG" ] || [ ! -f $GATEWAY_SVC_CONFIG ] ; then
+    if [ -z "$GATEWAY_SVC_CONFIG" ] || [ ! -f "$GATEWAY_SVC_CONFIG" ] ; then
         warn "GATEWAY_SVC_CONFIG configuration item missing or file invalid"
         invalid_config=1
     fi
     export ITEMS_GATEWAY_SVC_CONFIG=$GATEWAY_SVC_CONFIG
 
-    if [ -z "$ACCOUNTS_SVC_CONFIG" ] || [ ! -f $ACCOUNTS_SVC_CONFIG ] ; then
+    if [ -z "$ACCOUNTS_SVC_CONFIG" ] || [ ! -f "$ACCOUNTS_SVC_CONFIG" ] ; then
         warn "ACCOUNTS_SVC_CONFIG configuration item missing or file invalid"
         invalid_config=1
     fi
@@ -126,17 +126,17 @@ fi
 if [ "$pull_images" ]; then
     msg "Pulling Docker images from Docker Hub with release tag '$release'"
 
-    ./$(dirname $0)/pullDockerImages.sh -r $release
+    ./$(dirname $0)/pullDockerImages.sh -r "$release"
     pull_return_value=$?
-    if [ $pull_return_value -eq 1 ]; then
+    if [ "$pull_return_value" -eq 1 ]; then
         die "Unable to pull Docker images, deployment aborted"
     fi
 
     msg "Docker images successfully pulled..."
 fi
 
-verify_configuration_file $config_file
+verify_configuration_file "$config_file"
 
 sweep_docker
 
-start_docker_images $release
+start_docker_images "$release"
