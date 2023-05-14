@@ -54,7 +54,7 @@ class WebBaseView(BaseView):
         }
 
         try:
-            response = requests.get(url, json = request_body, timeout=0)
+            response = requests.get(url, json = request_body, timeout=1)
 
         except requests.exceptions.ConnectionError as ex:
             raise ItemsException('Connection to gateway api timed out') from ex

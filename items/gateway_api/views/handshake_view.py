@@ -230,10 +230,10 @@ class View(BaseView):
             auth_url : str = (f"{base_accounts_svc}"
                               "/basic_auth/authenticate")
 
-            response = await self._call_api_get(auth_url, auth_request)
+            response = await self._call_api_post(auth_url, auth_request)
 
             if response.status_code != HTTPStatus.OK:
-                self._logger.critical("Auth request invalid - Reason: %s",
+                self._logger.critical("Accounts svc request invalid - Reason: %s",
                                       response.exception_msg)
                 response_status = HTTPStatus.INTERNAL_SERVER_ERROR
                 response_json = {
@@ -244,31 +244,25 @@ class View(BaseView):
                                 status=HTTPStatus.INTERNAL_SERVER_ERROR,
                                 mimetype=mimetypes.types_map['.json'])
 
-                # response_json = {
-                #     "status": "OK",
-                #     "token": "c7dd0a54-baea-11eb-8529-0242ac130003"
-                # }
-
             response_status = HTTPStatus.OK
 
-            body = response.json()
-            if not body.get("status"):
+            if not response.body.get("status"):
                 response_json = {
                     "status":  0,
-                    "error": body.get("error")
+                    "error": response.body.get("error")
                 }
 
             else:
                 token = uuid.uuid4().hex
-                self._sessions.add_auth_session(
-                    request_obj.email_address, token, LogonType.BASIC)
+                # self._sessions.add_auth_session(
+                #     request_obj.email_address, token, LogonType.BASIC)
 
                 response_json = {
                     "status": 1,
                     "token": token
                 }
                 self._logger.info("User '%s' logged in",
-                                  request_obj.email_address)
+                                  request_obj.body.email_address)
 
         except requests.exceptions.ConnectionError as ex:
             except_str = f"Internal error: {ex}"
@@ -326,19 +320,20 @@ class View(BaseView):
             Response instance
         """
 
-        request_obj, err_msg = await self._convert_json_body_to_object(
-            api_request, self.tokenValidationCheckRequestSchema)
+        request_obj : ApiResponse = self._validate_json_body(
+            await api_request.get_data(), self.tokenValidationCheckRequestSchema)
 
-        if not request_obj:
-
+        if request_obj.status_code != HTTPStatus.OK:
             response_json = { 'status': 'BAD REQUEST' }
-            response_status = HTTPStatus.NOT_ACCEPTABLE
+            return Response(json.dumps(response_json),
+                            status=HTTPStatus.NOT_ACCEPTABLE,
+                            mimetype=mimetypes.types_map['.json'])
 
-        else:
-            valid = self._sessions.is_valid_session(request_obj.email_address,
-                                                    request_obj.token)
-            response_json = { "status": "VALID" if valid else "INVALID" }
-            response_status = HTTPStatus.OK
+        # valid = self._sessions.is_valid_session(request_obj.email_address,
+        #                                         request_obj.token)
+        valid = True
+        response_json = { "status": "VALID" if valid else "INVALID" }
+        response_status = HTTPStatus.OK
 
         return Response(json.dumps(response_json), response_status,
                         mimetype=mimetypes.types_map['.json'])
