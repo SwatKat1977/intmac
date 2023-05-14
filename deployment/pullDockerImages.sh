@@ -1,6 +1,6 @@
-#/bin/sh
+#!/bin/bash
 
-source $(dirname $0)/log_functions.sh
+source "$(dirname "$0")/log_functions.sh"
 
 ############################################################
 # Display Help information                                 #
@@ -19,14 +19,14 @@ help()
 ############################################################
 # Pull Docker images                                       #
 ############################################################
-function pull_docker_images() {
+pull_docker_images() {
     msg "Pulling docker images from Docker Hub..."
     msg "=> Web Portal Service"
-    docker pull --quiet intmac/nightly:web-portal-svc-$1 || exit 1
+    docker pull --quiet "intmac/nightly:web-portal-svc-$1" || exit 1
     msg "=> Gateway Service"
-    docker pull --quiet intmac/nightly:gateway-svc-$1 || exit 1
+    docker pull --quiet "intmac/nightly:gateway-svc-$1" || exit 1
     msg "=> Accounts Service"
-    docker pull --quiet intmac/nightly:accounts-svc-$1 || exit 1
+    docker pull --quiet "intmac/nightly:accounts-svc-$1" || exit 1
 }
 
 while getopts hr: flag
