@@ -44,6 +44,12 @@ verify_configuration_file()
     fi
     export ITEMS_ACCOUNTS_SVC_CONFIG=$ACCOUNTS_SVC_CONFIG
 
+    if [ -z "$SESSIONS_CONFIG" ] || [ ! -f "$SESSIONS_CONFIG" ] ; then
+        warn "SESSIONS_CONFIG configuration item missing or file invalid"
+        invalid_config=1
+    fi
+    export ITEMS_SESSIONS_CONFIG=$SESSIONS_CONFIG
+
     if [ "$ACCOUNTS_SVC_INTERNAL_DB" ] ; then
         internal_db_file=$ACCOUNTS_SVC_INTERNAL_DB
     fi
@@ -93,6 +99,7 @@ start_docker_images()
 
     export ITEMS_ACCOUNTS_SVC_IMAGE="intmac/nightly:accounts-svc-$1"
     export ITEMS_GATEWAY_SVC_IMAGE="intmac/nightly:gateway-svc-$1"
+    export ITEMS_SESSIONS_IMAGE="intmac/nightly:sessions-$1"
     export ITEMS_WEB_PORTAL_SVC_IMAGE="intmac/nightly:web-portal-svc-$1"
 
     msg "Starting Docker containers..."
