@@ -254,8 +254,8 @@ class View(BaseView):
 
             else:
                 token = uuid.uuid4().hex
-                # self._sessions.add_auth_session(
-                #     request_obj.email_address, token, LogonType.BASIC)
+                self._sessions.add_auth_session(
+                    request_obj.body.email_address, token, LogonType.BASIC)
 
                 response_json = {
                     "status": 1,
