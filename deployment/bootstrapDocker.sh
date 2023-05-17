@@ -98,6 +98,7 @@ start_docker_images()
     docker network create --driver bridge items_docker_network || exit 1
 
     export ITEMS_ACCOUNTS_SVC_IMAGE="intmac/nightly:accounts-svc-$1"
+    export ITEMS_CMS_SVC_IMAGE="intmac/nightly:cms-svc-$1"
     export ITEMS_GATEWAY_SVC_IMAGE="intmac/nightly:gateway-svc-$1"
     export ITEMS_SESSIONS_IMAGE="intmac/nightly:sessions-$1"
     export ITEMS_WEB_PORTAL_SVC_IMAGE="intmac/nightly:web-portal-svc-$1"
