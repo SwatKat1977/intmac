@@ -1,4 +1,4 @@
-FROM python:3.9.5-alpine
+FROM python:3.10.11-alpine
 
 # Add a user and group for ITEMS and then setup file paths.
 RUN addgroup -S items && \
@@ -7,21 +7,21 @@ RUN addgroup -S items && \
     chown items:items /usr/local/items
 
 # Contents Management System (CMS) dependencies
-COPY docker/requirements-cms.txt .
+COPY docker/requirements-cms_svc.txt .
 RUN apk add --no-cache && \
-    pip install --no-cache-dir -r requirements-cms.txt && \
-    rm requirements-cms.txt
+    pip install --no-cache-dir -r requirements-cms_svc.txt && \
+    rm requirements-cms_svc.txt
 
 USER items
 
 # Copy base files into Docker image.
-COPY --chown=items:items items/cms /usr/local/items/cms
+COPY --chown=items:items items/cms_svc /usr/local/items/cms_svc
 COPY --chown=items:items items/shared /usr/local/items/shared
 
 # Configure the environment
 WORKDIR /usr/local/items
-ENV PYTHONPATH="${PYTHONPATH}:/usr/local/items/cms:/usr/local/items/shared"
+ENV PYTHONPATH="${PYTHONPATH}:/usr/local/items/cms_svc:/usr/local/items/shared"
 
-EXPOSE 2222
+EXPOSE 6050
 
-CMD hypercorn cms:app --bind '0.0.0.0:2222'
+CMD uvicorn cms_svc:app --host 0.0.0.0 --port 6050 --lifespan off
