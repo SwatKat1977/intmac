@@ -127,12 +127,7 @@ class Application(BaseApplication):
 
         else:
             if Configuration().backend_create_db_if_missing:
-                status, err_str = self._db.build_database()
-                if not status:
-                    self._logger.critical(err_str)
-
-                else:
-                    status = True
+                status = self._db.build_database()
 
             else:
                 self._logger.critical(("Database file '%s' doesn't exist and "
