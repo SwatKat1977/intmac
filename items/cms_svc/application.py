@@ -16,9 +16,7 @@ limitations under the License.
 import logging
 import os
 from base_application import BaseApplication, COPYRIGHT_TEXT, LICENSE_TEXT
-
-from sqlite_client import SqliteClient as SqliteInterface
-
+from sqlite_interface import SqliteInterface
 from threadsafe_configuration import ThreadafeConfiguration as Configuration
 from configuration_layout import CONFIGURATION_LAYOUT
 from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
