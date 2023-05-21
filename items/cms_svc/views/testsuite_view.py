@@ -21,9 +21,9 @@ def create(logger : logging.Logger):
 
     blueprint = Blueprint('testcase_api', __name__)
 
-    @blueprint.route('/testcase/testsuites', methods=['GET'])
-    def placeholder_request():
-        return view.get_testsuites(logger)
+    @blueprint.route('/testsuites/testsuites', methods=['GET'])
+    def get_testsuites():
+        return view.get_testsuites()
 
     return blueprint
 
@@ -32,6 +32,6 @@ class TestsuiteView:
     def __init__(self, logger : logging.Logger):
         self._logger : logging.Logger = logger.getChild(__name__)
 
-    def get_filters(self):
+    def get_testsuites(self):
         print('Test: Placeholder')
         return 'Test: Placeholder', 404

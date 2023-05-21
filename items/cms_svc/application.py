@@ -119,7 +119,6 @@ class Application(BaseApplication):
         self._db = SqliteInterface(self._logger, filename)
 
         if os.path.isfile(filename):
-            print("IS A FILE")
             if not self._db.valid_database():
                 self._logger.critical("Database file '%s' is not valid!",
                                       filename)
