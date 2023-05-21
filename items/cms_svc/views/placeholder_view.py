@@ -18,11 +18,11 @@ from quart import Blueprint, request
 def create_placeholder_blueprint():
     view = PlaceholderView()
 
-    blueprint = Blueprint('placeholder_api', __name__)
+    blueprint = Blueprint('testcase_api', __name__)
 
-    @blueprint.route('/test/placeholder', methods=['POST'])
+    @blueprint.route('/testcase/testsuites', methods=['GET'])
     def placeholder_request():
-        return view.placeholder_handler(request)
+        return view.get_testsuites()
 
     return blueprint
 
@@ -31,6 +31,6 @@ class PlaceholderView:
     def __init__(self):
         print('PlaceholderView init()')
 
-    def placeholder_handler(self, api_request):
+    def get_filters(self):
         print('Test: Placeholder')
         return 'Test: Placeholder', 404
