@@ -15,6 +15,7 @@ limitations under the License.
 '''
 import logging
 import os
+from quart import Blueprint
 from base_application import BaseApplication, COPYRIGHT_TEXT, LICENSE_TEXT
 from sqlite_interface import SqliteInterface
 from threadsafe_configuration import ThreadafeConfiguration as Configuration
@@ -23,7 +24,7 @@ from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
                            LOGGING_DEFAULT_LOG_LEVEL, \
                            LOGGING_LOG_FORMAT_STRING
 from version import BUILD_TAG, BUILD_VERSION, RELEASE_VERSION
-from views.placeholder_view import create_placeholder_blueprint
+from views.testsuite_view import create as create_testsuite_blueprint
 
 class Application(BaseApplication):
     ''' Contents Management System application class '''
@@ -41,10 +42,6 @@ class Application(BaseApplication):
         self._logger.addHandler(console_stream)
 
     def _initialise(self) -> bool:
-
-        placeholder_blueprint = create_placeholder_blueprint()
-        self._quart_instance.register_blueprint(placeholder_blueprint)
-
         build = f"V{RELEASE_VERSION}-{BUILD_VERSION}{BUILD_TAG}"
 
         self._logger.info('ITEMS Contents Management Microservice %s', build)
@@ -60,6 +57,10 @@ class Application(BaseApplication):
 
         if not self._open_internal_database():
             return False
+
+        self._logger.info("Registering 'testsuite' view...")
+        testsuite_blueprint : Blueprint = create_testsuite_blueprint(self._logger)
+        self._quart_instance.register_blueprint(testsuite_blueprint)
 
         return True
 

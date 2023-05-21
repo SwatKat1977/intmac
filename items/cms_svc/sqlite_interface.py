@@ -19,12 +19,13 @@ from sqlite_client import SqliteClient, SqliteClientException
 
 class SqliteInterface(SqliteClient):
 
-    sql_create_testcase_filter_table = """
-        CREATE TABLE IF NOT EXISTS testcase_filter (
-            id INT PRIMARY KEY,
+    sql_create_testsuites_table = """
+        CREATE TABLE IF NOT EXISTS testsuites (
+            id BIGINT PRIMARY KEY,
+            project_id INT
             name VARCHAR(100) NOT NULL,
             description TEXT NOT NULL DEFAULT '',
-            parent INT NOT NULL
+            parent BIGINT NOT NULL
         )
     """
 
@@ -47,9 +48,9 @@ class SqliteInterface(SqliteClient):
 
                 cursor = self._connection.cursor()
 
-                self._logger.info("-> Creating testcase_filter table")
-                self._create_table(cursor, self.sql_create_testcase_filter_table,
-                                   'testcase_filter')
+                self._logger.info("-> Creating testsuites table")
+                self._create_table(cursor, self.sql_create_testsuites_table,
+                                   'testsuites')
 
                 self._logger.info("Database build successful")
                 build_status = True

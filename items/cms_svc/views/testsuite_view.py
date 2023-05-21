@@ -13,23 +13,24 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+import logging
 from quart import Blueprint, request
 
-def create_placeholder_blueprint():
-    view = PlaceholderView()
+def create(logger : logging.Logger):
+    view = TestsuiteView(logger)
 
     blueprint = Blueprint('testcase_api', __name__)
 
     @blueprint.route('/testcase/testsuites', methods=['GET'])
     def placeholder_request():
-        return view.get_testsuites()
+        return view.get_testsuites(logger)
 
     return blueprint
 
-class PlaceholderView:
+class TestsuiteView:
 
-    def __init__(self):
-        print('PlaceholderView init()')
+    def __init__(self, logger : logging.Logger):
+        self._logger : logging.Logger = logger.getChild(__name__)
 
     def get_filters(self):
         print('Test: Placeholder')
