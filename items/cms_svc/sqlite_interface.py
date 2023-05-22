@@ -214,5 +214,4 @@ class SqliteInterface(SqliteClient):
 
         rows = cursor.fetchall()
 
-        return True if rows else False
- 
+        return bool(rows)
