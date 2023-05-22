@@ -138,3 +138,21 @@ class SqliteInterface(SqliteClient):
                 testsuites.append(entry)
 
         return testsuites
+
+    def is_valid_project_id(self, project_id : int) -> bool:
+
+        query : str = "SELECT id FROM project WHERE id = ?"
+
+        cursor = self._connection.cursor()
+
+        try:
+            cursor.execute(query, (project_id,))
+
+        except sqlite3.Error as sqlite_except:
+            raise RuntimeError(f'Query failed, reason: {sqlite_except}') from \
+                sqlite_except
+
+        rows = cursor.fetchall()
+
+        return True if rows else False
+ 

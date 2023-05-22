@@ -72,6 +72,16 @@ class TestsuiteView(BaseView):
                             mimetype=mimetypes.types_map['.json'])
 
         project_id : int = request_obj.body.project_id
+
+        if not self._db.is_valid_project_id(project_id):
+            response_json = {
+                'status': 0,
+                'error': "Invalid project id"
+            }
+            return Response(json.dumps(response_json),
+                            status=HTTPStatus.INTERNAL_SERVER_ERROR,
+                            mimetype=mimetypes.types_map['.json'])
+
         testsuites : list = self._db.get_testsuites_for_project(project_id)
 
         return Response(json.dumps(testsuites),
