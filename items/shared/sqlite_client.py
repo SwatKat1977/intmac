@@ -104,7 +104,8 @@ class SqliteClient:
         err_str = ''
 
         try:
-            self._connection = sqlite3.connect(self._database_filename)
+            self._connection = sqlite3.connect(self._database_filename,
+                                               check_same_thread=False)
             open_status = True
             self._is_connected = True
 

@@ -13,25 +13,67 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from http import HTTPStatus
+import json
 import logging
-from quart import Blueprint, request
+import mimetypes
+from quart import Blueprint, request, Response
+from base_view import ApiResponse, BaseView
+from sqlite_interface import SqliteInterface
 
-def create(logger : logging.Logger):
-    view = TestsuiteView(logger)
+def create(logger : logging.Logger, db : SqliteInterface):
+    view = TestsuiteView(logger, db)
 
     blueprint = Blueprint('testcase_api', __name__)
 
     @blueprint.route('/testsuites/testsuites', methods=['GET'])
-    def get_testsuites():
-        return view.get_testsuites()
+    async def get_testsuites():
+        return await view.get_testsuites()
 
     return blueprint
 
-class TestsuiteView:
+class TestsuiteView(BaseView):
 
-    def __init__(self, logger : logging.Logger):
+    get_testcases_schema = \
+    {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+
+        "type" : "object",
+        "additionalProperties" : False,
+
+        "properties":
+        {
+            "project_id":
+            {
+                "type" : "integer"
+            }
+        },
+        "required" : ["project_id"]
+    }
+
+    def __init__(self, logger : logging.Logger, db : SqliteInterface):
         self._logger : logging.Logger = logger.getChild(__name__)
+        self._db : SqliteInterface = db
 
-    def get_testsuites(self):
-        print('Test: Placeholder')
-        return 'Test: Placeholder', 404
+        mimetypes.init()
+
+    async def get_testsuites(self):
+
+        request_obj : ApiResponse = self._validate_json_body(
+            await request.get_data(), self.get_testcases_schema)
+
+        if request_obj.status_code != HTTPStatus.OK:
+            response_json = {
+                'status': 0,
+                'error': request_obj.exception_msg
+            }
+            return Response(json.dumps(response_json),
+                            status=HTTPStatus.INTERNAL_SERVER_ERROR,
+                            mimetype=mimetypes.types_map['.json'])
+
+        project_id : int = request_obj.body.project_id
+        testsuites : list = self._db.get_testsuites_for_project(project_id)
+
+        return Response(json.dumps(testsuites),
+                        status=HTTPStatus.OK,
+                        mimetype=mimetypes.types_map['.json'])

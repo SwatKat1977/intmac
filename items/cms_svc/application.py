@@ -41,6 +41,8 @@ class Application(BaseApplication):
         self._logger.setLevel(LOGGING_DEFAULT_LOG_LEVEL)
         self._logger.addHandler(console_stream)
 
+        self._db : SqliteInterface = None
+
     def _initialise(self) -> bool:
         build = f"V{RELEASE_VERSION}-{BUILD_VERSION}{BUILD_TAG}"
 
@@ -59,7 +61,7 @@ class Application(BaseApplication):
             return False
 
         self._logger.info("Registering 'testsuite' view...")
-        testsuite_blueprint : Blueprint = create_testsuite_blueprint(self._logger)
+        testsuite_blueprint : Blueprint = create_testsuite_blueprint(self._logger, self._db)
         self._quart_instance.register_blueprint(testsuite_blueprint)
 
         return True
