@@ -18,6 +18,7 @@ import sqlite3
 from sqlite_client import SqliteClient, SqliteClientException
 
 class SqliteInterface(SqliteClient):
+    ''' Sqlite database interface layer'''
 
     # Column names for testcase
     TESTCASE_COLUMN_ID = 'id'
@@ -190,6 +191,15 @@ class SqliteInterface(SqliteClient):
         return testsuites
 
     def is_valid_project_id(self, project_id : int) -> bool:
+        """
+        Check to see if a project id is valid.
+
+        parameters:
+            project_id - Project ID to verify
+
+        returns:
+            boolean status
+        """
 
         query : str = "SELECT id FROM project WHERE id = ?"
 
