@@ -19,6 +19,11 @@ from sqlite_client import SqliteClient, SqliteClientException
 
 class SqliteInterface(SqliteClient):
 
+    # Column names for testcase
+    TESTCASE_COLUMN_ID = 'id'
+    TESTCASE_COLUMN_TITLE = 'title'
+    TESTCASE_COLUMN_TESTSUITE_ID = 'testsuite_id'
+
     # Column names for testsuite
     TESTSUITE_COLUMN_ID = 'id'
     TESTSUITE_COLUMN_NAME = 'name'
@@ -36,6 +41,7 @@ class SqliteInterface(SqliteClient):
     sql_create_testcase_table = """
         CREATE TABLE IF NOT EXISTS testcase (
             id INTEGER PRIMARY KEY,
+            project_id INTEGER,
             title VARCHAR(100) NOT NULL,
             testsuite_id INTEGER NOT NULL
         )
@@ -101,6 +107,50 @@ class SqliteInterface(SqliteClient):
                                   self._database_filename)
 
         return build_status
+
+    def get_testcases_for_project(self, project_id : int, options : dict) -> list:
+        """
+        Get all testsuites for a given project.
+
+        parameters:
+            project_id - Project ID for testsuites
+        """
+
+        query_parameters : list = [project_id]
+
+        select_by_suite : str = ''
+        if 'testsuite_id' in options.__dict__:
+            select_by_suite = 'AND testsuite_id = ?'
+            query_parameters.append(options.testsuite_id)
+
+        query : str = ("SELECT id, title, testsuite_id FROM testcase "
+                       "WHERE project_id = ? " +
+                       select_by_suite)
+
+        cursor = self._connection.cursor()
+
+        try:
+            cursor.execute(query, tuple(query_parameters))
+
+        except sqlite3.Error as sqlite_except:
+            raise RuntimeError(f'Query failed, reason: {sqlite_except}') from \
+                sqlite_except
+
+        rows = cursor.fetchall()
+
+        testcases : list = []
+
+        if rows:
+            for testcase in rows:
+                entry = {
+                    self.TESTCASE_COLUMN_ID : testcase[0],
+                    self.TESTCASE_COLUMN_TITLE : testcase[1],
+                    self.TESTCASE_COLUMN_TESTSUITE_ID : testcase[2]
+                }
+
+                testcases.append(entry)
+
+        return testcases
 
     def get_testsuites_for_project(self, project_id : int) -> list:
         """
