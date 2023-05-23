@@ -7,7 +7,7 @@
 	},
 	"item": [
 		{
-			"name": "Auth Service",
+			"name": "Accounts Service",
 			"item": [
 				{
 					"name": "Basic Logon Authenticate",
@@ -16,7 +16,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email_address\": \"admin@localhost\",\n    \"password\": \"aa5e453f-626e\"\n}",
+							"raw": "{\n    \"email_address\": \"admin@localhost\",\n    \"password\": \"7461d6da-a974\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -24,18 +24,13 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:3030/handshake/basic_authenticate",
-							"protocol": "http",
+							"raw": "{{ACCOUNTS_SVC_URL}}/basic_auth/authenticate",
 							"host": [
-								"127",
-								"0",
-								"0",
-								"1"
+								"{{ACCOUNTS_SVC_URL}}"
 							],
-							"port": "3030",
 							"path": [
-								"handshake",
-								"basic_authenticate"
+								"basic_auth",
+								"authenticate"
 							]
 						}
 					},
@@ -53,7 +48,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email_address\": \"admin@localhost\",\n    \"password\": \"aa5e453f-626e\"\n}",
+							"raw": "{\n    \"email_address\": \"admin@localhost\",\n    \"password\": \"fe39a583-d45e\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -61,9 +56,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{GATEWAY_BASE_URL}}/handshake/basic_authenticate",
+							"raw": "{{GATEWAY_SVC_URL}}/handshake/basic_authenticate",
 							"host": [
-								"{{GATEWAY_BASE_URL}}"
+								"{{GATEWAY_SVC_URL}}"
 							],
 							"path": [
 								"handshake",
@@ -83,7 +78,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email_address\": \"admin@localhost\",\n    \"token\": \"589c73deadd74a189189b24af3a19755\"\n}",
+							"raw": "{\n    \"email_address\": \"admin@localhost\",\n    \"token\": \"445b751d7e4747b49c29ce788b81a923\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -91,13 +86,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://items-dev.internal:2111/handshake/valid_token",
-							"protocol": "http",
+							"raw": "{{GATEWAY_SVC_URL}}/handshake/valid_token",
 							"host": [
-								"items-dev",
-								"internal"
+								"{{GATEWAY_SVC_URL}}"
 							],
-							"port": "2111",
 							"path": [
 								"handshake",
 								"valid_token"
@@ -121,9 +113,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{GATEWAY_BASE_URL}}/handshake/logout",
+							"raw": "{{GATEWAY_SVC_URL}}/handshake/logout",
 							"host": [
-								"{{GATEWAY_BASE_URL}}"
+								"{{GATEWAY_SVC_URL}}"
 							],
 							"path": [
 								"handshake",
@@ -146,6 +138,71 @@
 							"path": [
 								"handshake",
 								"get_projects"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "CMS Service",
+			"item": [
+				{
+					"name": "Get Testsuites",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"project_id\" : 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CMS_SVC_URL}}/testsuite/testsuites",
+							"host": [
+								"{{CMS_SVC_URL}}"
+							],
+							"path": [
+								"testsuite",
+								"testsuites"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Testcases",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"project_id\" : 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CMS_SVC_URL}}/testcase/testcases",
+							"host": [
+								"{{CMS_SVC_URL}}"
+							],
+							"path": [
+								"testcase",
+								"testcases"
 							]
 						}
 					},

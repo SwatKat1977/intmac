@@ -22,19 +22,19 @@ from base_view import ApiResponse, BaseView
 from sqlite_interface import SqliteInterface
 
 def create(logger : logging.Logger, db : SqliteInterface):
-    view = TestsuiteView(logger, db)
+    view = TestcaseView(logger, db)
 
-    blueprint = Blueprint('testsuite_endpoint', __name__)
+    blueprint = Blueprint('testcase_endpoint', __name__)
 
-    @blueprint.route('/testsuite/testsuites', methods=['GET'])
-    async def get_testsuites():
-        return await view.get_testsuites()
+    @blueprint.route('/testcase/testcases', methods=['GET'])
+    async def get_testcases():
+        return await view.get_testcases()
 
     return blueprint
 
-class TestsuiteView(BaseView):
+class TestcaseView(BaseView):
 
-    get_testsuites_schema = \
+    get_testcases_schema = \
     {
         "$schema": "http://json-schema.org/draft-07/schema#",
 
@@ -46,7 +46,12 @@ class TestsuiteView(BaseView):
             "project_id":
             {
                 "type" : "integer"
-            }
+            },
+            "testsuite_id":
+            {
+                "type" : "integer"
+            },
+
         },
         "required" : ["project_id"]
     }
@@ -57,10 +62,10 @@ class TestsuiteView(BaseView):
 
         mimetypes.init()
 
-    async def get_testsuites(self):
+    async def get_testcases(self):
 
         request_obj : ApiResponse = self._validate_json_body(
-            await request.get_data(), self.get_testsuites_schema)
+            await request.get_data(), self.get_testcases_schema)
 
         if request_obj.status_code != HTTPStatus.OK:
             response_json = {
@@ -82,7 +87,7 @@ class TestsuiteView(BaseView):
                             status=HTTPStatus.INTERNAL_SERVER_ERROR,
                             mimetype=mimetypes.types_map['.json'])
 
-        testsuites : list = self._db.get_testsuites_for_project(project_id)
+        testsuites : list = self._db.get_testcases_for_project(project_id, request_obj.body)
 
         return Response(json.dumps(testsuites),
                         status=HTTPStatus.OK,

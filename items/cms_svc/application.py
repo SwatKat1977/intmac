@@ -24,6 +24,7 @@ from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
                            LOGGING_DEFAULT_LOG_LEVEL, \
                            LOGGING_LOG_FORMAT_STRING
 from version import BUILD_TAG, BUILD_VERSION, RELEASE_VERSION
+from views.testcase_view import create as create_testcase_blueprint
 from views.testsuite_view import create as create_testsuite_blueprint
 
 class Application(BaseApplication):
@@ -59,6 +60,10 @@ class Application(BaseApplication):
 
         if not self._open_internal_database():
             return False
+
+        self._logger.info("Registering 'testcase' view...")
+        testcase_blueprint : Blueprint = create_testcase_blueprint(self._logger, self._db)
+        self._quart_instance.register_blueprint(testcase_blueprint)
 
         self._logger.info("Registering 'testsuite' view...")
         testsuite_blueprint : Blueprint = create_testsuite_blueprint(self._logger, self._db)
