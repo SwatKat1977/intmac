@@ -27,6 +27,8 @@ pull_docker_images() {
     docker pull --quiet "intmac/nightly:gateway-svc-$1" || exit 1
     msg "=> Accounts Service"
     docker pull --quiet "intmac/nightly:accounts-svc-$1" || exit 1
+    msg "=> CMS Service"
+    docker pull --quiet "intmac/nightly:cms-svc-$1" || exit 1
 }
 
 while getopts hr: flag
