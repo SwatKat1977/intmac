@@ -38,6 +38,9 @@ services:
       - "6050:6050"
     networks:
       - items_docker_network
+    volumes:
+      - ${ITEMS_CMS_SVC_CONFIG}:/usr/local/items/accounts_svc.config:ro
+      - ${ITEMS_CMS_SVC_INTERNAL_DB}:/usr/local/items/items_cms_svc.db
 
   items-gateway-svc:
     image: "${ITEMS_GATEWAY_SVC_IMAGE}"

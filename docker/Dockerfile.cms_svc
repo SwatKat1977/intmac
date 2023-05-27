@@ -21,6 +21,7 @@ COPY --chown=items:items items/shared /usr/local/items/shared
 # Configure the environment
 WORKDIR /usr/local/items
 ENV PYTHONPATH="${PYTHONPATH}:/usr/local/items/cms_svc:/usr/local/items/shared"
+ENV BACKEND_INTERNAL_DB_FILENAME="/usr/local/items/items_cms_svc.db"
 
 EXPOSE 6050
 

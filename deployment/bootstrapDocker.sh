@@ -44,22 +44,35 @@ verify_configuration_file()
     fi
     export ITEMS_ACCOUNTS_SVC_CONFIG=$ACCOUNTS_SVC_CONFIG
 
+    if [ "$ACCOUNTS_SVC_INTERNAL_DB" ] ; then
+        internal_db_file=$ACCOUNTS_SVC_INTERNAL_DB
+    fi
+    export ITEMS_ACCOUNTS_SVC_INTERNAL_DB=$internal_db_file
+
     if [ -z "$SESSIONS_CONFIG" ] || [ ! -f "$SESSIONS_CONFIG" ] ; then
         warn "SESSIONS_CONFIG configuration item missing or file invalid"
         invalid_config=1
     fi
     export ITEMS_SESSIONS_CONFIG=$SESSIONS_CONFIG
 
-    if [ "$ACCOUNTS_SVC_INTERNAL_DB" ] ; then
-        internal_db_file=$ACCOUNTS_SVC_INTERNAL_DB
-    fi
-    export ITEMS_ACCOUNTS_SVC_INTERNAL_DB=$internal_db_file
-
     if [ -z "$PORTAL_SVC_CONFIG" ] || [ ! -f $PORTAL_SVC_CONFIG ] ; then
         warn "PORTAL_SVC_CONFIG configuration item missing or file invalid"
         invalid_config=1
     fi
     export ITEMS_WEB_PORTAL_SVC_CONFIG=$PORTAL_SVC_CONFIG
+
+    if [ -z "$CMS_SVC_CONFIG" ] || [ ! -f "$CMS_SVC_CONFIG" ] ; then
+        warn "CMS_SVC_CONFIG configuration item missing or file invalid"
+        invalid_config=1
+    fi
+    export ITEMS_CMS_SVC_CONFIG=$CMS_SVC_CONFIG
+
+    if [ -z "$CMS_SVC_INTERNAL_DB" ] || [ ! -f "$CMS_SVC_INTERNAL_DB" ] ; then
+        warn "CMS_SVC_INTERNAL_DB configuration item missing or file invalid"
+        invalid_config=1
+    fi
+
+    export ITEMS_CMS_SVC_INTERNAL_DB=$CMS_SVC_INTERNAL_DB
 
     if [ $invalid_config -eq 1 ]; then
         die "Required configuration item(s) missing"

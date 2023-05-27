@@ -17,5 +17,36 @@ from configuration.configuration_manager import ConfigurationManager
 from thread_safe_singleton import ThreadSafeSingleton
 
 class ThreadafeConfiguration(ConfigurationManager, metaclass = ThreadSafeSingleton):
-    # pylint: disable=too-few-public-methods
     """ Thread-safe singleton for the config """
+
+    @property
+    def logging_log_level(self) -> str:
+        """ Configuration property : Logging | log level """
+        return ThreadafeConfiguration().get_entry('loggings', 'log_level')
+
+    @property
+    def sessions_redis_host(self) -> str:
+        """ Configuration property : Sessions REDIS | Hostname or IP address """
+        return ThreadafeConfiguration().get_entry('sessions_redis', 'host')
+
+    @property
+    def sessions_redis_port(self) -> str:
+        """ Configuration property : Sessions REDIS | Port """
+        return ThreadafeConfiguration().get_entry('sessions_redis', 'port')
+
+    @property
+    def sessions_redis_retries(self) -> str:
+        """ Configuration property : Sessions REDIS | Max Retries """
+        return ThreadafeConfiguration().get_entry('sessions_redis', 'retries')
+
+    @property
+    def internal_apis_accounts_svc(self) -> str:
+        """ Configuration property : Internal APIs | Accounts Service base path """
+        return ThreadafeConfiguration().get_entry(
+            'internal_apis', 'accounts_svc')
+
+    @property
+    def internal_apis_cms_svc(self) -> str:
+        """ Configuration property : Internal APIs | CMS Service base path """
+        return ThreadafeConfiguration().get_entry(
+            'internal_apis', 'cms_svc')

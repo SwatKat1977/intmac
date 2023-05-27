@@ -22,6 +22,7 @@ from threadsafe_configuration import ThreadafeConfiguration
 from configuration_layout import CONFIGURATION_LAYOUT
 from redis_interface import RedisInterface
 from views.handshake_view import create_handshake_blueprint
+from views.testcases_view import create_blueprint as create_testcases_blueprint
 from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
                            LOGGING_DEFAULT_LOG_LEVEL, \
                            LOGGING_LOG_FORMAT_STRING
@@ -66,9 +67,14 @@ class Application(BaseApplication):
         if not self._connect_to_sessions_redis():
             return False
 
-        auth_view_blueprint = create_handshake_blueprint(self._sessions,
+        self._logger.info('Registering handshake endpoints...')
+        handshake_blueprint = create_handshake_blueprint(self._sessions,
                                                          self._logger)
-        self._quart_instance.register_blueprint(auth_view_blueprint)
+        self._quart_instance.register_blueprint(handshake_blueprint)
+
+        self._logger.info('Registering testcases endpoints...')
+        testcases_blueprint = create_testcases_blueprint(self._logger)
+        self._quart_instance.register_blueprint(testcases_blueprint)
 
         return True
 
@@ -146,20 +152,15 @@ class Application(BaseApplication):
                           ThreadafeConfiguration().get_entry("logging", "log_level"))
         self._logger.info("[REDIS]")
         self._logger.info("=> Host    : %s",
-                          ThreadafeConfiguration().get_entry("sessions_redis",
-                                                    "host"))
+                          ThreadafeConfiguration().sessions_redis_host)
         self._logger.info("=> Port    : %s",
-                          ThreadafeConfiguration().get_entry("sessions_redis",
-                                                    "port"))
+                          ThreadafeConfiguration().sessions_redis_port)
         self._logger.info("=> Retries : %s",
-                          ThreadafeConfiguration().get_entry("sessions_redis",
-                                                    "retries"))
+                          ThreadafeConfiguration().sessions_redis_retries)
         self._logger.info("[Internal APIs]")
         self._logger.info("=> accounts svc : %s",
-                          ThreadafeConfiguration().get_entry("internal_apis",
-                                                    "accounts_svc"))
+                          ThreadafeConfiguration().internal_apis_accounts_svc)
         self._logger.info("=> CMS svc      : %s",
-                          ThreadafeConfiguration().get_entry("internal_apis",
-                                                    "cms_svc"))
+                          ThreadafeConfiguration().internal_apis_cms_svc)
 
         return True
