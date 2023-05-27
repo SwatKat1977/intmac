@@ -121,7 +121,6 @@ class View(BaseView):
             api_response = await self._call_api_get(url, request)
 
             if api_response.status_code != HTTPStatus.OK:
-                print(api_response.body)
                 self._logger.critical("CMS svc request invalid - Reason: %s",
                                       api_response.body['error'])
                 response_status = HTTPStatus.INTERNAL_SERVER_ERROR
@@ -197,10 +196,7 @@ class View(BaseView):
 
             api_response = await self._call_api_get(url, request)
 
-            print(api_response)
-
             if api_response.status_code != HTTPStatus.OK:
-                print(api_response.body)
                 self._logger.critical("CMS svc request invalid - Reason: %s",
                                       api_response.body['error'])
                 response_status = HTTPStatus.INTERNAL_SERVER_ERROR
