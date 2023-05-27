@@ -42,6 +42,73 @@
 			"name": "Gateway API",
 			"item": [
 				{
+					"name": "Testcases",
+					"item": [
+						{
+							"name": "Get Testsuites",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"project_id\" : 1\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{GATEWAY_SVC_URL}}/internal/testcases/get_testsuites",
+									"host": [
+										"{{GATEWAY_SVC_URL}}"
+									],
+									"path": [
+										"internal",
+										"testcases",
+										"get_testsuites"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Testcases overview",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"project_id\" : 1\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{GATEWAY_SVC_URL}}/internal/testcases/get_testsuites",
+									"host": [
+										"{{GATEWAY_SVC_URL}}"
+									],
+									"path": [
+										"internal",
+										"testcases",
+										"get_testsuites"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
 					"name": "Basic User Authenticate",
 					"request": {
 						"method": "POST",
