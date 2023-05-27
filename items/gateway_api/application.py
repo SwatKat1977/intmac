@@ -67,10 +67,12 @@ class Application(BaseApplication):
         if not self._connect_to_sessions_redis():
             return False
 
+        self._logger.info('Registering handshake endpoints...')
         handshake_blueprint = create_handshake_blueprint(self._sessions,
                                                          self._logger)
         self._quart_instance.register_blueprint(handshake_blueprint)
 
+        self._logger.info('Registering testcases endpoints...')
         testcases_blueprint = create_testcases_blueprint(self._logger)
         self._quart_instance.register_blueprint(testcases_blueprint)
 
