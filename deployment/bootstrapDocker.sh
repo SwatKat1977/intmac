@@ -44,10 +44,11 @@ verify_configuration_file()
     fi
     export ITEMS_ACCOUNTS_SVC_CONFIG=$ACCOUNTS_SVC_CONFIG
 
-    if [ "$ACCOUNTS_SVC_INTERNAL_DB" ] ; then
-        internal_db_file=$ACCOUNTS_SVC_INTERNAL_DB
+    if [ -z "$ACCOUNTS_SVC_INTERNAL_DB" ] || [ ! -f "$ACCOUNTS_SVC_INTERNAL_DB" ] ; then
+        warn "ACCOUNTS_SVC_INTERNAL_DB configuration item missing or file invalid"
+        invalid_config=1
     fi
-    export ITEMS_ACCOUNTS_SVC_INTERNAL_DB=$internal_db_file
+    export ITEMS_ACCOUNTS_SVC_INTERNAL_DB=$ACCOUNTS_SVC_INTERNAL_DB
 
     if [ -z "$SESSIONS_CONFIG" ] || [ ! -f "$SESSIONS_CONFIG" ] ; then
         warn "SESSIONS_CONFIG configuration item missing or file invalid"

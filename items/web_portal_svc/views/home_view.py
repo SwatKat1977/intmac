@@ -240,7 +240,7 @@ class View(WebBaseView):
 
     async def _handle_project_select_get(self, api_request):
 
-        url = f"{self._config.gateway_api.base_url}/handshake/get_projects"
+        url = f"{Configuration().internal_api_gateway}/handshake/get_projects"
 
         try:
             response = requests.get(url)
