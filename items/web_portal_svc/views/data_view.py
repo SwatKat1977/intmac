@@ -175,19 +175,6 @@ class View(WebBaseView):
         outside_indent : str = ' ' * ((depth +2) * 4)
         inside_indent : str = ' ' * ((depth +3) * 4)
 
-        '''
-            <div class="tree well">
-        <ul>
-            <li>
-                <span><i class="fas fa-folder-open"></i></span> Top-Level Parent
-                <ul>
-                    <li>
-                        <span><i class="fas fa-folder-open"></i></span> Child #1
-                        <ul>
-                        </ul>
-                    </li>
-        '''
-
         if entries:
             for entry in entries:
                 html_code += f"{outside_indent}<li>\n" + \
@@ -218,61 +205,3 @@ class View(WebBaseView):
 
         return self._generate_test_overview_for_depth(test_suites, test_cases,
                                                       depth, parent)
-
-        entries = [suite for suite in test_suites if suite['depth'] == depth]
-        print("Entries", entries)
-
-        '''
-<body>
-    <div class="tree well">
-        <ul>
-            <li>
-                <span><i class="fas fa-folder-open"></i></span> Top-Level Parent
-                <ul>
-                    <li>
-                        <span><i class="fas fa-folder-open"></i></span> Child #1
-                        <ul>
-                            <li>
-                                <span><i class="fas fa-book"></i></span><a href="">Test Case #1</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <span><i class="fas fa-folder-open"></i></span> Child #2
-                        <ul>
-                            <li>
-                                <span><i class="fas fa-book"></i></span><a href="">Test Case #2</a>
-                            </li>
-                            <li>
-                                <span><i class="fas fa-folder-open"></i></span> Child #2.1
-                                <ul>
-                                    <li>
-                                        <span><i class="fas fa-folder-open"></i></span>Child #2.1.1
-                                        <ul>
-                                            <li>
-                                                <span><i class="fas fa-book"></i></span><a href="">Test Case #3</a>
-                                            </li>
-                                            <li>
-                                                <span><i class="fas fa-book"></i></span><a href="">Test Case #4</a>
-                                            </li>
-                                         </ul>
-                                    </li>
-                                    <li>
-                                        <span><i class="fas fa-book"></i></span><a href="">Test Case #5</a>
-                                    </li>
-                                    <li>
-                                        <span><i class="fas fa-book"></i></span><a href="">Test Case #6</a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li>
-                                <span><i class="fas fa-book"></i></span><a href="">Test Case #7</a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </li>
-        </ul>
-    </div>
-</body>
-        '''
