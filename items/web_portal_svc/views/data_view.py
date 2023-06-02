@@ -79,10 +79,35 @@ class View(WebBaseView):
                             status=HTTPStatus.INTERNAL_SERVER_ERROR,
                             mimetype=mimetypes.types_map['.json'])
 
-        print(api_response)
-        testsuites = self.organise_testsuites(api_response.body['data'], depth=0)
+        testsuites = self._organise_testsuites(api_response.body['data'], depth=0)
         print("testsuites : ", testsuites)
-        print("lenth", len(testsuites))
+
+        request : dict = {
+            "project_id": 1
+        }
+        url : str = (f'{base_path}/internal/testcases/get_testcases_overview')
+
+        api_response = await self._call_api_get(url, request)
+        print(api_response)
+
+        if api_response.status_code != HTTPStatus.OK:
+            self._logger.critical("Invalid Gateway svc request '%s' - Reason: %s",
+                                  url, api_response.body['error'])
+            response_json = {
+                "status": 0,
+                'error': api_response.body['error']
+            }
+
+            return Response(json.dumps(response_json),
+                            status=HTTPStatus.INTERNAL_SERVER_ERROR,
+                            mimetype=mimetypes.types_map['.json'])
+
+        start_depth : int = 0
+        start_parent : int = -1
+
+        html_code : str = self._generate_test_overview_for_depth(
+            testsuites, api_response.body, start_depth, start_parent)
+        print(html_code)
 
         try:
             if not self._has_auth_cookies() or not self._validate_cookies():
@@ -93,9 +118,10 @@ class View(WebBaseView):
                 self._logger.error('Internal Error: %s', ex)
                 return await render_template(self.TEMPLATE_INTERNAL_ERROR_PAGE)
 
+
         return await render_template(self.TEST_CASES_LOGIN_PAGE)
 
-    def organise_testsuites(self, test_suites, depth : int,
+    def _organise_testsuites(self, test_suites, depth : int,
                                   parent : int = -1):
         """
         Recursive method to organise the testsuites and calculate/add the depth
@@ -119,10 +145,123 @@ class View(WebBaseView):
         for entry in root_entries:
             entry['depth'] = depth
             suites.append(entry)
-            new_entries = self.organise_testsuites(test_suites,
-                                                   depth=depth+1,
-                                                   parent=entry['id'])
+            new_entries = self._organise_testsuites(test_suites,
+                                                    depth=depth+1,
+                                                    parent=entry['id'])
             if new_entries:
                 suites = [*suites, *new_entries]
 
         return suites
+
+    def _generate_test_overview_for_depth(self, test_suites : list,
+                                          test_cases : list, depth : int, 
+                                          parent : int) -> str:
+
+        entries = [suite for suite in test_suites if suite['depth'] == depth \
+                   and suite['parent'] == parent]
+        html_code : str = ""
+        outside_indent : str = ' ' * ((depth +2) * 4)
+        inside_indent : str = ' ' * ((depth +3) * 4)
+
+        '''
+            <div class="tree well">
+        <ul>
+            <li>
+                <span><i class="fas fa-folder-open"></i></span> Top-Level Parent
+                <ul>
+                    <li>
+                        <span><i class="fas fa-folder-open"></i></span> Child #1
+                        <ul>
+                        </ul>
+                    </li>
+        '''
+
+        if entries:
+            for entry in entries:
+                html_code += f"{outside_indent}<li>\n" + \
+                             f"{inside_indent}<span><i class='fas fa-folder-open'>" + \
+                             f"</i></span> {entry['name']}\n" + \
+                             f"{inside_indent}<ul>\n"
+                html_code += self._generate_test_overview_for_depth(
+                    test_suites,test_cases, depth + 1, entry['id'])
+                html_code += f"{inside_indent}</ul>\n" + \
+                             f"{outside_indent}</li>\n"
+            '''
+                    <li>
+                        <span><i class="fas fa-folder-open"></i></span> Child #1
+                        <ul>
+                            <li>
+                                <span><i class="fas fa-book"></i></span><a href="">Test Case #1</a>
+                            </li>
+                        </ul>
+                    </li>
+            '''
+
+        return html_code
+
+    def _generate_testcase_overview_tree(self, test_suites : list,
+                                         test_cases : list):
+        depth : int = 0
+        parent : int = -1
+
+        return self._generate_test_overview_for_depth(test_suites, test_cases,
+                                                      depth, parent)
+
+        entries = [suite for suite in test_suites if suite['depth'] == depth]
+        print("Entries", entries)
+
+        '''
+<body>
+    <div class="tree well">
+        <ul>
+            <li>
+                <span><i class="fas fa-folder-open"></i></span> Top-Level Parent
+                <ul>
+                    <li>
+                        <span><i class="fas fa-folder-open"></i></span> Child #1
+                        <ul>
+                            <li>
+                                <span><i class="fas fa-book"></i></span><a href="">Test Case #1</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <span><i class="fas fa-folder-open"></i></span> Child #2
+                        <ul>
+                            <li>
+                                <span><i class="fas fa-book"></i></span><a href="">Test Case #2</a>
+                            </li>
+                            <li>
+                                <span><i class="fas fa-folder-open"></i></span> Child #2.1
+                                <ul>
+                                    <li>
+                                        <span><i class="fas fa-folder-open"></i></span>Child #2.1.1
+                                        <ul>
+                                            <li>
+                                                <span><i class="fas fa-book"></i></span><a href="">Test Case #3</a>
+                                            </li>
+                                            <li>
+                                                <span><i class="fas fa-book"></i></span><a href="">Test Case #4</a>
+                                            </li>
+                                         </ul>
+                                    </li>
+                                    <li>
+                                        <span><i class="fas fa-book"></i></span><a href="">Test Case #5</a>
+                                    </li>
+                                    <li>
+                                        <span><i class="fas fa-book"></i></span><a href="">Test Case #6</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>
+                                <span><i class="fas fa-book"></i></span><a href="">Test Case #7</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    
+</body>
+        '''
