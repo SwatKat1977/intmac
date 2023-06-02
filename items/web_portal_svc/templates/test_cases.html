@@ -83,7 +83,9 @@
       <hr>
     </div>
     <div class="row m-2">
-
+      {% if has_testcases == True %}
+{{ testcases |safe}}
+      {% else %}
       <div id="no_data_msg_jumbo" class="jumbotron text-black border border-dark w-100">
         <div class="container mt-1 mx-0" id="no_data_msg_container">
           <div class="row w-100">
@@ -106,6 +108,7 @@
           </div>
         </div>
       </div>
+      {% endif %}
     </div>
   </div>
 </div>

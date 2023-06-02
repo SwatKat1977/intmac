@@ -58,6 +58,15 @@ class View(WebBaseView):
             Instance of Quart Response class.
         """
 
+        try:
+            if not self._has_auth_cookies() or not self._validate_cookies():
+                redirect = self._generate_redirect('login')
+                return await make_response(redirect)
+
+        except ItemsException as ex:
+                self._logger.error('Internal Error: %s', ex)
+                return await render_template(self.TEMPLATE_INTERNAL_ERROR_PAGE)
+
         base_path : str = ThreadafeConfiguration().internal_api_gateway
 
         request : dict = {
@@ -80,7 +89,6 @@ class View(WebBaseView):
                             mimetype=mimetypes.types_map['.json'])
 
         testsuites = self._organise_testsuites(api_response.body['data'], depth=0)
-        print("testsuites : ", testsuites)
 
         request : dict = {
             "project_id": 1
@@ -88,7 +96,6 @@ class View(WebBaseView):
         url : str = (f'{base_path}/internal/testcases/get_testcases_overview')
 
         api_response = await self._call_api_get(url, request)
-        print(api_response)
 
         if api_response.status_code != HTTPStatus.OK:
             self._logger.critical("Invalid Gateway svc request '%s' - Reason: %s",
@@ -102,24 +109,29 @@ class View(WebBaseView):
                             status=HTTPStatus.INTERNAL_SERVER_ERROR,
                             mimetype=mimetypes.types_map['.json'])
 
-        start_depth : int = 0
-        start_parent : int = -1
+        has_testcases : bool = False
+        if testsuites or api_response.body:
+            start_depth : int = 0
+            start_parent : int = -1
 
-        html_code : str = self._generate_test_overview_for_depth(
-            testsuites, api_response.body, start_depth, start_parent)
-        print(html_code)
+            html_code : str = self._generate_test_overview_for_depth(
+                testsuites, api_response.body, start_depth, start_parent)
+            print(html_code)
+            has_testcases = True
 
-        try:
-            if not self._has_auth_cookies() or not self._validate_cookies():
-                redirect = self._generate_redirect('login')
-                return await make_response(redirect)
+        '''
+        {% if has_testcases == True %}
+        {% testcases %}
 
-        except ItemsException as ex:
-                self._logger.error('Internal Error: %s', ex)
-                return await render_template(self.TEMPLATE_INTERNAL_ERROR_PAGE)
+        err_msg = "Internal error, please refresh to try again"
+        response = await render_template(
+                    self.TEMPLATE_PROJECT_SELECTION_PAGE, projects = {},
+                    has_error = True, error_msg = err_msg)
+        '''
 
-
-        return await render_template(self.TEST_CASES_LOGIN_PAGE)
+        return await render_template(self.TEST_CASES_LOGIN_PAGE,
+                                     has_testcases=has_testcases,
+                                     testcases=html_code)
 
     def _organise_testsuites(self, test_suites, depth : int,
                                   parent : int = -1):
@@ -262,6 +274,5 @@ class View(WebBaseView):
             </li>
         </ul>
     </div>
-    
 </body>
         '''
