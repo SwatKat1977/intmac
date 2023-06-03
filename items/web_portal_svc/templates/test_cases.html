@@ -22,19 +22,19 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header addFilterHeader">
-        <h7 class="modal-title" id="addFilterModalLabel">Add Filter</h7>
+        <h6 class="modal-title" id="addFilterModalLabel">Add Filter</h6>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <form method="POST">
         <div class="modal-body">
           <div class="mb-3">
-            <label for="recipient-name" class="col-form-label">
+            <label for="filter-name" class="col-form-label">
               <strong>Name</strong>
             </label>
             <input type="text" class="form-control" id="filter-name">
           </div>
           <div class="mb-3">
-            <label for="message-text" class="col-form-label">
+            <label for="filter-description" class="col-form-label">
               <strong>Description</strong>
             </label>
             <textarea class="form-control" id="filter-description"></textarea>
@@ -54,16 +54,16 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header addFilterHeader">
-        <h7 class="modal-title" id="addTestCaseModalLabel">Add Test Case</h7>
+        <h6 class="modal-title" id="addTestCaseModalLabel">Add Test Case</h6>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <form method="POST">
         <div class="modal-body">
           <div class="mb-3">
-            <label for="recipient-name" class="col-form-label">
+            <label for="testcase-name" class="col-form-label">
               <strong>Test Case Name</strong>
             </label>
-            <input type="text" class="form-control" id="filter-name">
+            <input type="text" class="form-control" id="testcase-name">
           </div>
         </div>
         <div class="modal-footer">
@@ -84,7 +84,11 @@
     </div>
     <div class="row m-2">
       {% if has_testcases == True %}
+      <div class="tree well">
+        <ul>
 {{ testcases |safe}}
+</ul>
+</div>
       {% else %}
       <div id="no_data_msg_jumbo" class="jumbotron text-black border border-dark w-100">
         <div class="container mt-1 mx-0" id="no_data_msg_container">
