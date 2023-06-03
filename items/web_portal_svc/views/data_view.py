@@ -111,11 +111,10 @@ class View(WebBaseView):
 
         has_testcases : bool = False
         if testsuites or api_response.body:
-            start_depth : int = 0
-            start_parent : int = -1
+            print('all TCs:', api_response.body['data'])
 
-            html_code : str = self._generate_test_overview_for_depth(
-                testsuites, api_response.body, start_depth, start_parent)
+            html_code : str = self._generate_testcase_overview_tree(
+                testsuites, api_response.body['data'])
             print(html_code)
             has_testcases = True
 
@@ -169,20 +168,32 @@ class View(WebBaseView):
                                           test_cases : list, depth : int, 
                                           parent : int) -> str:
 
-        entries = [suite for suite in test_suites if suite['depth'] == depth \
+        suites = [suite for suite in test_suites if suite['depth'] == depth \
                    and suite['parent'] == parent]
         html_code : str = ""
         outside_indent : str = ' ' * ((depth +2) * 4)
         inside_indent : str = ' ' * ((depth +3) * 4)
 
-        if entries:
-            for entry in entries:
+        cases : list = [tc for tc in test_cases \
+                        if tc['testsuite_id'] == parent]
+        #print('CASES', cases)
+
+        if suites:
+            for suite in suites:
+                print('suite id I am looking at', suite['id'])
                 html_code += f"{outside_indent}<li>\n" + \
                              f"{inside_indent}<span><i class='fas fa-folder-open'>" + \
-                             f"</i></span> {entry['name']}\n" + \
+                             f"</i></span> {suite['name']}\n" + \
                              f"{inside_indent}<ul>\n"
                 html_code += self._generate_test_overview_for_depth(
-                    test_suites,test_cases, depth + 1, entry['id'])
+                    test_suites,test_cases, depth + 1, suite['id'])
+
+                if cases:
+                    print(f"[tc for tc in test_cases if tc['testsuite_id'] == {parent}]")
+
+                    for tc in cases:
+                        print('Test cases', tc)
+
                 html_code += f"{inside_indent}</ul>\n" + \
                              f"{outside_indent}</li>\n"
             '''
@@ -203,5 +214,17 @@ class View(WebBaseView):
         depth : int = 0
         parent : int = -1
 
-        return self._generate_test_overview_for_depth(test_suites, test_cases,
-                                                      depth, parent)
+        root_name : str = 'ROOT'
+        outside_indent : str = ' ' * ((depth +2) * 4)
+        inside_indent : str = ' ' * ((depth +3) * 4)
+
+        html_code : str = \
+            f"{outside_indent}<li>\n" + \
+            f"{inside_indent}<span><i class='fas fa-folder-open'>" + \
+            f"</i></span> {root_name}\n" + \
+            f"{inside_indent}<ul>\n"
+        html_code += self._generate_test_overview_for_depth(
+            test_suites, test_cases, depth, parent)
+
+        html_code += f"{inside_indent}</ul>\n"
+        return html_code
