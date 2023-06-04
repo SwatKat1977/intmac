@@ -77,16 +77,12 @@ class View(WebBaseView):
         api_response = await self._call_api_get(url, request)
 
         if api_response.status_code != HTTPStatus.OK:
-            self._logger.critical("Invalid Gateway svc request '%s' - Reason: %s",
-                                  url, api_response.body['error'])
-            response_json = {
-                "status": 0,
-                'error': api_response.body['error']
-            }
-
-            return Response(json.dumps(response_json),
-                            status=HTTPStatus.INTERNAL_SERVER_ERROR,
-                            mimetype=mimetypes.types_map['.json'])
+            reason : str = api_response.exception_msg if api_response.exception_msg \
+                 else "Internal communications error"
+            self._logger.critical(
+                "Invalid Gateway svc request '%s' - Reason: %s",
+                url, reason)
+            return await render_template(self.TEMPLATE_INTERNAL_ERROR_PAGE)
 
         testsuites = self._organise_testsuites(api_response.body['data'], depth=0)
 
@@ -111,22 +107,10 @@ class View(WebBaseView):
 
         has_testcases : bool = False
         if testsuites or api_response.body:
-            print('all TCs:', api_response.body['data'])
 
             html_code : str = self._generate_testcase_overview_tree(
                 testsuites, api_response.body['data'])
-            print(html_code)
             has_testcases = True
-
-        '''
-        {% if has_testcases == True %}
-        {% testcases %}
-
-        err_msg = "Internal error, please refresh to try again"
-        response = await render_template(
-                    self.TEMPLATE_PROJECT_SELECTION_PAGE, projects = {},
-                    has_error = True, error_msg = err_msg)
-        '''
 
         return await render_template(self.TEST_CASES_LOGIN_PAGE,
                                      has_testcases=has_testcases,
@@ -174,25 +158,14 @@ class View(WebBaseView):
         outside_indent : str = ' ' * ((depth +2) * 4)
         inside_indent : str = ' ' * ((depth +3) * 4)
 
-        cases : list = [tc for tc in test_cases \
-                        if tc['testsuite_id'] == parent]
-        #print('CASES', cases)
-
         if suites:
             for suite in suites:
-                print('suite id I am looking at', suite['id'])
                 html_code += f"{outside_indent}<li>\n" + \
                              f"{inside_indent}<span><i class='fas fa-folder-open'>" + \
                              f"</i></span> {suite['name']}\n" + \
                              f"{inside_indent}<ul>\n"
                 html_code += self._generate_test_overview_for_depth(
                     test_suites,test_cases, depth + 1, suite['id'])
-
-                if cases:
-                    print(f"[tc for tc in test_cases if tc['testsuite_id'] == {parent}]")
-
-                    for tc in cases:
-                        print('Test cases', tc)
 
                 html_code += f"{inside_indent}</ul>\n" + \
                              f"{outside_indent}</li>\n"
@@ -206,6 +179,17 @@ class View(WebBaseView):
                         </ul>
                     </li>
             '''
+
+        cases : list = [tc for tc in test_cases \
+                        if tc['testsuite_id'] == parent]
+        if cases:
+            for tc in cases:
+                tc_html : str = \
+                    "<li>\n" + \
+                    "<span><i class='fas fa-book'></i></span><a " + \
+                    f"href='{tc['id']}'>{tc['title']}</a>\n" + \
+                    "</li>\n"
+                html_code += tc_html
 
         return html_code
 
