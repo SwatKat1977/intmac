@@ -41,12 +41,6 @@ The following is based on Ogre3D code:
 #    define ITEMS_PLATFORM ITEMS_PLATFORM_LINUX
 #endif
 
-#if (ITEMS_PLATFORM == ITEMS_PLATFORM_WINDOWS_MSVC)
-#  define ITEMS_DLLEXPORT __declspec( dllexport )
-#else
-#  define ITEMS_DLLEXPORT
-#endif
-
 char* GetEnv (const char* field);
 
 #endif

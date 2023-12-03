@@ -25,7 +25,6 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 #include <string>
 #include "INIReader.h"
 #include "ConfigSetup.h"
-#include "Platform.h"
 
 namespace items
 {
