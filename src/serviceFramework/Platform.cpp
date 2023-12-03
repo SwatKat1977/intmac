@@ -23,30 +23,17 @@ The following is based on Ogre3D code:
 * GetEnv from os-int.h
 -----------------------------------------------------------------------------
 */
-#ifndef PLATFORM_H
-#define PLATFORM_H
-#include <string>
+#include "Platform.h"
 
-#define ITEMS_PLATFORM_WINDOWS_CORE 1
-#define ITEMS_PLATFORM_WINDOWS_MSVC 1
-#define ITEMS_PLATFORM_LINUX 2
-
-#if (defined( __WIN32__ ) || defined( _WIN32 )) && !defined(__ANDROID__)
-#  if defined(_MSC_VER)
-#    define ITEMS_PLATFORM ITEMS_PLATFORM_WINDOWS_MSVC 
-#  else
-#    define ITEMS_PLATFORM ITEMS_PLATFORM_WINDOWS_CORE
-#  endif
-#else
-#    define ITEMS_PLATFORM ITEMS_PLATFORM_LINUX
-#endif
-
+char* GetEnv (const char* field)
+{
 #if (ITEMS_PLATFORM == ITEMS_PLATFORM_WINDOWS_MSVC)
-#  define ITEMS_DLLEXPORT   __declspec( dllexport )
-#else
-#  define ITEMS_DLLEXPORT
+    size_t len = 0;
+    char buf[128];
+    bool ok = ::getenv_s (&len, buf, sizeof (buf), field) == 0;
+    return ok ? buf : nullptr;
+#else // revert to getenv
+    char* buf = ::getenv (field);
+    return buf ? buf : std::string{};
 #endif
-
-char* GetEnv (const char* field);
-
-#endif
+}
