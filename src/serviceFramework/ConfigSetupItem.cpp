@@ -37,73 +37,73 @@ namespace items
     {
     }
 
-    std::string ConfigSetupItem::GetItemName ()
+    std::string ConfigSetupItem::ItemName ()
     {
         return m_itemName;
     }
 
-    ConfigItemDataType ConfigSetupItem::GetType()
+    ConfigItemDataType ConfigSetupItem::Type()
     {
         return m_itemType;
     }
 
-    bool ConfigSetupItem::GetIsUnset ()
+    bool ConfigSetupItem::IsUnset ()
     {
         return m_isUnset;
     }
 
-    bool ConfigSetupItem::GetIsRequired ()
+    bool ConfigSetupItem::IsRequired ()
     {
         return m_isRequired;
     }
 
-    int ConfigSetupItem::GetDefaultIntValue ()
+    int ConfigSetupItem::DefaultIntValue ()
     {
         return m_defaultValueInt;
     }
 
-    std::string ConfigSetupItem::GetDefaultStringValue ()
+    std::string ConfigSetupItem::DefaultStringValue ()
     {
         return m_defaultValueStr;
     }
 
-    IntList ConfigSetupItem::GetValidIntValues ()
+    IntList ConfigSetupItem::ValidIntValues ()
     {
         return m_validValuesInt;
     }
 
-    StringList ConfigSetupItem::GetValidStringValues ()
+    StringList ConfigSetupItem::ValidStringValues ()
     {
         return m_validValuesStr;
     }
 
-    ConfigSetupItem &ConfigSetupItem::SetIsRequired ()
+    ConfigSetupItem &ConfigSetupItem::IsRequired (bool state)
     {
-        m_isRequired = true;
+        m_isRequired = state;
         return *this;
     }
 
-    ConfigSetupItem &ConfigSetupItem::SetDefaultValue (int defaultValue)
+    ConfigSetupItem &ConfigSetupItem::DefaultValue (int defaultValue)
     {
         m_defaultValueInt = defaultValue;
         m_isUnset = false;
         return *this;
     }
 
-    ConfigSetupItem &ConfigSetupItem::SetDefaultValue(std::string defaultValue)
+    ConfigSetupItem &ConfigSetupItem::DefaultValue(std::string defaultValue)
     {
         m_defaultValueStr = defaultValue;
         m_isUnset = false;
         return *this;
     }
 
-    ConfigSetupItem &ConfigSetupItem::SetValidValues(IntList validValue)
+    ConfigSetupItem &ConfigSetupItem::ValidValues(IntList validValue)
     {
         m_validValuesInt = validValue;
         return *this;
     }
 
-    ConfigSetupItem &ConfigSetupItem::SetValidValues(StringList validValue)
+    ConfigSetupItem &ConfigSetupItem::ValidValues(StringList validValue)
     {
         m_validValuesStr = validValue;
         return *this;

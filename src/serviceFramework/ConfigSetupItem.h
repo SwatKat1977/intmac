@@ -45,29 +45,29 @@ namespace items
         public:
             ConfigSetupItem(std::string itemName, ConfigItemDataType dataType);
 
-            std::string GetItemName ();
+            std::string ItemName ();
 
-            ConfigItemDataType GetType();
+            ConfigItemDataType Type();
 
-            bool GetIsUnset ();
+            bool IsUnset ();
 
-            bool GetIsRequired ();
+            bool IsRequired ();
 
-            int GetDefaultIntValue ();
+            int DefaultIntValue ();
 
-            std::string GetDefaultStringValue ();
+            std::string DefaultStringValue ();
 
-            IntList GetValidIntValues ();
+            IntList ValidIntValues ();
 
-            StringList GetValidStringValues ();
+            StringList ValidStringValues ();
 
-            ConfigSetupItem &SetIsRequired();
+            ConfigSetupItem &IsRequired(bool state);
 
-            ConfigSetupItem &SetDefaultValue(int defaultValue);
-            ConfigSetupItem &SetDefaultValue(std::string defaultValue);
+            ConfigSetupItem &DefaultValue(int defaultValue);
+            ConfigSetupItem &DefaultValue(std::string defaultValue);
 
-            ConfigSetupItem &SetValidValues(IntList validValue);
-            ConfigSetupItem &SetValidValues(StringList validValue);
+            ConfigSetupItem &ValidValues(IntList validValue);
+            ConfigSetupItem &ValidValues(StringList validValue);
 
         private:
             std::string m_itemName;
@@ -83,7 +83,6 @@ namespace items
         };
 
     }   // namespace serviceFramework
-
 }   // namespace items
 
 #endif
