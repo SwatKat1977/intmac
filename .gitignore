@@ -1,7 +1,15 @@
+# -----------------
+# Python GIT ignore
+# -----------------
 *.pyc
 .DS_Store
 
+# ---------------
+# C++ GIT ignores
+# ---------------
 obj
 bin
 .vs
 .vscode
+*.user
+*.filters
