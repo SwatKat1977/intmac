@@ -1,7 +1,7 @@
 /*
 -----------------------------------------------------------------------------
 This source file is part of ITEMS
-(Integrated Test Management Suite )
+(Integrated Test Management Suite)
 For the latest info, see https://github.com/SwatKat1977/intmac/
 
 Copyright 2014-2023 Integrated Test Management Suite Development Team
@@ -111,9 +111,3 @@ namespace items
 
     }   // namespace serviceFramework
 }   // namespace items
-
-
-int main(int argc, char **argv)
-{
-    return 0;
-}

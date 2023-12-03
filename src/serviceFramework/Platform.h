@@ -1,7 +1,7 @@
 /*
 -----------------------------------------------------------------------------
 This source file is part of ITEMS
-(Integrated Test Management Suite )
+(Integrated Test Management Suite)
 For the latest info, see https://github.com/SwatKat1977/intmac/
 
 Copyright 2014-2023 Integrated Test Management Suite Development Team
@@ -42,7 +42,7 @@ The following is based on Ogre3D code:
 #endif
 
 #if (ITEMS_PLATFORM == ITEMS_PLATFORM_WINDOWS_MSVC)
-#  define ITEMS_DLLEXPORT   __declspec( dllexport )
+#  define ITEMS_DLLEXPORT __declspec( dllexport )
 #else
 #  define ITEMS_DLLEXPORT
 #endif
