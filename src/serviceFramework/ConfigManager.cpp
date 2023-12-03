@@ -28,7 +28,6 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 
 #define UNDEFINED_INIT_VALUE "__UNSET__"
 
-
 namespace items
 {
     namespace serviceFramework
@@ -37,7 +36,8 @@ namespace items
         ConfigManager::ConfigManager () : m_configFile (""),
             m_hasConfigFile (false),
             m_configFileRequired (false),
-            m_layout (nullptr)
+            m_layout (nullptr),
+            m_configReader(nullptr)
         {
         }
 
