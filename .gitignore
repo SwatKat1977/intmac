@@ -13,3 +13,6 @@ bin
 .vscode
 *.user
 *.filters
+X64
+
+src/build
