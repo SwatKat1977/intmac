@@ -140,6 +140,7 @@ copy $(OutDir)$(TargetName)$(TargetExt) $(SolutionDir)build
     <ClCompile Include="ConfigSetup.cpp" />
     <ClCompile Include="ConfigSetupItem.cpp" />
     <ClCompile Include="Platform.cpp" />
+    <ClCompile Include="Service.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\externalLibraries\INIReader\INIReader.h" />
@@ -147,6 +148,8 @@ copy $(OutDir)$(TargetName)$(TargetExt) $(SolutionDir)build
     <ClInclude Include="ConfigSetup.h" />
     <ClInclude Include="ConfigSetupItem.h" />
     <ClInclude Include="Platform.h" />
+    <ClInclude Include="Service.h" />
+    <ClInclude Include="Singleton.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

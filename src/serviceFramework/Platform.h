@@ -25,6 +25,7 @@ The following is based on Ogre3D code:
 */
 #ifndef PLATFORM_H
 #define PLATFORM_H
+#include <assert.h>
 #include <string>
 
 #define ITEMS_PLATFORM_WINDOWS_CORE 1
@@ -40,6 +41,8 @@ The following is based on Ogre3D code:
 #else
 #    define ITEMS_PLATFORM ITEMS_PLATFORM_LINUX
 #endif
+
+#define ItemsAssert( expr, mesg ) assert( (expr) && (mesg) )
 
 char* GetEnv (const char* field);
 
