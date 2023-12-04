@@ -23,11 +23,15 @@ The following is based on Ogre3D code:
 * GetEnv from os-int.h
 -----------------------------------------------------------------------------
 */
+#include <signal.h>
 #include "spdlog/spdlog.h"
 #include "spdlog/async.h"
 #include "spdlog/sinks/basic_file_sink.h"
 #include "spdlog/sinks/rotating_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
+#include "oatpp/web/server/HttpConnectionHandler.hpp"
+#include "oatpp/network/Server.hpp"
+#include "oatpp/network/tcp/server/ConnectionProvider.hpp"
 #include "LoggerSettings.h"
 #include "Platform.h"
 #include "ServiceContext.h"
@@ -36,10 +40,19 @@ The following is based on Ogre3D code:
 #define LOGGER_THREAD_COUNT 1
 #define LOGGER_NAME "loggername"
 
+#define LOGGER spdlog::get ("loggername")
+
 namespace items
 {
     namespace serviceFramework
     {
+        static ServiceContext *m_instance;
+
+        static void StopSignalHandler (int signal)
+        {
+            LOGGER->info ("Service shutdown signal has been caught...");
+            m_instance->NotifyShutdownRequested ();
+        }
 
         ServiceContext::ServiceContext (std::string contextName) :
             m_contextName(contextName),
@@ -48,6 +61,7 @@ namespace items
             m_usingIniConfig(false),
             m_initLayout(nullptr)
         {
+            m_instance = this;
         }
 
         bool ServiceContext::Initialise (SectionsMap *initLayout,
@@ -71,8 +85,76 @@ namespace items
                 return false;
             }
 
-            //m_initialised = ServiceInitialise ();
+            for (auto init = m_initialisers.begin ();
+                init != m_initialisers.end ();
+                init++)
+            {
+                m_initialised = (*init)->CallInitialise ();
+
+                if (!m_initialised)
+                    break;
+            }
+
             return m_initialised;
+        }
+
+        void ServiceContext::AddInitialiser (ServiceInitialiser* newInit)
+        {
+            for (auto init = m_initialisers.begin ();
+                init != m_initialisers.end ();
+                init++)
+            {
+                if ((*init)->Name () == newInit->Name ())
+                {
+                    std::string err = "Duplicate initaliser '" +
+                                      newInit->Name() + "'";
+                    throw new std::invalid_argument(err);
+                }
+            }
+
+            m_initialisers.push_back (newInit);
+        }
+
+        void ServiceContext::Execute ()
+        {
+            // Windows does not handle SIGINT properly, so disable... see MSDN:
+            // https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/signal?view=msvc-170
+#if ITEMS_PLATFORM == ITEMS_PLATFORM_LINUX
+            LOGGER->info ("Setting up signal handler...");
+            struct sigaction sigIntHandler;
+            sigIntHandler.sa_handler = StopSignalHandler;
+            sigemptyset (&sigIntHandler.sa_mask);
+            sigIntHandler.sa_flags = 0;
+            sigaction (SIGINT, &sigIntHandler, NULL);
+#endif
+
+            /* Create Router for HTTP requests routing */
+            auto router = oatpp::web::server::HttpRouter::createShared ();
+
+            /* Create HTTP connection handler with router */
+            auto connectionHandler = oatpp::web::server::HttpConnectionHandler::createShared (router);
+
+            /* Create TCP connection provider */
+            auto connectionProvider = oatpp::network::tcp::server::ConnectionProvider::createShared ({ "localhost", 8000, oatpp::network::Address::IP_4 });
+
+            /* Create server which takes provided TCP connections and passes them to HTTP connection handler */
+            oatpp::network::Server server (connectionProvider, connectionHandler);
+
+            // Run Oat++ server.
+            server.run (true);
+
+            while (!m_shutdownRequested)
+            {
+                // std::this_thread::sleep_for (1ms);
+                // ServiceRun ();
+            }
+
+            // ServiceStop ();
+        }
+
+        void ServiceContext::NotifyShutdownRequested ()
+        {
+            m_shutdownRequested = true;
         }
 
         bool ServiceContext::InitialiseLogger ()
@@ -97,7 +179,6 @@ namespace items
 
             if (GET_LOGGING_LOG_TO_CONSOLE == LOGGING_LOG_TO_CONSOLE_YES)
             {
-                printf ("Logging to console\n");
                 auto stdout_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt > ();
                 sinks.push_back (stdout_sink);
             }

@@ -71,7 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>.;../externalLibraries/INIReader;../externalLibraries/spdlog;$(IncludePath)</IncludePath>
+    <IncludePath>.;../externalLibraries/INIReader;../externalLibraries/spdlog;$(ITEMS_OATPP_BASE_DIR)\include\oatpp-1.3.0\oatpp;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ITEMS_OATPP_BASE_DIR)\lib\oatpp-1.3.0;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -107,10 +108,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>ws2_32.lib;oatpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>IF NOT EXIST  $(SolutionDir)build mkdir $(SolutionDir)build
@@ -118,6 +121,9 @@ copy $(OutDir)$(TargetName)$(TargetExt) $(SolutionDir)build
 </Command>
       <Message>Copy service framework library</Message>
     </PostBuildEvent>
+    <Lib>
+      <AdditionalDependencies>oatpp.lib</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -139,6 +145,7 @@ copy $(OutDir)$(TargetName)$(TargetExt) $(SolutionDir)build
     <ClCompile Include="ConfigManager.cpp" />
     <ClCompile Include="ConfigSetup.cpp" />
     <ClCompile Include="ConfigSetupItem.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="Platform.cpp" />
     <ClCompile Include="ServiceContext.cpp" />
   </ItemGroup>

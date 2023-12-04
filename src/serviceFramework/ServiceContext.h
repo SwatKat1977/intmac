@@ -30,6 +30,21 @@ namespace items
 {
     namespace serviceFramework
     {
+        class ServiceInitialiser
+        {
+        public:
+
+            ServiceInitialiser (std::string name) : m_name(name)
+            {}
+
+            std::string& Name () { return m_name; }
+
+            virtual bool CallInitialise () = 0;
+
+        protected:
+            std::string m_name;
+        };
+
         class ServiceContext
         {
         public:
@@ -43,6 +58,8 @@ namespace items
 
             void NotifyShutdownRequested ();
 
+            void AddInitialiser (ServiceInitialiser *initialiser);
+
         private:
             ConfigManager m_configManager;
             std::string m_contextName;
@@ -51,6 +68,7 @@ namespace items
             SectionsMap* m_initLayout;
             bool m_shutdownRequested;
             bool m_usingIniConfig;
+            std::list<ServiceInitialiser*> m_initialisers;
 
 /*
             virtual bool ServiceInitialise () { return true; }

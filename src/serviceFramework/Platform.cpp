@@ -25,7 +25,7 @@ The following is based on Ogre3D code:
 */
 #include "Platform.h"
 
-char* GetEnv (const char* field)
+std::string GetEnv (const char* field)
 {
 #if (ITEMS_PLATFORM == ITEMS_PLATFORM_WINDOWS_MSVC)
     size_t len = 0;
