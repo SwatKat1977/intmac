@@ -44,6 +44,6 @@ The following is based on Ogre3D code:
 
 #define ItemsAssert( expr, mesg ) assert( (expr) && (mesg) )
 
-char* GetEnv (const char* field);
+std::string GetEnv (const char* field);
 
 #endif

@@ -209,9 +209,9 @@ namespace items
                 envVariable.begin (),
                 ::toupper);
 
-            const char* envValue = GetEnv (envVariable.c_str ());
+            std::string envValue = GetEnv (envVariable.c_str ());
 
-            if (envValue)
+            if (!envValue.empty())
             {
                 try
                 {
@@ -308,9 +308,9 @@ namespace items
                 envVariable.begin (),
                 ::toupper);
 
-            const char* envValue = GetEnv (envVariable.c_str ());
+            std::string envValue = GetEnv (envVariable.c_str ());
 
-            if (envValue)
+            if (!envValue.empty ())
             {
                 strValue = std::string (envValue);
                 isSet = true;
