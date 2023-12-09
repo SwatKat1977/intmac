@@ -47,16 +47,18 @@ namespace items
             std::shared_ptr<oatpp::network::tcp::server::ConnectionProvider> provider;
         };
 
-        class ServiceInitialiser
+        class ServiceModule
         {
         public:
 
-            ServiceInitialiser (std::string name) : m_name(name)
+            ServiceModule (std::string name) : m_name(name)
             {}
 
             std::string& Name () { return m_name; }
 
-            virtual bool CallInitialise () = 0;
+            virtual bool Initialise () { return true; }
+
+            virtual void Execute () { }
 
         protected:
             std::string m_name;
@@ -75,7 +77,7 @@ namespace items
 
             void NotifyShutdownRequested ();
 
-            void AddInitialiser (ServiceInitialiser *initialiser);
+            void AddServiceModule (ServiceModule *newModule);
 
             void AddServiceProvider (std::string address,
                                      int networkPort,
@@ -89,7 +91,7 @@ namespace items
             SectionsMap* m_initLayout;
             bool m_shutdownRequested;
             bool m_usingIniConfig;
-            std::list<ServiceInitialiser*> m_initialisers;
+            std::list<ServiceModule *> m_modules;
 
             std::shared_ptr<oatpp::web::server::HttpRouter> m_router;
             std::shared_ptr<oatpp::web::server::HttpConnectionHandler> m_connectionHandler;

@@ -90,11 +90,11 @@ namespace items
                 return false;
             }
 
-            for (auto init = m_initialisers.begin ();
-                init != m_initialisers.end ();
+            for (auto init = m_modules.begin ();
+                init != m_modules.end ();
                 init++)
             {
-                m_initialised = (*init)->CallInitialise ();
+                m_initialised = (*init)->Initialise ();
 
                 if (!m_initialised)
                     break;
@@ -122,22 +122,21 @@ namespace items
             return m_initialised;
         }
 
-        void ServiceContext::AddInitialiser (ServiceInitialiser* newInit)
+        void ServiceContext::AddServiceModule (ServiceModule* newModule)
         {
-
-            for (auto init = m_initialisers.begin ();
-                init != m_initialisers.end ();
-                init++)
+            for (auto module = m_modules.begin ();
+                module != m_modules.end ();
+                module++)
             {
-                if ((*init)->Name () == newInit->Name ())
+                if ((*module)->Name () == newModule->Name ())
                 {
-                    std::string err = "Duplicate initaliser '" +
-                                      newInit->Name() + "'";
+                    std::string err = "Duplicate service module '" +
+                                      newModule->Name() + "'";
                     throw new std::invalid_argument(err);
                 }
             }
 
-            m_initialisers.push_back (newInit);
+            m_modules.push_back (newModule);
         }
 
         void ServiceContext::AddServiceProvider (std::string address,

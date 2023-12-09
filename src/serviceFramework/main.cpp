@@ -6,17 +6,17 @@
 
 using namespace items::serviceFramework;
 
-class TestInit : public ServiceInitialiser
+class TestInit : public ServiceModule
 {
 public:
 
-    TestInit (std::string name) : ServiceInitialiser (name)
+    TestInit (std::string name) : ServiceModule (name)
     {
     }
 
-    bool CallInitialise ()
+    bool Initialise ()
     {
-        printf ("Hello my little kitty\n");
+        printf ("Initialise test module...\n");
         return true;
     }
 };
@@ -32,7 +32,7 @@ int main ()
 
     auto context = new ServiceContext ("Test Application");
 
-    context->AddInitialiser (&testInit);
+    context->AddServiceModule(&testInit);
 
     if (!context->Initialise (&CONFIGURATION_LAYOUT_MAP, "test.ini"))
     {
