@@ -6,11 +6,11 @@
 
 using namespace items::serviceFramework;
 
-class TestInit : public ServiceModule
+class TestModule : public ServiceModule
 {
 public:
 
-    TestInit (std::string name) : ServiceModule (name)
+    TestModule (std::string name) : ServiceModule (name)
     {
     }
 
@@ -28,11 +28,11 @@ int main ()
         {LOGGING_SECTION, LoggerSettings }
     };
 
-    TestInit testInit = TestInit ("Test Init");
+    TestModule module = TestModule ("Test Init");
 
     auto context = new ServiceContext ("Test Application");
 
-    context->AddServiceModule(&testInit);
+    context->AddServiceModule(&module);
 
     if (!context->Initialise (&CONFIGURATION_LAYOUT_MAP, "test.ini"))
     {
