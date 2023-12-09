@@ -139,7 +139,8 @@ namespace items
             m_modules.push_back (newModule);
         }
 
-        void ServiceContext::AddServiceProvider (std::string address,
+        void ServiceContext::AddServiceProvider (std::string name,
+                                                 std::string address,
                                                  int networkPort,
                                                  ServiceNetworkType networkType)
         {
@@ -147,9 +148,10 @@ namespace items
                 provider != m_providers.end ();
                 provider++)
             {
-                if ((*provider).address == address &&
-                    (*provider).networkPort == networkPort &&
-                    (*provider).networkType == networkType)
+                if ((*provider).second.name == name &&
+                    (*provider).second.address == address &&
+                    (*provider).second.networkPort == networkPort &&
+                    (*provider).second.networkType == networkType)
                 {
                     std::string err = "Duplicate service provider!";
                     printf ("Duplicate service provider!\n");
@@ -161,11 +163,12 @@ namespace items
                 oatpp::network::Address::IP_4 : oatpp::network::Address::IP_6;
             auto provider = oatpp::network::tcp::server::ConnectionProvider::createShared (
                 { address, v_uint16 (networkPort), addrType });
-            ServiceProviderEntry entry = { address,
+            ServiceProviderEntry entry = { name,
+                                           address,
                                            v_uint16 (networkPort),
                                            networkType,
                                            provider };
-            m_providers.push_back (entry);
+            m_providers[name] = entry;
         }
 
         void ServiceContext::Execute ()
@@ -187,12 +190,12 @@ namespace items
             {
                 std::stringstream msg;
                 msg << "Server started listening "
-                    << (*provider).address << ":"
-                    << (*provider).networkPort;
+                    << (*provider).second.address << ":"
+                    << (*provider).second.networkPort;
                 LOGGER->info (msg.str());
                 std::shared_ptr<oatpp::network::Server> server;
                 server = std::make_shared<oatpp::network::Server> (
-                    (*provider).provider,
+                    (*provider).second.provider,
                     m_connectionHandler);
                 server->run (true);
                 m_servers.push_back (server);

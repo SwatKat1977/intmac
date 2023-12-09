@@ -41,6 +41,7 @@ namespace items
 
         struct ServiceProviderEntry
         {
+            std::string name;
             std::string address;
             v_uint16 networkPort;
             ServiceNetworkType networkType;
@@ -79,7 +80,8 @@ namespace items
 
             void AddServiceModule (ServiceModule *newModule);
 
-            void AddServiceProvider (std::string address,
+            void AddServiceProvider (std::string name,
+                                     std::string address,
                                      int networkPort,
                                      ServiceNetworkType networkType);
 
@@ -95,7 +97,7 @@ namespace items
 
             std::shared_ptr<oatpp::web::server::HttpRouter> m_router;
             std::shared_ptr<oatpp::web::server::HttpConnectionHandler> m_connectionHandler;
-            std::list<ServiceProviderEntry> m_providers;
+            std::map<std::string, ServiceProviderEntry> m_providers;
             std::list<std::shared_ptr<oatpp::network::Server>> m_servers;
 
             /*
