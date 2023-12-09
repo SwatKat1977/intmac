@@ -27,7 +27,9 @@ The following is based on Ogre3D code:
 #include "oatpp/network/Server.hpp"
 #include "oatpp/network/tcp/server/ConnectionProvider.hpp"
 #include "oatpp/web/server/HttpConnectionHandler.hpp"
+#include "oatpp/web/protocol/http/outgoing/Response.hpp"
 #include "ConfigManager.h"
+#include "ApiRoute.h"
 
 namespace items
 {
@@ -39,6 +41,9 @@ namespace items
             SERVICENETWORKTYPE_IPV6
         };
 
+        using ApiRoutePtr = std::shared_ptr<ApiRoute>;
+        using ApiRoutesMap = std::map<std::string, ApiRoutePtr>;
+
         struct ServiceProviderEntry
         {
             std::string name;
@@ -49,6 +54,8 @@ namespace items
             std::shared_ptr<oatpp::web::server::HttpRouter> router;
             std::shared_ptr<oatpp::web::server::HttpConnectionHandler> connectionHandler;
         };
+
+        using ProvidersMap = std::map<std::string, ServiceProviderEntry>;
 
         class ServiceModule
         {
@@ -87,6 +94,11 @@ namespace items
                                      int networkPort,
                                      ServiceNetworkType networkType);
 
+            void AddRoute (std::string providerName,
+                           HTTPRequestMethod method,
+                           std::string endpoint,
+                           ApiRoute *route);
+
         private:
             ConfigManager m_configManager;
             std::string m_contextName;
@@ -97,8 +109,10 @@ namespace items
             bool m_usingIniConfig;
             std::list<ServiceModule *> m_modules;
 
-            std::map<std::string, ServiceProviderEntry> m_providers;
+            ProvidersMap m_providers;
             std::list<std::shared_ptr<oatpp::network::Server>> m_servers;
+
+            std::string HttpRequestMethodToStr (HTTPRequestMethod method);
 
             /*
             virtual void ServiceRun () { ; }

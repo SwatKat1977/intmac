@@ -3,6 +3,7 @@
 #include "spdlog/spdlog.h"
 #include "ServiceContext.h"
 #include "LoggerSettings.h"
+#include "oatpp/web/server/HttpConnectionHandler.hpp"
 
 using namespace items::serviceFramework;
 
@@ -19,6 +20,18 @@ public:
         printf ("Initialise test module...\n");
         return true;
     }
+};
+
+class TestRoute1 : public ApiRoute
+{
+public:
+    TestRoute1 (std::string name) : ApiRoute (name) {}
+
+    virtual ApiOutResponsePtr Route (const ApiIncomingReqPtr& request)
+    {
+        return ApiResponseFactory::createResponse (ApiResponseStatus::CODE_200, "This is my endpoint");
+    }
+
 };
 
 int main ()
@@ -49,7 +62,18 @@ int main ()
         std::cout << "Exception : " << e.what () << std::endl;
     }
 
-    context->Execute ();
+    try
+    {
+        context->AddRoute ("entry1", HTTPRequestMethod_GET, "/test", new TestRoute1("A Route"));
+        //context->AddRoute ("Invad", HTTPRequestMethod_GET, "/test", nullptr);
+    }
+    catch (std::runtime_error e)
+    {
+        std::cout << "Exception : " << e.what () << std::endl;
+        return EXIT_FAILURE;
+    }
+
+        context->Execute ();
 
     return EXIT_SUCCESS;
 }

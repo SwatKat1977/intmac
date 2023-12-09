@@ -59,12 +59,19 @@ namespace items
             m_instance->NotifyShutdownRequested ();
         }
 
-        class Handler : public oatpp::web::server::HttpRequestHandler
+        class RouteHandler : public oatpp::web::server::HttpRequestHandler
         {
-            std::shared_ptr<OutgoingResponse> handle (const std::shared_ptr<IncomingRequest>& request) override
+        public:
+            RouteHandler (ApiRoute *route) : m_route(route)
+            { }
+
+            ApiOutResponsePtr handle (const std::shared_ptr<IncomingRequest>& request) override
             {
-                return ResponseFactory::createResponse (Status::CODE_200, "Hello World!");
+                return m_route->Route (request);
             }
+
+        protected:
+            ApiRoute *m_route;
         };
 
         ServiceContext::ServiceContext (std::string contextName) :
@@ -179,6 +186,25 @@ namespace items
             m_providers[name] = entry;
         }
 
+        void ServiceContext::AddRoute (std::string providerName,
+            HTTPRequestMethod method,
+            std::string endpoint,
+            ApiRoute* route)
+        {
+            ProvidersMap::iterator provider = m_providers.find (providerName);
+            if (provider == m_providers.end ())
+            {
+                std::string errStr = std::string ("Unknow provider '") +
+                                     providerName + "'";
+                throw std::runtime_error (errStr);
+            }
+
+            // Add route to the provider.
+            (*provider).second.router->route (
+                HttpRequestMethodToStr(method),
+                endpoint, std::make_shared<RouteHandler>(route));
+        }
+
         void ServiceContext::Execute ()
         {
             // Windows does not handle SIGINT properly, so disable... see MSDN:
@@ -206,8 +232,8 @@ namespace items
                     (*provider).second.provider,
                     (*provider).second.connectionHandler);
 
-                /* Route GET - "/hello" requests to Handler */
-                (*provider).second.router->route ("GET", "/hello", std::make_shared<Handler> ());
+                ///* Route GET - "/hello" requests to Handler */
+                //(*provider).second.router->route ("GET", "/hello", std::make_shared<Handler> ());
 
                 server->run (true);
                 m_servers.push_back (server);
@@ -322,6 +348,25 @@ namespace items
 
             return m_configManager.processConfig ();
         }
+
+        std::string ServiceContext::HttpRequestMethodToStr (HTTPRequestMethod method)
+        {
+            switch (method)
+            {
+                case HTTPRequestMethod_GET: return "GET";
+                case HTTPRequestMethod_HEAD: return "HEAD";
+                case HTTPRequestMethod_POST: return "POST";
+                case HTTPRequestMethod_PUT: return "PUT";
+                case HTTPRequestMethod_DELETE: return "DELETE";
+                case HTTPRequestMethod_CONNECT: return "CONNECT";
+                case HTTPRequestMethod_OPTIONS: return "OPTIONS";
+                case HTTPRequestMethod_TRACE: return "TRACE";
+                case HTTPRequestMethod_PATCH: return "PATCH";
+            }
+
+            throw std::runtime_error ("Invalid HttpRequestMethod");
+        }
+
 
     }   // namespace serviceFramework
 }   // namespace items

@@ -151,6 +151,7 @@ copy $(OutDir)$(TargetName)$(TargetExt) $(SolutionDir)build
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\externalLibraries\INIReader\INIReader.h" />
+    <ClInclude Include="ApiRoute.h" />
     <ClInclude Include="ConfigManager.h" />
     <ClInclude Include="ConfigSetup.h" />
     <ClInclude Include="ConfigSetupItem.h" />
