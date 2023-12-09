@@ -24,12 +24,28 @@ The following is based on Ogre3D code:
 -----------------------------------------------------------------------------
 */
 #include <string>
+#include "oatpp/network/Server.hpp"
+#include "oatpp/network/tcp/server/ConnectionProvider.hpp"
+#include "oatpp/web/server/HttpConnectionHandler.hpp"
 #include "ConfigManager.h"
 
 namespace items
 {
     namespace serviceFramework
     {
+        enum ServiceNetworkType
+        {
+            SERVICENETWORKTYPE_IPV4,
+            SERVICENETWORKTYPE_IPV6
+        };
+
+        struct ServiceProviderEntry
+        {
+            std::string address;
+            v_uint16 networkPort;
+            ServiceNetworkType networkType;
+        };
+
         class ServiceInitialiser
         {
         public:
@@ -60,6 +76,10 @@ namespace items
 
             void AddInitialiser (ServiceInitialiser *initialiser);
 
+            void AddServiceProvider (std::string address,
+                                     int networkPort,
+                                     ServiceNetworkType networkType);
+
         private:
             ConfigManager m_configManager;
             std::string m_contextName;
@@ -70,14 +90,17 @@ namespace items
             bool m_usingIniConfig;
             std::list<ServiceInitialiser*> m_initialisers;
 
-/*
-            virtual bool ServiceInitialise () { return true; }
+            std::shared_ptr<oatpp::web::server::HttpRouter> m_router;
+            std::shared_ptr<oatpp::web::server::HttpConnectionHandler> m_connectionHandler;
+            std::list <std::shared_ptr<oatpp::network::tcp::server::ConnectionProvider>> m_providers;
+            std::list<ServiceProviderEntry> m_serviceProviderEntry;
+            std::list<std::shared_ptr<oatpp::network::Server>> m_servers;
 
+            /*
             virtual void ServiceRun () { ; }
 
             virtual void ServiceStop () { ; }
-
-*/
+            */
 
             bool InitialiseLogger ();
 

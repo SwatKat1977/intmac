@@ -1,5 +1,5 @@
-
-
+#include <exception>
+#include <iostream>
 #include "spdlog/spdlog.h"
 #include "ServiceContext.h"
 #include "LoggerSettings.h"
@@ -36,6 +36,17 @@ int main ()
 
     context->Initialise (&CONFIGURATION_LAYOUT_MAP, "test.ini");
     spdlog::get ("loggername")->info ("Test something here....");
+
+    try
+    {
+        context->AddServiceProvider ("localhost", 8008, SERVICENETWORKTYPE_IPV4);
+        context->AddServiceProvider ("localhost", 8099, SERVICENETWORKTYPE_IPV4);
+    }
+    catch (std::invalid_argument e)
+    {
+        std::cout << "Exception : " << e.what () << std::endl;
+    }
+
     context->Execute ();
 
     //return EXIT_FAILURE;

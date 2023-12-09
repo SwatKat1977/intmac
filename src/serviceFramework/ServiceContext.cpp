@@ -23,15 +23,17 @@ The following is based on Ogre3D code:
 * GetEnv from os-int.h
 -----------------------------------------------------------------------------
 */
+#include <chrono>
 #include <signal.h>
+#if ITEMS_PLATFORM == ITEMS_PLATFORM_WINDOWS_CORE || \
+    ITEMS_PLATFORM == ITEMS_PLATFORM_WINDOWS_MSVC
+#  include <winsock2.h>
+#endif
 #include "spdlog/spdlog.h"
 #include "spdlog/async.h"
 #include "spdlog/sinks/basic_file_sink.h"
 #include "spdlog/sinks/rotating_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
-#include "oatpp/web/server/HttpConnectionHandler.hpp"
-#include "oatpp/network/Server.hpp"
-#include "oatpp/network/tcp/server/ConnectionProvider.hpp"
 #include "LoggerSettings.h"
 #include "Platform.h"
 #include "ServiceContext.h"
@@ -41,6 +43,8 @@ The following is based on Ogre3D code:
 #define LOGGER_NAME "loggername"
 
 #define LOGGER spdlog::get ("loggername")
+
+using namespace std::chrono_literals;
 
 namespace items
 {
@@ -95,11 +99,31 @@ namespace items
                     break;
             }
 
+#if ITEMS_PLATFORM == ITEMS_PLATFORM_WINDOWS_CORE || \
+    ITEMS_PLATFORM == ITEMS_PLATFORM_WINDOWS_MSVC
+            int iResult;
+            WSADATA wsaData;
+
+            // Initialize Winsock
+            iResult = WSAStartup (MAKEWORD (2, 2), &wsaData);
+            if (iResult != 0) {
+                printf ("Failed to initialise Winsock..\n");
+                m_initialised = false;
+            }
+#endif
+
+            // Create Router for HTTP requests routing.
+            m_router = oatpp::web::server::HttpRouter::createShared ();
+
+            // Create HTTP connection handler with router.
+            m_connectionHandler = oatpp::web::server::HttpConnectionHandler::createShared (m_router);
+
             return m_initialised;
         }
 
         void ServiceContext::AddInitialiser (ServiceInitialiser* newInit)
         {
+
             for (auto init = m_initialisers.begin ();
                 init != m_initialisers.end ();
                 init++)
@@ -115,6 +139,36 @@ namespace items
             m_initialisers.push_back (newInit);
         }
 
+        void ServiceContext::AddServiceProvider (std::string address,
+                                                 int networkPort,
+                                                 ServiceNetworkType networkType)
+        {
+            for (auto provider = m_serviceProviderEntry.begin ();
+                provider != m_serviceProviderEntry.end ();
+                provider++)
+            {
+                if ((*provider).address == address &&
+                    (*provider).networkPort == networkPort &&
+                    (*provider).networkType == networkType)
+                {
+                    std::string err = "Duplicate service provider!";
+                    printf ("Duplicate service provider!\n");
+                    throw std::invalid_argument (err);
+                }
+            }
+
+            ServiceProviderEntry entry = { address,
+                                           v_uint16(networkPort),
+                                           networkType };
+            m_serviceProviderEntry.push_back (entry);
+
+            auto addrType = networkType == SERVICENETWORKTYPE_IPV4 ?
+                 oatpp::network::Address::IP_4 : oatpp::network::Address::IP_6;
+            auto provider = oatpp::network::tcp::server::ConnectionProvider::createShared (
+                 { address, v_uint16(networkPort), addrType });
+            m_providers.push_back (provider);
+        }
+
         void ServiceContext::Execute ()
         {
             // Windows does not handle SIGINT properly, so disable... see MSDN:
@@ -128,24 +182,20 @@ namespace items
             sigaction (SIGINT, &sigIntHandler, NULL);
 #endif
 
-            /* Create Router for HTTP requests routing */
-            auto router = oatpp::web::server::HttpRouter::createShared ();
-
-            /* Create HTTP connection handler with router */
-            auto connectionHandler = oatpp::web::server::HttpConnectionHandler::createShared (router);
-
-            /* Create TCP connection provider */
-            auto connectionProvider = oatpp::network::tcp::server::ConnectionProvider::createShared ({ "localhost", 8000, oatpp::network::Address::IP_4 });
-
-            /* Create server which takes provided TCP connections and passes them to HTTP connection handler */
-            oatpp::network::Server server (connectionProvider, connectionHandler);
-
-            // Run Oat++ server.
-            server.run (true);
+            for (auto provider = m_providers.begin ();
+                 provider != m_providers.end ();
+                 provider++)
+            {
+                LOGGER->info ("Starting listening on port xxxx");
+                std::shared_ptr<oatpp::network::Server> server;
+                server = std::make_shared<oatpp::network::Server> ((*provider), m_connectionHandler);
+                server->run (true);
+                m_servers.push_back (server);
+            }
 
             while (!m_shutdownRequested)
             {
-                // std::this_thread::sleep_for (1ms);
+                std::this_thread::sleep_for (1ms);
                 // ServiceRun ();
             }
 
