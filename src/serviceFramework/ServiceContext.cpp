@@ -25,6 +25,7 @@ The following is based on Ogre3D code:
 */
 #include <chrono>
 #include <signal.h>
+#include <sstream>
 #if ITEMS_PLATFORM == ITEMS_PLATFORM_WINDOWS_CORE || \
     ITEMS_PLATFORM == ITEMS_PLATFORM_WINDOWS_MSVC
 #  include <winsock2.h>
@@ -143,8 +144,8 @@ namespace items
                                                  int networkPort,
                                                  ServiceNetworkType networkType)
         {
-            for (auto provider = m_serviceProviderEntry.begin ();
-                provider != m_serviceProviderEntry.end ();
+            for (auto provider = m_providers.begin ();
+                provider != m_providers.end ();
                 provider++)
             {
                 if ((*provider).address == address &&
@@ -157,16 +158,15 @@ namespace items
                 }
             }
 
-            ServiceProviderEntry entry = { address,
-                                           v_uint16(networkPort),
-                                           networkType };
-            m_serviceProviderEntry.push_back (entry);
-
             auto addrType = networkType == SERVICENETWORKTYPE_IPV4 ?
-                 oatpp::network::Address::IP_4 : oatpp::network::Address::IP_6;
+                oatpp::network::Address::IP_4 : oatpp::network::Address::IP_6;
             auto provider = oatpp::network::tcp::server::ConnectionProvider::createShared (
-                 { address, v_uint16(networkPort), addrType });
-            m_providers.push_back (provider);
+                { address, v_uint16 (networkPort), addrType });
+            ServiceProviderEntry entry = { address,
+                                           v_uint16 (networkPort),
+                                           networkType,
+                                           provider };
+            m_providers.push_back (entry);
         }
 
         void ServiceContext::Execute ()
@@ -186,9 +186,15 @@ namespace items
                  provider != m_providers.end ();
                  provider++)
             {
-                LOGGER->info ("Starting listening on port xxxx");
+                std::stringstream msg;
+                msg << "Server started listening "
+                    << (*provider).address << ":"
+                    << (*provider).networkPort;
+                LOGGER->info (msg.str());
                 std::shared_ptr<oatpp::network::Server> server;
-                server = std::make_shared<oatpp::network::Server> ((*provider), m_connectionHandler);
+                server = std::make_shared<oatpp::network::Server> (
+                    (*provider).provider,
+                    m_connectionHandler);
                 server->run (true);
                 m_servers.push_back (server);
             }

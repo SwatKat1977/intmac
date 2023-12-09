@@ -44,6 +44,7 @@ namespace items
             std::string address;
             v_uint16 networkPort;
             ServiceNetworkType networkType;
+            std::shared_ptr<oatpp::network::tcp::server::ConnectionProvider> provider;
         };
 
         class ServiceInitialiser
@@ -92,8 +93,7 @@ namespace items
 
             std::shared_ptr<oatpp::web::server::HttpRouter> m_router;
             std::shared_ptr<oatpp::web::server::HttpConnectionHandler> m_connectionHandler;
-            std::list <std::shared_ptr<oatpp::network::tcp::server::ConnectionProvider>> m_providers;
-            std::list<ServiceProviderEntry> m_serviceProviderEntry;
+            std::list<ServiceProviderEntry> m_providers;
             std::list<std::shared_ptr<oatpp::network::Server>> m_servers;
 
             /*

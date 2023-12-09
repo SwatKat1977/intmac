@@ -34,8 +34,10 @@ int main ()
 
     context->AddInitialiser (&testInit);
 
-    context->Initialise (&CONFIGURATION_LAYOUT_MAP, "test.ini");
-    spdlog::get ("loggername")->info ("Test something here....");
+    if (!context->Initialise (&CONFIGURATION_LAYOUT_MAP, "test.ini"))
+    {
+        return EXIT_FAILURE;
+    }
 
     try
     {
@@ -48,8 +50,6 @@ int main ()
     }
 
     context->Execute ();
-
-    //return EXIT_FAILURE;
 
     return EXIT_SUCCESS;
 }
