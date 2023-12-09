@@ -59,6 +59,14 @@ namespace items
             m_instance->NotifyShutdownRequested ();
         }
 
+        class Handler : public oatpp::web::server::HttpRequestHandler
+        {
+            std::shared_ptr<OutgoingResponse> handle (const std::shared_ptr<IncomingRequest>& request) override
+            {
+                return ResponseFactory::createResponse (Status::CODE_200, "Hello World!");
+            }
+        };
+
         ServiceContext::ServiceContext (std::string contextName) :
             m_contextName(contextName),
             m_initialised(false),
@@ -113,12 +121,6 @@ namespace items
             }
 #endif
 
-            // Create Router for HTTP requests routing.
-            m_router = oatpp::web::server::HttpRouter::createShared ();
-
-            // Create HTTP connection handler with router.
-            m_connectionHandler = oatpp::web::server::HttpConnectionHandler::createShared (m_router);
-
             return m_initialised;
         }
 
@@ -163,11 +165,17 @@ namespace items
                 oatpp::network::Address::IP_4 : oatpp::network::Address::IP_6;
             auto provider = oatpp::network::tcp::server::ConnectionProvider::createShared (
                 { address, v_uint16 (networkPort), addrType });
-            ServiceProviderEntry entry = { name,
-                                           address,
-                                           v_uint16 (networkPort),
-                                           networkType,
-                                           provider };
+
+            auto router = oatpp::web::server::HttpRouter::createShared ();
+            ServiceProviderEntry entry = {
+                name,
+                address,
+                v_uint16 (networkPort),
+                networkType,
+                provider,
+                router,
+                oatpp::web::server::HttpConnectionHandler::createShared (router)
+            };
             m_providers[name] = entry;
         }
 
@@ -196,7 +204,11 @@ namespace items
                 std::shared_ptr<oatpp::network::Server> server;
                 server = std::make_shared<oatpp::network::Server> (
                     (*provider).second.provider,
-                    m_connectionHandler);
+                    (*provider).second.connectionHandler);
+
+                /* Route GET - "/hello" requests to Handler */
+                (*provider).second.router->route ("GET", "/hello", std::make_shared<Handler> ());
+
                 server->run (true);
                 m_servers.push_back (server);
             }

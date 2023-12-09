@@ -46,6 +46,8 @@ namespace items
             v_uint16 networkPort;
             ServiceNetworkType networkType;
             std::shared_ptr<oatpp::network::tcp::server::ConnectionProvider> provider;
+            std::shared_ptr<oatpp::web::server::HttpRouter> router;
+            std::shared_ptr<oatpp::web::server::HttpConnectionHandler> connectionHandler;
         };
 
         class ServiceModule
@@ -95,8 +97,6 @@ namespace items
             bool m_usingIniConfig;
             std::list<ServiceModule *> m_modules;
 
-            std::shared_ptr<oatpp::web::server::HttpRouter> m_router;
-            std::shared_ptr<oatpp::web::server::HttpConnectionHandler> m_connectionHandler;
             std::map<std::string, ServiceProviderEntry> m_providers;
             std::list<std::shared_ptr<oatpp::network::Server>> m_servers;
 
