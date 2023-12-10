@@ -20,26 +20,24 @@ jobs:
   build-images:
     runs-on: ubuntu-22.04
     steps:
-      -
-        name: Set up QEMU
+      - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
-      -
-        name: Set up Docker Buildx
+
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-      -
-        name: Login to Docker Hub
+
+      - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
-      -
-        uses: actions/checkout@v3
+
+      - uses: actions/checkout@master
         name: Checkout Oat++ code
-          uses: actions/checkout@master
         with:
           repository: oatpp/oatpp
-      -
-        name: Build and push Oat++ library Docker Image
+
+      - name: Build and push Oat++ library Docker Image
         uses: docker/build-push-action@v3
         with:
           context: .
