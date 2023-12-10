@@ -35,7 +35,8 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
-      - name: Checkout Oat++ code
+      -
+        name: Checkout Oat++ code
         uses: actions/checkout@v3
         uses: actions/checkout@master
         with:
