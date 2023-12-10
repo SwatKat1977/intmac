@@ -28,6 +28,10 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
+      - name: Checkout Intmac code
+        uses: actions/checkout@v3
+
+      - uses: actions/checkout@v1
       - name: Checkout Oat++ code
         uses: actions/checkout@master
         with:
