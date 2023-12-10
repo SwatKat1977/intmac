@@ -1,0 +1,24 @@
+name: Build Docker ServiceFramework Docker Image
+on:
+  push:
+    branches:
+      - 'master'
+      - 'cpluplus_restart'
+
+inputs:
+  debug_mode:
+    description: "Push to Registry"
+    type: choice
+    required: true
+    default: 'true'
+    options:
+      - true
+      - false
+
+jobs:
+  build-images:
+    runs-on: ubuntu-22.04
+    steps:
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
