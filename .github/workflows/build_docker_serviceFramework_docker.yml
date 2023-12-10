@@ -5,6 +5,9 @@ on:
       - 'master'
       - 'cpluplus_restart'
 
+  schedule:
+    - cron: '0 1 * * *'
+
 inputs:
   debug_mode:
     description: "Push to Registry"
