@@ -28,8 +28,7 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
-      - uses: actions/checkout@v1
-        name: Checkout Oat++ code
+      - name: Checkout Oat++ code
         uses: actions/checkout@master
         with:
           repository: oatpp/oatpp
