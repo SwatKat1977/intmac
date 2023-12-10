@@ -1,4 +1,4 @@
-name: Build Docker ServiceFramework Docker Image
+name: Build ServiceFramework Docker Image
 on:
   push:
     branches:
@@ -8,13 +8,9 @@ on:
   workflow_dispatch:
     inputs:
       push_to_registry:
-        type: choice
+        type: boolean
         description: Push to Registry
         required: true
-        default: 'true'
-        options:
-          - true
-          - false
 
 jobs:
   build-images:
