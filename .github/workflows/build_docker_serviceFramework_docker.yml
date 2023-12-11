@@ -31,6 +31,16 @@ jobs:
       - name: Checkout Intmac code
         uses: actions/checkout@v3
 
+      - name: Determine current branch
+        run: |
+          if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
+              echo "BUILD_TAG=LATEST" >> "$GITHUB_ENV"
+              echo "BUILD TAG = $BUILD_TAG"
+          else
+              echo "BUILD_TAG=${GITHUB_REF##*/}" >> "$GITHUB_ENV"
+              echo "BUILD TAG = $BUILD_TAG"
+          fi
+
       - name: Build and push Oat++ library Docker Image
         uses: docker/build-push-action@v3
         with:
@@ -38,7 +48,7 @@ jobs:
           file: docker/Dockerfile.oatcpp_image
           push: true
           no-cache: true
-          tags: intmac/images:oatcpp-nightly
+          tags: intmac/images:oatcpp-$BUILD_TAG
           platforms: |
               linux/arm64
               linux/amd64
