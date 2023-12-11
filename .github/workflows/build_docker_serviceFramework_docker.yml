@@ -35,26 +35,22 @@ jobs:
         run: |
           if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
               echo "BUILD_TAG=LATEST" >> "$GITHUB_ENV"
-              echo "BUILD TAG = $BUILD_TAG"
-              echo "GITHUB_ENV = $GITHUB_REF"
           else
               echo "----- BUILDING ON BRANCH -----"
               echo "BUILD_TAG=${GITHUB_REF##*/}" >> "$GITHUB_ENV"
-              echo "GITHUB_ENV = $GITHUB_REF"
-              echo "BUILD TAG = $BUILD_TAG"
           fi
 
-      - name: Determine current branch
+      - name: Display current build tag
         run: echo "BUILD TAG = $BUILD_TAG | GITHUB_ENV = $GITHUB_REF"
 
-      # - name: Build and push Oat++ library Docker Image
-      #   uses: docker/build-push-action@v3
-      #   with:
-      #     context: .
-      #     file: docker/Dockerfile.oatcpp_image
-      #     push: true
-      #     no-cache: true
-      #     tags: intmac/images:oatcpp-$BUILD_TAG
-      #     platforms: |
-      #         linux/arm64
-      #         linux/amd64
+      - name: Build and push Oat++ library Docker Image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: docker/Dockerfile.oatcpp_image
+          push: true
+          no-cache: true
+          tags: intmac/images:oatcpp-$BUILD_TAG
+          platforms: |
+              linux/arm64
+              linux/amd64
