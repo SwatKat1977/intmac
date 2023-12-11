@@ -38,9 +38,10 @@ jobs:
           if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
               echo "BUILD_TAG=LATEST" >> "$GITHUB_ENV"
               echo "BUILD TAG = $BUILD_TAG"
+              echo "GITHUB_ENV = $GITHUB_ENV"
           else
               echo "BUILD_TAG=${GITHUB_REF##*/}" >> "$GITHUB_ENV"
-              echo "BUILD TAG = $BUILD_TAG"
+              echo "GITHUB_ENV = $GITHUB_ENV"
           fi
 
       # - name: Build and push Oat++ library Docker Image
