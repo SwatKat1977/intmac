@@ -34,10 +34,10 @@ jobs:
       - name: Determine current branch
         run: |
           if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
-              echo "BUILD_TAG=LATEST" >> "$GITHUB_ENV"
+              echo "BUILD_TAG=intmac/images:oatcpp-LATEST" >> "$GITHUB_ENV"
           else
               echo "----- BUILDING ON BRANCH -----"
-              echo "BUILD_TAG=${GITHUB_REF##*/}" >> "$GITHUB_ENV"
+              echo "BUILD_TAG=intmac/images:oatcpp-${GITHUB_REF##*/}" >> "$GITHUB_ENV"
           fi
 
       - name: Display current build tag
