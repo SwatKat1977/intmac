@@ -39,9 +39,6 @@ jobs:
               echo "BUILD_TAG=intmac/intmac_oatcpp:${GITHUB_REF##*/}" >> "$GITHUB_ENV"
           fi
 
-      - name: Display current build tag
-        run: echo "BUILD TAG = $BUILD_TAG | GITHUB_ENV = $GITHUB_REF"
-
       - name: Build and push Oat++ library Docker Image
         uses: docker/build-push-action@v3
         with:
