@@ -44,6 +44,9 @@ jobs:
               echo "BUILD TAG = $BUILD_TAG"
           fi
 
+      - name: Determine current branch
+        run: echo "BUILD TAG = $BUILD_TAG | GITHUB_ENV = $GITHUB_REF"
+
       # - name: Build and push Oat++ library Docker Image
       #   uses: docker/build-push-action@v3
       #   with:
