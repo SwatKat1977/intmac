@@ -43,14 +43,14 @@ jobs:
               echo "BUILD TAG = $BUILD_TAG"
           fi
 
-      - name: Build and push Oat++ library Docker Image
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          file: docker/Dockerfile.oatcpp_image
-          push: true
-          no-cache: true
-          tags: intmac/images:oatcpp-$BUILD_TAG
-          platforms: |
-              linux/arm64
-              linux/amd64
+      # - name: Build and push Oat++ library Docker Image
+      #   uses: docker/build-push-action@v3
+      #   with:
+      #     context: .
+      #     file: docker/Dockerfile.oatcpp_image
+      #     push: true
+      #     no-cache: true
+      #     tags: intmac/images:oatcpp-$BUILD_TAG
+      #     platforms: |
+      #         linux/arm64
+      #         linux/amd64
