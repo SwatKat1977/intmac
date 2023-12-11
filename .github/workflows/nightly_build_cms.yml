@@ -34,7 +34,7 @@ jobs:
         with:
           context: .
           file: docker/Dockerfile.cms_svc
-          push: true
+          push: ${{ inputs.push_to_registry }}
           no-cache: true
           tags: intmac/nightly:cms-svc-nightly
           platforms: |
