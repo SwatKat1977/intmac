@@ -16,8 +16,6 @@ jobs:
   build-images:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v2
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
 
@@ -40,6 +38,7 @@ jobs:
               echo "BUILD TAG = $BUILD_TAG"
               echo "GITHUB_ENV = $GITHUB_REF"
           else
+              echo "----- BUILDING ON BRANCH -----"
               echo "BUILD_TAG=${GITHUB_REF##*/}" >> "$GITHUB_ENV"
               echo "GITHUB_ENV = $GITHUB_REF"
               echo "BUILD TAG = $BUILD_TAG"
