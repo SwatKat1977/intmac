@@ -51,7 +51,7 @@ jobs:
           push: true
           no-cache: true
           #tags: "intmac/images:oatcpp-$BUILD_TAG"
-          tags: $BUILD_TAG
+          tags: {{ $BUILD_TAG }}
           platforms: |
               linux/arm64
               linux/amd64
