@@ -34,9 +34,9 @@ jobs:
       - name: Determine current branch
         run: |
           if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
-              echo "BUILD_TAG=intmac/intmac_serviceFramework:LATEST" >> "$GITHUB_ENV"
+              echo "BUILD_TAG=intmac/intmac_serviceframework:LATEST" >> "$GITHUB_ENV"
           else
-              echo "BUILD_TAG=intmac/intmac_serviceFramework:${GITHUB_REF##*/}" >> "$GITHUB_ENV"
+              echo "BUILD_TAG=intmac/intmac_serviceframework:${GITHUB_REF##*/}" >> "$GITHUB_ENV"
           fi
 
       - name: Build and push Items Microservice Framework Docker Image
