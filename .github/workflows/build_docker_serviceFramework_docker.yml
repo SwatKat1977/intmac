@@ -44,7 +44,7 @@ jobs:
         with:
           context: .
           file: docker/Dockerfile.oatcpp_image
-          push: true
+          push: ${{ inputs.push_to_registry }}
           no-cache: true
           tags: ${{ env.BUILD_TAG }}
           platforms: |
