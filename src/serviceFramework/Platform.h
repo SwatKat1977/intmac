@@ -28,9 +28,9 @@ The following is based on Ogre3D code:
 #include <assert.h>
 #include <string>
 
-#define ITEMS_PLATFORM_WINDOWS_CORE 1
-#define ITEMS_PLATFORM_WINDOWS_MSVC 1
-#define ITEMS_PLATFORM_LINUX 2
+#define ITEMS_PLATFORM_WINDOWS      1
+#define ITEMS_PLATFORM_WINDOWS_MSVC 2
+#define ITEMS_PLATFORM_LINUX        3
 
 #if (defined( __WIN32__ ) || defined( _WIN32 )) && !defined(__ANDROID__)
 #  if defined(_MSC_VER)

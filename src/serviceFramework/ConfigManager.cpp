@@ -217,13 +217,13 @@ namespace items
                 {
                     intValue = new int (std::stoi (envVariable));
                 }
-                catch (std::invalid_argument)
+                catch (std::invalid_argument const&)
                 {
                     std::string except = "Invalid int value (cannot parse int) for " +
                         section + "::" + fmt.ItemName ();
                     throw std::out_of_range (except);
                 }
-                catch (std::out_of_range)
+                catch (std::out_of_range const&)
                 {
                     std::string except = "Invalid int value (out of range) for " +
                         section + "::" + fmt.ItemName ();
@@ -242,14 +242,14 @@ namespace items
                     {
                         intValue = new int (std::stoi (iniIntValue));
                     }
-                    catch (std::invalid_argument)
+                    catch (std::invalid_argument const&)
                     {
                         std::string except = "Cannot convert int value '" +
                             iniIntValue + "' for " +
                             section + "::" + fmt.ItemName ();
                         throw std::out_of_range (except);
                     }
-                    catch (std::out_of_range)
+                    catch (std::out_of_range const&)
                     {
                         std::string except = "Invalid int value (out of range) for " +
                             section + "::" + fmt.ItemName ();
