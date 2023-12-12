@@ -1,8 +1,9 @@
 name: Build | Oat++ Docker Image
 on:
   push:
+    # Set branch to be invalid on purpose!
     branches:
-      - 'main'
+      - 'invalid'
 
   workflow_dispatch:
     inputs:
