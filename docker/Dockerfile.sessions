@@ -1,0 +1,5 @@
+FROM redis:7.0.11-bullseye
+
+LABEL com.items.version="0.0.0-pre_alpha"
+
+CMD redis-server /usr/local/etc/redis/redis.conf

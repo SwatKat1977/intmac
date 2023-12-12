@@ -1,0 +1,63 @@
+version: "3.8"
+
+networks:
+  items_docker_network:
+    driver: bridge
+
+services:
+
+  ################
+  ## Core services
+  ################
+
+  items-redis:
+    image: "${ITEMS_SESSIONS_IMAGE}"
+    container_name: items_sessions
+    networks:
+      - items_docker_network
+    ports:
+      - 6379:6379
+    volumes:
+      - ${ITEMS_SESSIONS_CONFIG}:/usr/local/etc/redis/redis.conf:ro
+
+  items-accounts-svc:
+    image: "${ITEMS_ACCOUNTS_SVC_IMAGE}"
+    container_name: items_accounts_svc
+    ports:
+      - "5050:5050"
+    networks:
+      - items_docker_network
+    volumes:
+      - ${ITEMS_ACCOUNTS_SVC_CONFIG}:/usr/local/items/accounts_svc.config:ro
+      - ${ITEMS_ACCOUNTS_SVC_INTERNAL_DB}:/usr/local/items/items_accounts_svc.db
+
+  items-cms-svc:
+    image: "${ITEMS_CMS_SVC_IMAGE}"
+    container_name: items_cms_svc
+    ports:
+      - "6050:6050"
+    networks:
+      - items_docker_network
+    volumes:
+      - ${ITEMS_CMS_SVC_CONFIG}:/usr/local/items/accounts_svc.config:ro
+      - ${ITEMS_CMS_SVC_INTERNAL_DB}:/usr/local/items/items_cms_svc.db
+
+  items-gateway-svc:
+    image: "${ITEMS_GATEWAY_SVC_IMAGE}"
+    container_name: items_gateway_svc
+    ports:
+      - "4050:4050"
+    networks:
+      - items_docker_network
+    volumes:
+      - ${ITEMS_GATEWAY_SVC_CONFIG}:/usr/local/items/gateway_svc.config:ro
+
+  items-web_portal-svc:
+    image: "${ITEMS_WEB_PORTAL_SVC_IMAGE}"
+    container_name: items_web_portal_svc
+    ports:
+      - "7050:7050"
+    networks:
+      - items_docker_network
+    volumes:
+      - ${ITEMS_WEB_PORTAL_SVC_CONFIG}:/usr/local/items/web_portal_svc.config:ro

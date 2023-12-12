@@ -1,0 +1,180 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif
+}
+
+body
+{
+    background-image: url('http://getwallpapers.com/wallpaper/full/a/5/d/544750.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    height: 100%;
+    min-height: 93vh
+}
+
+.wrapper
+{
+    max-width: 600px;
+    margin: 50px auto
+}
+
+.wrapper .card
+{
+    max-width: 500px;
+    margin: 30px;
+    background: rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 15px;
+    cursor: pointer;
+    padding: 0.8rem
+}
+
+.wrapper .card a
+{
+    text-decoration: none;
+    color: #eee
+}
+
+.wrapper .card a:hover
+{
+    color: #fff
+}
+
+.wrapper .card .input-field
+{
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    color: #eee;
+    padding: 0.3rem
+}
+
+.wrapper .card select
+{
+    color: white;
+    background-color: inherit;
+    border: 0px;
+}
+
+.wrapper .card .input-field input
+{
+    background-color: inherit
+}
+
+.wrapper .card .input-field input.form-control,
+.wrapper .card .input-field input.form-control:focus
+{
+    border: none;
+    outline: none;
+    box-shadow: none;
+    color: #eee
+}
+
+.wrapper .card .input-field button.btn
+{
+    color: #eee;
+    padding: 0rem;
+    padding-right: 0.5rem
+}
+
+.wrapper .card .input-field button.btn:hover
+{
+    color: #fff
+}
+
+.wrapper .card .input-field button.btn:focus
+{
+    border: none;
+    outline: none;
+    box-shadow: none
+}
+
+.wrapper .card .input-field input::placeholder
+{
+    color: #eee
+}
+
+.wrapper .card .option span.text-light-white:hover
+{
+    color: #fff
+}
+
+.wrapper .card .btn.btn-primary
+{
+    border-radius: 20px;
+    width: 100px;
+    background-color: #fff;
+    color: #333;
+    border: none
+}
+
+.wrapper .card .btn.btn-primary:hover
+{
+    color: #fff;
+    background: #333
+}
+
+.wrapper .card .btn.btn-primary:focus
+{
+    border: none;
+    box-shadow: none
+}
+
+.wrapper .card .text-light-white
+{
+    color: #ddd
+}
+
+.wrapper .card span.connect
+{
+    position: absolute;
+    top: -12px;
+    left: 33%;
+    color: #fff;
+    padding: 0 0.3rem;
+    z-index: 100;
+    border-radius: 2px;
+}
+
+.wrapper .card .connections a img
+{
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover
+}
+
+@media(max-width: 370px)
+{
+    .wrapper .card .line:after
+    {
+        left: 27%
+    }
+}
+
+#error_msg
+{
+    color: #ff4d4d;
+    font-weight: bold;
+    padding-top: 1rem;
+    padding-left: 1rem;
+    border-radius: 6px ;
+}
+
+@media(max-width: 350px)
+{
+    .wrapper
+    {
+        margin: 10px auto
+    }
+
+    .wrapper .card
+    {
+        margin: 10px
+    }
+}

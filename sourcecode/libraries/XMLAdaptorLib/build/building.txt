@@ -1,8 +1,0 @@
-Building the XML Adaptor Library
---------------------------------
-
-The XML Adaptor library is a layer ontop of V3.1.1 of the The Apache Xerces™
- project, which can be found at http://xerces.apache.org/.
-
-The environment variable $(XERCES_LIBRARY) will need to be set to the root of
-the Xerces source directory.

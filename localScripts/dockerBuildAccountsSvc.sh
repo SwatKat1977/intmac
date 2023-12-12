@@ -1,0 +1,1 @@
+docker build --file docker/Dockerfile.accounts_svc . -t items_accounts_svc

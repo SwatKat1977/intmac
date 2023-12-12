@@ -1,0 +1,44 @@
+body
+{
+  background-color: #dceaf2;
+}
+
+p
+{
+  font-family: Verdana, sans-serif;
+}
+
+#no_data_msg_jumbo 
+{
+    background: white;
+    padding: 0;
+}
+
+#no_data_msg_container
+{
+  padding: 0px;
+}
+
+.no_data_msg_button
+{
+  background: #567178;
+}
+
+.addFilterHeader
+{
+  background: #51a0b8;
+}
+
+.btn-default
+{
+  background-color: #567178;
+  color:#FFF;
+  border-color: #567178;
+}
+ 
+.btn-default:hover, .btn-default:focus, .btn-default:active, .btn-default.active, .open .dropdown-toggle.btn-default
+{
+  background-color: #2F3E48;
+  color:#FFF;
+  border-color: #567178;
+}
