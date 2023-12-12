@@ -1,0 +1,15 @@
+from ubuntu:22.04
+
+RUN export DEBIAN_FRONTEND=noninteractive && \
+    apt update && \
+    apt-get install --yes git && \
+    apt-get install --yes cmake && \
+    apt-get install --yes build-essential && \
+    apt-get install --yes libpthread-stubs0-dev
+
+RUN git clone https://github.com/oatpp/oatpp.git && \
+    cd oatpp && \
+    mkdir build && \
+    cd build && \
+    cmake .. && \
+    make install
