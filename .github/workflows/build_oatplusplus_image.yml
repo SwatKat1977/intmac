@@ -1,9 +1,8 @@
-name: Build ServiceFramework Docker Image
+name: Build | Oat++ Docker Image
 on:
   push:
     branches:
-      - 'master'
-      - 'cpluplus_restart'
+      - 'main'
 
   workflow_dispatch:
     inputs:
