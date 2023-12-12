@@ -26,6 +26,7 @@ The following is based on Ogre3D code:
 #include <chrono>
 #include <signal.h>
 #include <sstream>
+#include "Platform.h"
 #if ITEMS_PLATFORM == ITEMS_PLATFORM_WINDOWS_CORE || \
     ITEMS_PLATFORM == ITEMS_PLATFORM_WINDOWS_MSVC
 #  include <winsock2.h>
@@ -36,7 +37,7 @@ The following is based on Ogre3D code:
 #include "spdlog/sinks/rotating_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "LoggerSettings.h"
-#include "Platform.h"
+
 #include "ServiceContext.h"
 
 #define LOGGER_THREAD_SIZE 8192
