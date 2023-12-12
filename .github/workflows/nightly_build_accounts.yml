@@ -6,9 +6,13 @@ on:
     workflow_dispatch:
      inputs:
        push_to_registry:
-         type: boolean
+         type: choice
          description: Push to Registry
          required: true
+         options:
+         - true
+         - false
+
 jobs:
   build-images:
     runs-on: ubuntu-22.04
