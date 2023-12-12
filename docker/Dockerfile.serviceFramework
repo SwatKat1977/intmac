@@ -1,0 +1,17 @@
+#FROM ubuntu:22.04
+FROM intmac/intmac_oatcpp:cpluplus_restart
+
+ARG oatpp_include_dir=/usr/local/include/oatpp-1.3.0/oatpp/
+ENV ITEMS_OATPP_INCLUDE_DIR=$oatpp_include_dir
+
+RUN groupadd --system items && \
+    useradd --system items --gid items && \
+	mkdir -p /items/src/serviceFramework && \
+	chown -R items:items /items
+
+COPY --chown=items:items src/serviceFramework /items/src/serviceFramework
+COPY --chown=items:items src/externalLibraries /items/src/externalLibraries
+
+WORKDIR /items/src/serviceFramework/
+
+RUN make
