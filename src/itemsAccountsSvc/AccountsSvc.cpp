@@ -34,6 +34,21 @@ using namespace items::serviceFramework;
 
 const std::string SERVICE_CONTEXT_NAME = "Items Accounts Svc";
 
+class TestModule : public ServiceModule
+{
+public:
+
+    TestModule (std::string name) : ServiceModule (name)
+    {
+    }
+
+    bool Initialise ()
+    {
+        printf ("Initialise test module...\n");
+        return true;
+    }
+};
+
 int main ()
 {
     auto configFile = GetEnv ("ITEMS_ACCOUNTS_SVC_CONFIG_FILE");
