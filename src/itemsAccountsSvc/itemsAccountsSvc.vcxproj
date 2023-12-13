@@ -137,6 +137,9 @@
   <ItemGroup>
     <ClCompile Include="AccountsSvc.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ConfigurationLayout.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
