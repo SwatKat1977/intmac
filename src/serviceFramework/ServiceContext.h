@@ -23,6 +23,8 @@ The following is based on Ogre3D code:
 * GetEnv from os-int.h
 -----------------------------------------------------------------------------
 */
+#ifndef SERVICECONTEXT_H
+#define SERVICECONTEXT_H
 #include <string>
 #include "oatpp/network/Server.hpp"
 #include "oatpp/network/tcp/server/ConnectionProvider.hpp"
@@ -63,7 +65,7 @@ namespace items
         {
         public:
 
-            ServiceModule (std::string name) : m_name(name)
+            ServiceModule (std::string name) : m_context(nullptr), m_name(name)
             {}
 
             void SetContext (ServiceContext *context) { m_context = context; }
@@ -131,3 +133,5 @@ namespace items
 
     }   // namespace serviceFramework
 }   // namespace items
+
+#endif
