@@ -146,11 +146,13 @@ copy $(OutDir)$(TargetName)$(TargetExt) $(SolutionDir)build
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AccountsSvc.cpp" />
+    <ClCompile Include="routes\BasicAuthRoutes.cpp" />
     <ClCompile Include="StartupModule.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\common\Version.h" />
     <ClInclude Include="ConfigurationLayout.h" />
+    <ClInclude Include="routes\BasicAuthRoutes.h" />
     <ClInclude Include="StartupModule.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
