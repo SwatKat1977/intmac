@@ -7,6 +7,8 @@
 
 using namespace items::serviceFramework;
 
+#define LOGGER spdlog::get ("loggername")
+
 class TestModule : public ServiceModule
 {
 public:
@@ -18,6 +20,21 @@ public:
     bool Initialise ()
     {
         printf ("Initialise test module...\n");
+
+        LOGGER->info ("[LOGGING]");
+        LOGGER->info ("-> Log Level      : {0}",
+                      m_context->GetConfigManager ().GetStringEntry ("logging", "log_level").c_str ());
+        LOGGER->info ("-> Log To Console : {0}",
+            m_context->GetConfigManager ().GetStringEntry ("logging", "log_to_console").c_str ());
+        LOGGER->info ("-> Log Filename   : {0}",
+            m_context->GetConfigManager ().GetStringEntry ("logging", "log_filename").c_str ());
+        LOGGER->info ("-> Max File Size  : {0:d}",
+            m_context->GetConfigManager ().GetIntEntry ("logging", "max_file_size"));
+        LOGGER->info ("-> Max File Count : {0:d}",
+            m_context->GetConfigManager ().GetIntEntry ("logging", "max_file_count"));
+        LOGGER->info ("-> Log Format     : {0}",
+            m_context->GetConfigManager ().GetStringEntry ("logging", "log_format").c_str ());
+
         return true;
     }
 };

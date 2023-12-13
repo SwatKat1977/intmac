@@ -146,6 +146,8 @@ namespace items
                 }
             }
 
+            newModule->SetContext (this);
+
             m_modules.push_back (newModule);
         }
 
@@ -164,7 +166,6 @@ namespace items
                     (*provider).second.networkType == networkType)
                 {
                     std::string err = "Duplicate service provider!";
-                    printf ("Duplicate service provider!\n");
                     throw std::invalid_argument (err);
                 }
             }
@@ -233,9 +234,6 @@ namespace items
                     (*provider).second.provider,
                     (*provider).second.connectionHandler);
 
-                ///* Route GET - "/hello" requests to Handler */
-                //(*provider).second.router->route ("GET", "/hello", std::make_shared<Handler> ());
-
                 server->run (true);
                 m_servers.push_back (server);
             }
@@ -243,10 +241,21 @@ namespace items
             while (!m_shutdownRequested)
             {
                 std::this_thread::sleep_for (1ms);
-                // ServiceRun ();
+
+                for (auto module = m_modules.begin ();
+                    module != m_modules.end ();
+                    module++)
+                {
+                    (*module)->Execute ();
+                }
             }
 
-            // ServiceStop ();
+            for (auto module = m_modules.begin ();
+                module != m_modules.end ();
+                module++)
+            {
+                (*module)->Shutdown ();
+            }
         }
 
         void ServiceContext::NotifyShutdownRequested ()
