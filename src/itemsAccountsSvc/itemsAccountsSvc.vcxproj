@@ -71,7 +71,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>.;..\externalLibraries\spdlog;..\externalLibraries\INIReader;..\serviceFramework;$(ITEMS_OATPP_BASE_DIR)\include\oatpp-1.3.0\oatpp;$(IncludePath)</IncludePath>
+    <IncludePath>.;..\externalLibraries\spdlog;..\externalLibraries\INIReader;..\serviceFramework;..\common;$(ITEMS_OATPP_BASE_DIR)\include\oatpp-1.3.0\oatpp;$(IncludePath)</IncludePath>
     <LibraryPath>..\build;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -146,9 +146,12 @@ copy $(OutDir)$(TargetName)$(TargetExt) $(SolutionDir)build
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AccountsSvc.cpp" />
+    <ClCompile Include="StartupModule.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\common\Version.h" />
     <ClInclude Include="ConfigurationLayout.h" />
+    <ClInclude Include="StartupModule.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

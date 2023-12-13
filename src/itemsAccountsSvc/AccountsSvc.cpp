@@ -25,29 +25,15 @@ The following is based on Ogre3D code:
 */
 #include <iostream>
 #include "spdlog/spdlog.h"
-#include "ServiceContext.h"
 #include "ConfigurationLayout.h"
 #include "Platform.h"
+#include "ServiceContext.h"
+#include "StartupModule.h"
 
 using namespace items::accountsSvc;
 using namespace items::serviceFramework;
 
 const std::string SERVICE_CONTEXT_NAME = "Items Accounts Svc";
-
-class TestModule : public ServiceModule
-{
-public:
-
-    TestModule (std::string name) : ServiceModule (name)
-    {
-    }
-
-    bool Initialise ()
-    {
-        printf ("Initialise test module...\n");
-        return true;
-    }
-};
 
 int main ()
 {
@@ -64,11 +50,11 @@ int main ()
         return EXIT_FAILURE;
     }
 
-    // TestModule module = TestModule ("Test Init");
+    StartupModule startupModule = StartupModule ("Startup Module");
 
     auto context = new ServiceContext (SERVICE_CONTEXT_NAME);
 
-    // context->AddServiceModule (&module);
+    context->AddServiceModule (&startupModule);
 
     if (!context->Initialise (&CONFIGURATION_LAYOUT_MAP, configFile))
     {
