@@ -40,7 +40,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -145,7 +145,6 @@ copy $(OutDir)$(TargetName)$(TargetExt) $(SolutionDir)build
     <ClCompile Include="ConfigManager.cpp" />
     <ClCompile Include="ConfigSetup.cpp" />
     <ClCompile Include="ConfigSetupItem.cpp" />
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="Platform.cpp" />
     <ClCompile Include="ServiceContext.cpp" />
   </ItemGroup>
