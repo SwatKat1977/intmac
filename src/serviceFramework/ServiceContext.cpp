@@ -146,6 +146,8 @@ namespace items
                 }
             }
 
+            newModule->SetContext (this);
+
             m_modules.push_back (newModule);
         }
 
@@ -164,7 +166,6 @@ namespace items
                     (*provider).second.networkType == networkType)
                 {
                     std::string err = "Duplicate service provider!";
-                    printf ("Duplicate service provider!\n");
                     throw std::invalid_argument (err);
                 }
             }
@@ -232,9 +233,6 @@ namespace items
                 server = std::make_shared<oatpp::network::Server> (
                     (*provider).second.provider,
                     (*provider).second.connectionHandler);
-
-                ///* Route GET - "/hello" requests to Handler */
-                //(*provider).second.router->route ("GET", "/hello", std::make_shared<Handler> ());
 
                 server->run (true);
                 m_servers.push_back (server);

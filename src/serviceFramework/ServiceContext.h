@@ -35,6 +35,8 @@ namespace items
 {
     namespace serviceFramework
     {
+        class ServiceContext;
+
         enum ServiceNetworkType
         {
             SERVICENETWORKTYPE_IPV4,
@@ -64,6 +66,9 @@ namespace items
             ServiceModule (std::string name) : m_name(name)
             {}
 
+            void SetContext (ServiceContext *context) { m_context = context; }
+            ServiceContext *GetContext () { return m_context; }
+
             std::string& Name () { return m_name; }
 
             virtual bool Initialise () { return true; }
@@ -73,6 +78,7 @@ namespace items
             virtual void Shutdown () { }
 
         protected:
+            ServiceContext *m_context;
             std::string m_name;
         };
 
@@ -100,6 +106,8 @@ namespace items
                            HTTPRequestMethod method,
                            std::string endpoint,
                            ApiRoute *route);
+
+            ConfigManager& GetConfigManager () { return m_configManager; }
 
         private:
             ConfigManager m_configManager;
