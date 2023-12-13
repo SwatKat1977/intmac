@@ -243,10 +243,21 @@ namespace items
             while (!m_shutdownRequested)
             {
                 std::this_thread::sleep_for (1ms);
-                // ServiceRun ();
+
+                for (auto module = m_modules.begin ();
+                    module != m_modules.end ();
+                    module++)
+                {
+                    (*module)->Execute ();
+                }
             }
 
-            // ServiceStop ();
+            for (auto module = m_modules.begin ();
+                module != m_modules.end ();
+                module++)
+            {
+                (*module)->Shutdown ();
+            }
         }
 
         void ServiceContext::NotifyShutdownRequested ()

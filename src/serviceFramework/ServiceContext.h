@@ -70,6 +70,8 @@ namespace items
 
             virtual void Execute () { }
 
+            virtual void Shutdown () { }
+
         protected:
             std::string m_name;
         };
@@ -113,12 +115,6 @@ namespace items
             std::list<std::shared_ptr<oatpp::network::Server>> m_servers;
 
             std::string HttpRequestMethodToStr (HTTPRequestMethod method);
-
-            /*
-            virtual void ServiceRun () { ; }
-
-            virtual void ServiceStop () { ; }
-            */
 
             bool InitialiseLogger ();
 
