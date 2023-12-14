@@ -152,6 +152,7 @@ copy $(OutDir)$(TargetName)$(TargetExt) $(SolutionDir)build
   <ItemGroup>
     <ClInclude Include="..\common\Version.h" />
     <ClInclude Include="ConfigurationLayout.h" />
+    <ClInclude Include="DTOs\basic_auth_view.h" />
     <ClInclude Include="routes\BasicAuthAuthenticateRoute.h" />
     <ClInclude Include="StartupModule.h" />
   </ItemGroup>
