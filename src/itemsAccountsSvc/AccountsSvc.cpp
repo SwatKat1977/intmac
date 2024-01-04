@@ -25,7 +25,9 @@ The following is based on Ogre3D code:
 */
 #include <iostream>
 #include "spdlog/spdlog.h"
+#include "oatpp/network/tcp/server/ConnectionProvider.hpp"
 #include "ConfigurationLayout.h"
+#include "Logger.h"
 #include "Platform.h"
 #include "ServiceContext.h"
 #include "StartupModule.h"
@@ -34,6 +36,52 @@ using namespace items::accountsSvc;
 using namespace items::serviceFramework;
 
 const std::string SERVICE_CONTEXT_NAME = "Items Accounts Svc";
+
+/* Begin DTO code-generation */
+#include OATPP_CODEGEN_BEGIN(DTO)
+
+class MessageDto : public oatpp::DTO {
+
+    DTO_INIT (MessageDto, DTO /* Extends */)
+
+    DTO_FIELD (Int32, statusCode);   // Status code field
+    DTO_FIELD (String, message);     // Message field
+
+};
+/* End DTO code-generation */
+#include OATPP_CODEGEN_END(DTO)
+
+
+class TestRoute1 : public ApiRoute
+{
+public:
+    TestRoute1 (std::string name) : ApiRoute (name) {}
+
+    virtual ApiOutResponsePtr Route (const ApiIncomingReqPtr& request)
+    {
+        auto inMsg = request->readBodyToDto<oatpp::Object<MessageDto>> (m_objectMapper.get ());
+
+        try
+        {
+            if ((!inMsg.get ()->message) || (!inMsg.get ()->statusCode))
+            {
+                return ApiResponseFactory::createResponse (ApiResponseStatus::CODE_200, "Invalid msg");
+            }
+        }
+        catch (...)
+        {
+            printf ("Invalid messge\n");
+        }
+
+        std::string msg = inMsg.get ()->message;
+        int status = inMsg.get ()->statusCode;
+
+        auto message = MessageDto::createShared ();
+        message->statusCode = status;
+        message->message = msg;
+        return ApiResponseFactory::createResponse (ApiResponseStatus::CODE_200, message, m_objectMapper);
+    }
+};
 
 int main ()
 {
@@ -71,10 +119,9 @@ int main ()
         std::cout << "Exception : " << e.what () << std::endl;
     }
 
-#ifdef __DISABLED__
     try
     {
-        context->AddRoute ("entry1", HTTPRequestMethod_GET, "/test", new TestRoute1 ("A Route"));
+        context->AddRoute ("entry1", HTTPRequestMethod_POST, "/test", new TestRoute1 ("A Route"));
         //context->AddRoute ("Invad", HTTPRequestMethod_GET, "/test", nullptr);
     }
     catch (std::runtime_error e)
@@ -84,7 +131,6 @@ int main ()
     }
 
     context->Execute ();
-#endif
 
     return EXIT_SUCCESS;
 }
