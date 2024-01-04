@@ -42,9 +42,10 @@ namespace items
         bool StartupModule::Initialise ()
         {
             LOGGER->info ("ITEMS Accounts Microservice V{0}.{1}.{2}-{3}",
-                VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_TAG);
-            LOGGER->info (COPYRIGHT_TEXT);
-            LOGGER->info (LICENSE_TEXT);
+                common::VERSION_MAJOR, common::VERSION_MINOR,
+                common::VERSION_PATCH, common::VERSION_TAG);
+            LOGGER->info (common::COPYRIGHT_TEXT);
+            LOGGER->info (common::LICENSE_TEXT);
 
             LOGGER->info ("|=====================|");
             LOGGER->info ("|=== Configuration ===|");

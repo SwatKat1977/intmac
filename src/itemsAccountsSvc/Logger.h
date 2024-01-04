@@ -23,23 +23,9 @@ The following is based on Ogre3D code:
 * GetEnv from os-int.h
 -----------------------------------------------------------------------------
 */
-#ifndef VERSION_H
-#define VERSION_H
-#include <string>
+#ifndef LOGGER_H
+#define LOGGER_H
 
-namespace items
-{
-    namespace common
-    {
-        const std::string COPYRIGHT_TEXT = "Copyright 2014 - 2023 Integrated Test Management Suite";
-        const std::string LICENSE_TEXT = "Licensed under the Apache License, Version 2.0";
-
-        const std::string VERSION_MAJOR = "0";
-        const std::string VERSION_MINOR = "0";
-        const std::string VERSION_PATCH = "0";
-        const std::string VERSION_TAG = "Alpha-01";
-
-    }   // namespace common
-}   // namespace items
+#define GET_LOGGER spdlog::get ("console")
 
 #endif
