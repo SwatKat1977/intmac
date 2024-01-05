@@ -26,6 +26,6 @@ The following is based on Ogre3D code:
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#define GET_LOGGER spdlog::get ("console")
+#define LOGGER spdlog::get ("console")
 
 #endif
