@@ -118,5 +118,5 @@ namespace items
         }
 #endif
 
-    }   // namespace serviceFramework
+    }   // namespace accountsSvc
 }   // namespace items

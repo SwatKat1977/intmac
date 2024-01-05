@@ -66,7 +66,7 @@ namespace items
             {SECTION_BACKEND, BackendSettings }
         };
 
-    }   // namespace serviceFramework
+    }   // namespace accountsSvc
 }   // namespace items
 
 
