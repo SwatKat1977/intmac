@@ -25,6 +25,7 @@ The following is based on Ogre3D code:
 */
 #include "spdlog/spdlog.h"
 #include "StartupModule.h"
+#include "Logger.h"
 #include "Version.h"
 
 namespace items
@@ -32,8 +33,6 @@ namespace items
     namespace accountsSvc
     {
         using namespace serviceFramework;
-
-#define LOGGER spdlog::get ("loggername")
 
         StartupModule::StartupModule (std::string name) : ServiceModule (name)
         {
@@ -67,6 +66,57 @@ namespace items
 
             return true;
         }
+
+#ifdef __USE__
+        sqlite3 * StartupModule::OpenInternalDatabase ()
+        {
+            LOGGER->info ("Opening internal database...");
+
+            bool status = false;
+
+            std::string filename = Configuration ().backend_internal_db_filename;
+
+            self._db = SqliteInterface (self._logger, filename);
+
+            if os.path.isfile (filename)
+            {
+                if not self._db.valid_database ()
+                {
+                    self._logger.critical ("Database file '%s' is not valid!",
+                        filename)
+                }
+                else
+                {
+                    status = True
+                }
+                else:
+                if Configuration ().backend_create_db_if_missing :
+                    status, err_str = self._db.build_database ()
+                    if not status :
+                        self._logger.critical (err_str)
+
+                    else :
+                        status = True
+            }
+            else
+            {
+                self._logger.critical (("Database file '%s' doesn't exist and "
+                    "won't get created!"), filename)
+
+                    if status :
+                open_status, err_str = self._db.open ()
+                    if not open_status :
+                        self._logger.critical (err_str)
+
+                    else :
+                        status = True
+                        self._logger.info ("Database '%s' opened successful",
+                            Configuration ().backend_internal_db_filename)
+
+                        return status
+            }
+        }
+#endif
 
     }   // namespace serviceFramework
 }   // namespace items
