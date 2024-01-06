@@ -20,14 +20,33 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
-#ifndef LOGGER_H
-#define LOGGER_H
-#include "spdlog/spdlog.h"
-#include "spdlog/async.h"
-#include "spdlog/sinks/basic_file_sink.h"
-#include "spdlog/sinks/rotating_file_sink.h"
-#include "spdlog/sinks/stdout_color_sinks.h"
+#ifndef UUID_H
+#define UUID_H
+#include <string>
 
-#define LOGGER spdlog::get ("console")
+namespace items
+{
+    namespace accountsSvc
+    {
+        /*
+        * This class is heavily based upon code written by rkg82 in
+        * repository https://github.com/rkg82/uuid-v4.
+        */
+        class UUID
+        {
+        public:
+            static UUID New ();
+
+            std::string ToString ();
+
+        private:
+            UUID () {}
+
+            unsigned char m_data[16] = { 0 };
+        };
+
+    }   // namespace accountsSvc
+}   // namespace items
+
 
 #endif
