@@ -18,15 +18,16 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 
     You should have received a copy of the GNU General Public License
     along with this program.If not, see < https://www.gnu.org/licenses/>.
-
-The following is based on Ogre3D code:
-* GetEnv from os-int.h
 -----------------------------------------------------------------------------
 */
+#ifndef SERVICECONTEXT_H
+#define SERVICECONTEXT_H
 #include <string>
 #include "oatpp/network/Server.hpp"
 #include "oatpp/network/tcp/server/ConnectionProvider.hpp"
 #include "oatpp/web/server/HttpConnectionHandler.hpp"
+#include "oatpp/parser/json/mapping/ObjectMapper.hpp"
+#include "oatpp/core/macro/codegen.hpp"
 #include "oatpp/web/protocol/http/outgoing/Response.hpp"
 #include "ConfigManager.h"
 #include "ApiRoute.h"
@@ -57,13 +58,33 @@ namespace items
             std::shared_ptr<oatpp::web::server::HttpConnectionHandler> connectionHandler;
         };
 
+        class RouteHandler : public oatpp::web::server::HttpRequestHandler
+        {
+        public:
+            RouteHandler (
+                ApiRoute* route,
+                const std::shared_ptr<oatpp::data::mapping::ObjectMapper>& objectMapper)
+                : m_route (route), m_objectMapper (objectMapper)
+            {
+            }
+
+            ApiOutResponsePtr handle (const std::shared_ptr<IncomingRequest>& request) override
+            {
+                return m_route->Route (request);
+            }
+
+        protected:
+            ApiRoute* m_route;
+            std::shared_ptr<oatpp::data::mapping::ObjectMapper> m_objectMapper;
+        };
+
         using ProvidersMap = std::map<std::string, ServiceProviderEntry>;
 
         class ServiceModule
         {
         public:
 
-            ServiceModule (std::string name) : m_name(name)
+            ServiceModule (std::string name) : m_context(nullptr), m_name(name)
             {}
 
             void SetContext (ServiceContext *context) { m_context = context; }
@@ -118,9 +139,11 @@ namespace items
             bool m_shutdownRequested;
             bool m_usingIniConfig;
             std::list<ServiceModule *> m_modules;
+            std::shared_ptr<oatpp::parser::json::mapping::ObjectMapper> m_objectMapper;
 
             ProvidersMap m_providers;
             std::list<std::shared_ptr<oatpp::network::Server>> m_servers;
+            std::map<std::string, std::shared_ptr<RouteHandler>> m_routes;
 
             std::string HttpRequestMethodToStr (HTTPRequestMethod method);
 
@@ -131,3 +154,5 @@ namespace items
 
     }   // namespace serviceFramework
 }   // namespace items
+
+#endif

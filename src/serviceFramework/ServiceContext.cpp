@@ -18,9 +18,6 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 
     You should have received a copy of the GNU General Public License
     along with this program.If not, see < https://www.gnu.org/licenses/>.
-
-The following is based on Ogre3D code:
-* GetEnv from os-int.h
 -----------------------------------------------------------------------------
 */
 #include <chrono>
@@ -36,15 +33,15 @@ The following is based on Ogre3D code:
 #include "spdlog/sinks/basic_file_sink.h"
 #include "spdlog/sinks/rotating_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
+#include "oatpp/parser/json/mapping/ObjectMapper.hpp"
 #include "LoggerSettings.h"
-
 #include "ServiceContext.h"
 
 #define LOGGER_THREAD_SIZE 8192
 #define LOGGER_THREAD_COUNT 1
-#define LOGGER_NAME "loggername"
+#define LOGGER_NAME "logger"
 
-#define LOGGER spdlog::get ("loggername")
+#define LOGGER spdlog::get (LOGGER_NAME)
 
 using namespace std::chrono_literals;
 
@@ -60,21 +57,6 @@ namespace items
             m_instance->NotifyShutdownRequested ();
         }
 
-        class RouteHandler : public oatpp::web::server::HttpRequestHandler
-        {
-        public:
-            RouteHandler (ApiRoute *route) : m_route(route)
-            { }
-
-            ApiOutResponsePtr handle (const std::shared_ptr<IncomingRequest>& request) override
-            {
-                return m_route->Route (request);
-            }
-
-        protected:
-            ApiRoute *m_route;
-        };
-
         ServiceContext::ServiceContext (std::string contextName) :
             m_contextName(contextName),
             m_initialised(false),
@@ -83,6 +65,9 @@ namespace items
             m_initLayout(nullptr)
         {
             m_instance = this;
+
+            // Create json object mapper.
+            m_objectMapper = oatpp::parser::json::mapping::ObjectMapper::createShared ();
         }
 
         bool ServiceContext::Initialise (SectionsMap *initLayout,
@@ -201,10 +186,15 @@ namespace items
                 throw std::runtime_error (errStr);
             }
 
+            auto routeEntry = std::make_shared<RouteHandler> (
+                route, m_objectMapper);
+            route->SetObjectMapper (m_objectMapper);
+            m_routes[route->Name ()] = routeEntry;
+
             // Add route to the provider.
-            (*provider).second.router->route (
-                HttpRequestMethodToStr(method),
-                endpoint, std::make_shared<RouteHandler>(route));
+            (*provider).second.router->route (HttpRequestMethodToStr(method),
+                                              endpoint,
+                                              routeEntry);
         }
 
         void ServiceContext::Execute ()

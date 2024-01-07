@@ -83,8 +83,14 @@ namespace items
 
             virtual ApiOutResponsePtr Route (const ApiIncomingReqPtr &request) = 0;
 
+            void SetObjectMapper (std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper)
+            {
+                m_objectMapper = objectMapper;
+            }
+
         protected:
             std::string m_name;
+            std::shared_ptr<oatpp::data::mapping::ObjectMapper> m_objectMapper;
         };
 
     }   // namespace serviceFramework
