@@ -20,13 +20,16 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
+#include <filesystem>
 #include <iostream>
+#include <string>
 #include "spdlog/spdlog.h"
 #include "oatpp/network/tcp/server/ConnectionProvider.hpp"
 #include "ConfigurationLayout.h"
 #include "Logger.h"
 #include "Platform.h"
 #include "ServiceContext.h"
+#include "SqliteInterface.h"
 #include "StartupModule.h"
 
 using namespace items::accountsSvc;
@@ -80,6 +83,63 @@ public:
     }
 };
 
+SqliteInterface *OpenInternalDatabase (ServiceContext *ctx)
+{
+    LOGGER->info ("Opening internal database...");
+
+    std::string filename = ctx->GetConfigManager ().GetStringEntry (
+        "backend", "internal_db_filename").c_str ();
+
+    SqliteInterface *dbInterface = new SqliteInterface (filename);
+
+    if (std::filesystem::is_regular_file (filename))
+    {
+        if (!dbInterface->IsValidDatabase ())
+        {
+            LOGGER->critical ("Database file '" + filename + "' is not valid!");
+            return nullptr;
+        }
+    }
+    else
+    {
+        std::string createIfMissingStr = ctx->GetConfigManager ().GetStringEntry (
+            "backend", "create_db_if_missing").c_str ();
+        bool createIfMissing = strcmp(createIfMissingStr.c_str(), "YES") == 0 ? true : false;
+
+        if (createIfMissing)
+        {
+            try
+            {
+                dbInterface->BuildDatabase ();
+            }
+            catch (SqliteInterfaceException& except)
+            {
+                LOGGER->critical (except.what ());
+                return nullptr;
+            }
+        }
+        else
+        {
+            LOGGER->critical (
+                "Database '{0}' doesn't exist and won't get created!",
+                filename);
+            return nullptr;
+        }
+    }
+
+    try
+    {
+        dbInterface->Open ();
+    }
+    catch (SqliteInterfaceException &ex)
+    {
+        LOGGER->critical (ex.what ());
+        return nullptr;
+    }
+
+    return dbInterface;
+}
+
 int main ()
 {
     auto configFile = GetEnv ("ITEMS_ACCOUNTS_SVC_CONFIG_FILE");
@@ -102,6 +162,12 @@ int main ()
     context->AddServiceModule (&startupModule);
 
     if (!context->Initialise (&CONFIGURATION_LAYOUT_MAP, configFile))
+    {
+        return EXIT_FAILURE;
+    }
+
+    SqliteInterface* sqlInterface = OpenInternalDatabase (context);
+    if (!sqlInterface)
     {
         return EXIT_FAILURE;
     }
