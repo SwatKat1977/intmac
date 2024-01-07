@@ -181,7 +181,7 @@ namespace items
             ProvidersMap::iterator provider = m_providers.find (providerName);
             if (provider == m_providers.end ())
             {
-                std::string errStr = std::string ("Unknow provider '") +
+                std::string errStr = std::string ("Unknown provider '") +
                                      providerName + "'";
                 throw std::runtime_error (errStr);
             }
