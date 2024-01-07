@@ -30,7 +30,7 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 #include "Platform.h"
 #include "ServiceContext.h"
 #include "SqliteInterface.h"
-#include "StartupModule.h"
+#include "serviceModules/StartupModule.h"
 
 using namespace items::accountsSvc;
 using namespace items::serviceFramework;
