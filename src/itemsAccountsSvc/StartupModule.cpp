@@ -51,72 +51,35 @@ namespace items
             LOGGER->info ("|=====================|");
 
             LOGGER->info ("[LOGGING]");
-            LOGGER->info ("-> Log Level      : {0}",
-                m_context->GetConfigManager ().GetStringEntry ("logging", "log_level").c_str ());
-            LOGGER->info ("-> Log To Console : {0}",
-                m_context->GetConfigManager ().GetStringEntry ("logging", "log_to_console").c_str ());
-            LOGGER->info ("-> Log Filename   : {0}",
-                m_context->GetConfigManager ().GetStringEntry ("logging", "log_filename").c_str ());
-            LOGGER->info ("-> Max File Size  : {0:d}",
-                m_context->GetConfigManager ().GetIntEntry ("logging", "max_file_size"));
-            LOGGER->info ("-> Max File Count : {0:d}",
-                m_context->GetConfigManager ().GetIntEntry ("logging", "max_file_count"));
-            LOGGER->info ("-> Log Format     : {0}",
-                m_context->GetConfigManager ().GetStringEntry ("logging", "log_format").c_str ());
+            LOGGER->info ("-> Log Level            : {0}",
+                m_context->GetConfigManager ().GetStringEntry (
+                    "logging", "log_level").c_str ());
+            LOGGER->info ("-> Log To Console       : {0}",
+                m_context->GetConfigManager ().GetStringEntry (
+                    "logging", "log_to_console").c_str ());
+            LOGGER->info ("-> Log Filename         : {0}",
+                m_context->GetConfigManager ().GetStringEntry (
+                    "logging", "log_filename").c_str ());
+            LOGGER->info ("-> Max File Size        : {0:d}",
+                m_context->GetConfigManager ().GetIntEntry (
+                    "logging", "max_file_size"));
+            LOGGER->info ("-> Max File Count       : {0:d}",
+                m_context->GetConfigManager ().GetIntEntry (
+                    "logging", "max_file_count"));
+            LOGGER->info ("-> Log Format           : {0}",
+                m_context->GetConfigManager ().GetStringEntry (
+                    "logging", "log_format").c_str ());
+
+            LOGGER->info ("[BACKEND]");
+            LOGGER->info ("-> DB filename          : {0}",
+                m_context->GetConfigManager ().GetStringEntry (
+                    "backend", "internal_db_filename").c_str ());
+            LOGGER->info ("-> Create DB if missing : {0}",
+                m_context->GetConfigManager ().GetStringEntry (
+                    "backend", "create_db_if_missing").c_str ());
 
             return true;
         }
-
-#ifdef __USE__
-        sqlite3 * StartupModule::OpenInternalDatabase ()
-        {
-            LOGGER->info ("Opening internal database...");
-
-            bool status = false;
-
-            std::string filename = Configuration ().backend_internal_db_filename;
-
-            self._db = SqliteInterface (self._logger, filename);
-
-            if os.path.isfile (filename)
-            {
-                if not self._db.valid_database ()
-                {
-                    self._logger.critical ("Database file '%s' is not valid!",
-                        filename)
-                }
-                else
-                {
-                    status = True
-                }
-                else:
-                if Configuration ().backend_create_db_if_missing :
-                    status, err_str = self._db.build_database ()
-                    if not status :
-                        self._logger.critical (err_str)
-
-                    else :
-                        status = True
-            }
-            else
-            {
-                self._logger.critical (("Database file '%s' doesn't exist and "
-                    "won't get created!"), filename)
-
-                    if status :
-                open_status, err_str = self._db.open ()
-                    if not open_status :
-                        self._logger.critical (err_str)
-
-                    else :
-                        status = True
-                        self._logger.info ("Database '%s' opened successful",
-                            Configuration ().backend_internal_db_filename)
-
-                        return status
-            }
-        }
-#endif
 
     }   // namespace accountsSvc
 }   // namespace items
