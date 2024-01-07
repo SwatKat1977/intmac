@@ -93,7 +93,7 @@ namespace items
 
                 fread (bufferBytes, 100, 1, fp);
 
-                if (strcmp (SQLITE_HEADER, bufferBytes))
+                if (strcmp (SQLITE_HEADER, bufferBytes) == 0)
                 {
                     status = true;
                 }
@@ -109,7 +109,7 @@ namespace items
             std::string filepath = { m_dbFilename };
             if (std::filesystem::is_regular_file (filepath))
             {
-                throw std::runtime_error (
+                throw SqliteInterfaceException (
                     "Database '" + m_dbFilename + "' already exists!");
             }
 
