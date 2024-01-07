@@ -20,14 +20,40 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
-#ifndef LOGGER_H
-#define LOGGER_H
-#include "spdlog/spdlog.h"
-#include "spdlog/async.h"
-#include "spdlog/sinks/basic_file_sink.h"
-#include "spdlog/sinks/rotating_file_sink.h"
-#include "spdlog/sinks/stdout_color_sinks.h"
+#ifndef SHA256_H
+#define SHA256_H
+#include <string>
 
-#define LOGGER spdlog::get ("logger")
+namespace items
+{
+    namespace accountsSvc
+    {
+        class SHA256
+        {
+        protected:
+            typedef unsigned char uint8;
+            typedef unsigned int uint32;
+            typedef unsigned long long uint64;
+
+            const static uint32 sha256_k[];
+            static const unsigned int SHA224_256_BLOCK_SIZE = (512 / 8);
+        public:
+            void init ();
+            void update (const unsigned char* message, unsigned int len);
+            void final (unsigned char* digest);
+            static const unsigned int DIGEST_SIZE = (256 / 8);
+
+        protected:
+            void transform (const unsigned char* message, unsigned int block_nb);
+            unsigned int m_tot_len;
+            unsigned int m_len;
+            unsigned char m_block[2 * SHA224_256_BLOCK_SIZE];
+            uint32 m_h[8];
+        };
+
+        std::string GenerateSha256 (std::string input);
+
+    }   // namespace accountsSvc
+}   // namespace items
 
 #endif

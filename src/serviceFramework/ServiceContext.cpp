@@ -42,9 +42,9 @@ The following is based on Ogre3D code:
 
 #define LOGGER_THREAD_SIZE 8192
 #define LOGGER_THREAD_COUNT 1
-#define LOGGER_NAME "loggername"
+#define LOGGER_NAME "logger"
 
-#define LOGGER spdlog::get ("loggername")
+#define LOGGER spdlog::get (LOGGER_NAME)
 
 using namespace std::chrono_literals;
 
