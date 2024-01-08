@@ -106,7 +106,7 @@ namespace items
             try
             {
                 m_context->AddRoute (
-                    BASIC_AUTHENTICATE_ROUTE_NAME,
+                    SERVICE_PROVIDER_API_NAME,
                     HTTPRequestMethod_POST,
                     BASIC_AUTHENTICATE_ROUTE,
                     basicAuth);
@@ -118,8 +118,8 @@ namespace items
                 return false;
             }
 
-            LOGGER->info ("Added basic auth route '{0}'",
-                BASIC_AUTHENTICATE_ROUTE_NAME);
+            LOGGER->info ("Added basic auth route '{0}' to '{1}' provider",
+                BASIC_AUTHENTICATE_ROUTE, SERVICE_PROVIDER_API_NAME);
 
             return true;
         }

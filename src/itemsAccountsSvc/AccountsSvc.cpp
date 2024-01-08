@@ -172,27 +172,6 @@ int main ()
         return EXIT_FAILURE;
     }
 
-    try
-    {
-        context->AddServiceProvider ("entry1", "localhost", 8008, SERVICENETWORKTYPE_IPV4);
-        context->AddServiceProvider ("entry2", "localhost", 8099, SERVICENETWORKTYPE_IPV4);
-    }
-    catch (std::invalid_argument e)
-    {
-        std::cout << "Exception : " << e.what () << std::endl;
-    }
-
-    try
-    {
-        context->AddRoute ("entry1", HTTPRequestMethod_POST, "/test", new TestRoute1 ("A Route"));
-        //context->AddRoute ("Invad", HTTPRequestMethod_GET, "/test", nullptr);
-    }
-    catch (std::runtime_error e)
-    {
-        std::cout << "Exception : " << e.what () << std::endl;
-        return EXIT_FAILURE;
-    }
-
     context->Execute ();
 
     return EXIT_SUCCESS;
