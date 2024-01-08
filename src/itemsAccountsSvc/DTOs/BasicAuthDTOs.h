@@ -27,8 +27,9 @@ namespace items
     namespace accountsSvc
     {
 
+#include OATPP_CODEGEN_BEGIN(DTO)
+
         // Definition of the basic_auth authenticate request.
-        #include OATPP_CODEGEN_BEGIN(DTO)
         class BasicAuthenticateRequest : public oatpp::DTO
         {
             DTO_INIT (BasicAuthenticateRequest, DTO)
@@ -36,7 +37,17 @@ namespace items
             DTO_FIELD (String, email_address);
             DTO_FIELD (String, password);
         };
-        #include OATPP_CODEGEN_END(DTO)
+
+        // Definition of the basic_auth authenticate response.
+        class BasicAuthenticateResponse : public oatpp::DTO
+        {
+            DTO_INIT (BasicAuthenticateResponse, DTO)
+
+            DTO_FIELD (Int32, status);
+            DTO_FIELD (String, error);
+        };
+
+#include OATPP_CODEGEN_END(DTO)
 
     }   // namespace accountsSvc
 }   // namespace items

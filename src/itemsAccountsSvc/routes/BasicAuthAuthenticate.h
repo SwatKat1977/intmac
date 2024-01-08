@@ -21,7 +21,6 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 -----------------------------------------------------------------------------
 */
 #include "ServiceContext.h"
-#include "DTOs/BasicAuthDTOs.h"
 
 namespace items
 {
