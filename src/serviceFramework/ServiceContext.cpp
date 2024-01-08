@@ -91,16 +91,6 @@ namespace items
                 return false;
             }
 
-            for (auto init = m_modules.begin ();
-                init != m_modules.end ();
-                init++)
-            {
-                m_initialised = (*init)->Initialise ();
-
-                if (!m_initialised)
-                    break;
-            }
-
 #if ITEMS_PLATFORM == ITEMS_PLATFORM_WINDOWS_CORE || \
     ITEMS_PLATFORM == ITEMS_PLATFORM_WINDOWS_MSVC
             int iResult;
@@ -113,6 +103,16 @@ namespace items
                 m_initialised = false;
             }
 #endif
+
+            for (auto init = m_modules.begin ();
+                init != m_modules.end ();
+                init++)
+            {
+                m_initialised = (*init)->Initialise ();
+
+                if (!m_initialised)
+                    break;
+            }
 
             return m_initialised;
         }
