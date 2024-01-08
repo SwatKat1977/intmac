@@ -20,31 +20,26 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
-from http import HTTPStatus
-import json
-import logging
-import mimetypes
-from quart import Blueprint, request, Response
-from base_view import ApiResponse, BaseView
-from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
-                           LOGGING_DEFAULT_LOG_LEVEL, \
-                           LOGGING_LOG_FORMAT_STRING
-from logon_type import LogonType
-from sqlite_interface import SqliteInterface
+#include "ServiceContext.h"
 
-
-
-class TestRoute1 : public ApiRoute
+namespace items
 {
-public:
-    TestRoute1 (std::string name) : ApiRoute (name) {}
-
-    virtual ApiOutResponsePtr Route (const ApiIncomingReqPtr& request)
+    namespace accountsSvc
     {
-        return ApiResponseFactory::createResponse (ApiResponseStatus::CODE_200, "This is my endpoint");
-    }
+        using namespace serviceFramework;
 
-};
+        class BasicAuthAuthenticate : public ApiRoute
+        {
+        public:
+            BasicAuthAuthenticate (std::string name);
+
+            ApiOutResponsePtr Route (const ApiIncomingReqPtr& request);
+        };
+
+    }   // namespace accountsSvc
+}   // namespace items
+
+#ifdef __USE_PYCODE__
 
 
 def create_basic_auth_blueprint(sql_interface : SqliteInterface,
@@ -147,3 +142,5 @@ class View(BaseView):
 
         return Response(json.dumps(response_json), status = response_status,
                                    mimetype = mimetypes.types_map['.json'])
+
+#endif // PYTHON CODE

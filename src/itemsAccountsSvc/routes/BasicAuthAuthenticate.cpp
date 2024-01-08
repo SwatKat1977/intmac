@@ -20,6 +20,25 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
+#include "BasicAuthAuthenticate.h"
+
+namespace items
+{
+    namespace accountsSvc
+    {
+        BasicAuthAuthenticate::BasicAuthAuthenticate (std::string name) : ApiRoute (name)
+        {
+        }
+
+        ApiOutResponsePtr BasicAuthAuthenticate::Route (const ApiIncomingReqPtr& request)
+        {
+            return ApiResponseFactory::createResponse (
+                ApiResponseStatus::CODE_200,
+                "Basic Auth authentication endpoint");
+        }
+    }   // namespace accountsSvc
+}   // namespace items
+
 #ifdef ___PYTHON___
 from http import HTTPStatus
 import json
