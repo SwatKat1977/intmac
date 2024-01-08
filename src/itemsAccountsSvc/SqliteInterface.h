@@ -79,6 +79,9 @@ namespace items
 
             void Close ();
 
+            int GetUserIdForUser (std::string emailAddress,
+                int logonType);
+
         private:
             sqlite3* m_connection;
             std::string m_dbFilename;
@@ -95,9 +98,6 @@ namespace items
             void InsertBasicAuthEntry (int userId,
                                        std::string password,
                                        std::string passwordSalt);
-
-            int GetUserIdForUser (std::string emailAddress,
-                                  int logonType);
         };
 
     }   // namespace accountsSvc

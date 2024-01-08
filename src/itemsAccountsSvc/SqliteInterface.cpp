@@ -27,6 +27,7 @@ The following is based on Ogre3D code:
 #include <filesystem>
 #include <sstream>
 #include "SqliteInterface.h"
+#include "Definitions.h"
 #include "Logger.h"
 #include "Sha256.h"
 #include "UUID.h"
@@ -63,6 +64,10 @@ namespace items
             { "account_status", std::to_string (AccountStatus_ACTIVE) },
             { "logon_type", std::to_string (LogonType_BASIC) }
         };
+
+        const std::string QUERY_GET_USERID_FOR_LOGIN =
+            "SELECT id, account_status FROM user_profile "
+            "WHERE email_address = ? AND logon_type = ?";
 
         SqliteInterface::SqliteInterface (std::string dbFilename) : m_connection (nullptr),
             m_dbFilename (dbFilename), m_isConnected (false)
@@ -272,6 +277,67 @@ namespace items
                 sqlite3_free (errMsg);
                 throw SqliteInterfaceException (exceptStr);
             }
+        }
+
+        int SqliteInterface::GetUserIdForUser (std::string emailAddress,
+                                               int logonType)
+        {
+            sqlite3_stmt* stmt = 0;
+
+            int prepareStatus = sqlite3_prepare_v2 (
+                m_connection,
+                QUERY_GET_USERID_FOR_LOGIN.c_str (),
+                (int)QUERY_GET_USERID_FOR_LOGIN.size (),
+                &stmt,
+                NULL);
+
+            if (prepareStatus != SQLITE_OK)
+            {
+                LOGGER->critical ("GetUserIdForUser SQL statement threw"
+                    "error on prepare stage : {0}",
+                    sqlite3_errmsg (m_connection));
+                return -1;
+            }
+
+            sqlite3_bind_text (
+                stmt,
+                1,
+                emailAddress.c_str (),
+                (int)emailAddress.size (),
+                SQLITE_STATIC);
+
+            sqlite3_bind_int (stmt, 2, logonType);
+
+            int stepStatus = 0;
+            int queryCount = 0;
+            int userId = -1;
+
+            while ((stepStatus = sqlite3_step (stmt)) == SQLITE_ROW)
+            {
+                queryCount++;
+
+                if (queryCount > 1)
+                {
+                    throw SqliteInterfaceException ("Duplicate entries");
+                }
+
+                userId = sqlite3_column_int (stmt, 0);
+                int accountStatus = sqlite3_column_int (stmt, 1);
+
+                if (accountStatus != AccountStatus_ACTIVE)
+                {
+                    throw SqliteInterfaceException ("Account not active");
+
+                }
+            }
+
+            if (stepStatus != SQLITE_DONE) {
+                printf ("error: %s\n", sqlite3_errmsg (m_connection));
+            }
+
+            sqlite3_finalize (stmt);
+
+            return userId;
         }
 
     }   // namespace accountsSvc
