@@ -20,6 +20,8 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
+#ifndef SQLITEINTERFACE_H
+#define SQLITEINTERFACE_H
 #include <exception>
 #include <map>
 #include <string>
@@ -93,7 +95,12 @@ namespace items
             void InsertBasicAuthEntry (int userId,
                                        std::string password,
                                        std::string passwordSalt);
+
+            int GetUserIdForUser (std::string emailAddress,
+                                  int logonType);
         };
 
     }   // namespace accountsSvc
 }   // namespace items
+
+#endif
