@@ -44,7 +44,7 @@ namespace items
         using namespace serviceFramework;
 
         StartupModule::StartupModule (std::string name)
-            : ServiceModule (name)
+            : ServiceModule (name), m_sqlite(nullptr)
         {
         }
 
@@ -108,7 +108,8 @@ namespace items
 
         bool StartupModule::AddBasicAuthenticationRoutes ()
         {
-            auto *basicAuth = new BasicAuthAuthenticate (BASIC_AUTHENTICATE_ROUTE_NAME);
+            auto *basicAuth = new BasicAuthAuthenticate (
+                BASIC_AUTHENTICATE_ROUTE_NAME, m_sqlite);
 
             try
             {
