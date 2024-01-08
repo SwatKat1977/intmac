@@ -23,6 +23,7 @@ The following is based on Ogre3D code:
 * GetEnv from os-int.h
 -----------------------------------------------------------------------------
 */
+#include <filesystem>
 #include "spdlog/spdlog.h"
 #include "Definitions.h"
 #include "routes/BasicAuthAuthenticate.h"
@@ -42,7 +43,8 @@ namespace items
     {
         using namespace serviceFramework;
 
-        StartupModule::StartupModule (std::string name) : ServiceModule (name)
+        StartupModule::StartupModule (std::string name)
+            : ServiceModule (name)
         {
         }
 
@@ -85,6 +87,11 @@ namespace items
             LOGGER->info ("-> Create DB if missing : {0}",
                 m_context->GetConfigManager ().GetStringEntry (
                     "backend", "create_db_if_missing").c_str ());
+
+            if (!OpenInternalDatabase ())
+            {
+                return false;
+            }
 
             if (!AddServiceProviders ())
             {
@@ -138,6 +145,63 @@ namespace items
             {
                 LOGGER->critical ("Unable to create service provider '{0}' : {1}",
                     SERVICE_PROVIDER_API_NAME, e.what ());
+                return false;
+            }
+
+            return true;
+        }
+
+        bool StartupModule::OpenInternalDatabase ()
+        {
+            LOGGER->info ("Opening internal database...");
+
+            std::string filename = m_context->GetConfigManager ().GetStringEntry (
+                "backend", "internal_db_filename").c_str ();
+
+            m_sqlite = new SqliteInterface (filename);
+
+            if (std::filesystem::is_regular_file (filename))
+            {
+                if (!m_sqlite->IsValidDatabase ())
+                {
+                    LOGGER->critical ("Database file '" + filename + "' is not valid!");
+                    return false;
+                }
+            }
+            else
+            {
+                std::string createIfMissingStr = m_context->GetConfigManager ().GetStringEntry (
+                    "backend", "create_db_if_missing").c_str ();
+                bool createIfMissing = strcmp (createIfMissingStr.c_str (), "YES") == 0 ? true : false;
+
+                if (createIfMissing)
+                {
+                    try
+                    {
+                        m_sqlite->BuildDatabase ();
+                    }
+                    catch (SqliteInterfaceException& except)
+                    {
+                        LOGGER->critical (except.what ());
+                        return false;
+                    }
+                }
+                else
+                {
+                    LOGGER->critical (
+                        "Database '{0}' doesn't exist and won't get created!",
+                        filename);
+                    return false;
+                }
+            }
+
+            try
+            {
+                m_sqlite->Open ();
+            }
+            catch (SqliteInterfaceException& ex)
+            {
+                LOGGER->critical (ex.what ());
                 return false;
             }
 
