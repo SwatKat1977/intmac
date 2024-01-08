@@ -160,7 +160,7 @@ copy $(OutDir)$(TargetName)$(TargetExt) $(SolutionDir)build
     <ClInclude Include="..\externalLibraries\sqlite\sqlite3ext.h" />
     <ClInclude Include="ConfigurationLayout.h" />
     <ClInclude Include="Definitions.h" />
-    <ClInclude Include="DTOs\basic_auth_view.h" />
+    <ClInclude Include="DTOs\BasicAuthDTOs.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="routes\BasicAuthAuthenticate.h" />
     <ClInclude Include="serviceModules\StartupModule.h" />
