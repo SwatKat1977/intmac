@@ -25,7 +25,6 @@ The following is based on Ogre3D code:
 */
 #ifndef STARTUPMODULE_H
 #define STARTUPMODULE_H
-#include <sqlite3.h>
 #include "ServiceContext.h"
 
 namespace items
@@ -43,7 +42,9 @@ namespace items
             bool Initialise ();
 
         private:
-            sqlite3* OpenInternalDatabase ();
+            bool AddBasicAuthenticationRoutes ();
+
+            bool AddServiceProviders ();
         };
 
     }   // namespace accountsSvc

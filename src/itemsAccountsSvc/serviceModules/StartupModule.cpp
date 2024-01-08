@@ -24,9 +24,17 @@ The following is based on Ogre3D code:
 -----------------------------------------------------------------------------
 */
 #include "spdlog/spdlog.h"
+#include "Definitions.h"
+#include "routes/BasicAuthAuthenticate.h"
 #include "StartupModule.h"
 #include "Logger.h"
 #include "Version.h"
+
+const std::string BASIC_AUTH_BASE = "/basic_auth/";
+
+// Route : Basic authentication
+const std::string BASIC_AUTHENTICATE_ROUTE = BASIC_AUTH_BASE + "authenticate";
+const std::string BASIC_AUTHENTICATE_ROUTE_NAME = "basicAuth_auth";
 
 namespace items
 {
@@ -77,6 +85,73 @@ namespace items
             LOGGER->info ("-> Create DB if missing : {0}",
                 m_context->GetConfigManager ().GetStringEntry (
                     "backend", "create_db_if_missing").c_str ());
+
+            if (!AddServiceProviders ())
+            {
+                return false;
+            }
+
+            if (!AddBasicAuthenticationRoutes ())
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        bool StartupModule::AddBasicAuthenticationRoutes ()
+        {
+            auto *basicAuth = new BasicAuthAuthenticate (BASIC_AUTHENTICATE_ROUTE_NAME);
+
+            try
+            {
+                m_context->AddRoute (
+                    BASIC_AUTHENTICATE_ROUTE_NAME,
+                    HTTPRequestMethod_POST,
+                    BASIC_AUTHENTICATE_ROUTE,
+                    basicAuth);
+            }
+            catch (std::runtime_error &e)
+            {
+                LOGGER->critical ("Unable to create route '{0}' : {1}",
+                    BASIC_AUTHENTICATE_ROUTE_NAME, e.what ());
+                return false;
+            }
+
+            LOGGER->info ("Added basic auth route '{0}'",
+                BASIC_AUTHENTICATE_ROUTE_NAME);
+
+            return true;
+        }
+
+        bool StartupModule::AddServiceProviders ()
+        {
+            /*
+            *     //try
+    //{
+    //    context->AddServiceProvider ("entry1", "localhost", 8008, SERVICENETWORKTYPE_IPV4);
+    //    context->AddServiceProvider ("entry2", "localhost", 8099, SERVICENETWORKTYPE_IPV4);
+    //}
+    //catch (std::invalid_argument e)
+    //{
+    //    std::cout << "Exception : " << e.what () << std::endl;
+    //}
+            */
+
+            try
+            {
+                m_context->AddServiceProvider (
+                    SERVICE_PROVIDER_API_NAME,
+                    "localhost",
+                    SERVICE_PROVIDER_API_PORT,
+                    SERVICENETWORKTYPE_IPV4);
+            }
+            catch (std::runtime_error &e)
+            {
+                LOGGER->critical ("Unable to create service provider '{0}' : {1}",
+                    SERVICE_PROVIDER_API_NAME, e.what ());
+                return false;
+            }
 
             return true;
         }
