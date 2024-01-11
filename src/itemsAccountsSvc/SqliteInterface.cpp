@@ -267,9 +267,6 @@ namespace items
                 << passwordSalt << "', "
                 << userId << ")";
 
-            printf ("PASSWORD : %s\n", password.c_str ());
-            printf ("INSERT : %s\n", query.str ().c_str ());
-
             char* errMsg = 0;
 
             int result = sqlite3_exec (m_connection,
@@ -338,8 +335,11 @@ namespace items
                 }
             }
 
-            if (stepStatus != SQLITE_DONE) {
-                printf ("error: %s\n", sqlite3_errmsg (m_connection));
+            if (stepStatus != SQLITE_DONE)
+            {
+                throw SqliteInterfaceException(
+                    std::string("SqliteInterface::GetUserIdForUser threw ") +
+                    + "exception " + sqlite3_errmsg (m_connection));
             }
 
             sqlite3_finalize (stmt);
@@ -402,8 +402,12 @@ namespace items
                 }
             }
 
-            if (stepStatus != SQLITE_DONE) {
-                printf ("error: %s\n", sqlite3_errmsg (m_connection));
+            if (stepStatus != SQLITE_DONE)
+            {
+                LOGGER->critical(
+                    "SqliteInterface::BasicAuthenticateUser threw exception {0}",
+                    sqlite3_errmsg (m_connection));
+                status = false;
             }
 
             sqlite3_finalize (stmt);
