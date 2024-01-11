@@ -20,6 +20,8 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
+#ifndef SQLITEINTERFACE_H
+#define SQLITEINTERFACE_H
 #include <exception>
 #include <map>
 #include <string>
@@ -77,6 +79,11 @@ namespace items
 
             void Close ();
 
+            int GetUserIdForUser (std::string emailAddress,
+                int logonType);
+
+            bool BasicAuthenticateUser (int userId, std::string password);
+
         private:
             sqlite3* m_connection;
             std::string m_dbFilename;
@@ -97,3 +104,5 @@ namespace items
 
     }   // namespace accountsSvc
 }   // namespace items
+
+#endif

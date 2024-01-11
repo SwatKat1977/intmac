@@ -25,6 +25,7 @@ The following is based on Ogre3D code:
 */
 #ifndef SINGLETON_H
 #define SINGLETON_H
+#include "Platform.h"
 
 namespace items
 {

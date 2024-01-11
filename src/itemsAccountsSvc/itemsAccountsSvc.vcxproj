@@ -148,10 +148,10 @@ copy $(OutDir)$(TargetName)$(TargetExt) $(SolutionDir)build
   <ItemGroup>
     <ClCompile Include="..\externalLibraries\sqlite\sqlite3.c" />
     <ClCompile Include="AccountsSvc.cpp" />
-    <ClCompile Include="routes\BasicAuthAuthenticateRoute.cpp" />
+    <ClCompile Include="routes\BasicAuthAuthenticate.cpp" />
+    <ClCompile Include="serviceModules\StartupModule.cpp" />
     <ClCompile Include="Sha256.cpp" />
     <ClCompile Include="SqliteInterface.cpp" />
-    <ClCompile Include="StartupModule.cpp" />
     <ClCompile Include="UUID.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -159,12 +159,13 @@ copy $(OutDir)$(TargetName)$(TargetExt) $(SolutionDir)build
     <ClInclude Include="..\externalLibraries\sqlite\sqlite3.h" />
     <ClInclude Include="..\externalLibraries\sqlite\sqlite3ext.h" />
     <ClInclude Include="ConfigurationLayout.h" />
-    <ClInclude Include="DTOs\basic_auth_view.h" />
+    <ClInclude Include="Definitions.h" />
+    <ClInclude Include="DTOs\BasicAuthDTOs.h" />
     <ClInclude Include="Logger.h" />
-    <ClInclude Include="routes\BasicAuthAuthenticateRoute.h" />
+    <ClInclude Include="routes\BasicAuthAuthenticate.h" />
+    <ClInclude Include="serviceModules\StartupModule.h" />
     <ClInclude Include="Sha256.h" />
     <ClInclude Include="SqliteInterface.h" />
-    <ClInclude Include="StartupModule.h" />
     <ClInclude Include="UUID.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

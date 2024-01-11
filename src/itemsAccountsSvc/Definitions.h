@@ -1,7 +1,7 @@
 /*
 -----------------------------------------------------------------------------
 This source file is part of ITEMS
-(Integrated Test Management Suite)
+(Integrated Test Management Suite )
 For the latest info, see https://github.com/SwatKat1977/intmac/
 
 Copyright 2014-2023 Integrated Test Management Suite Development Team
@@ -18,35 +18,17 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 
     You should have received a copy of the GNU General Public License
     along with this program.If not, see < https://www.gnu.org/licenses/>.
-
-The following is based on Ogre3D code:
-* GetEnv from os-int.h
 -----------------------------------------------------------------------------
 */
-#ifndef STARTUPMODULE_H
-#define STARTUPMODULE_H
-#include <sqlite3.h>
 #include "ServiceContext.h"
 
 namespace items
 {
     namespace accountsSvc
     {
-        using namespace serviceFramework;
 
-        class StartupModule : public ServiceModule
-        {
-        public:
-
-            StartupModule (std::string name);
-
-            bool Initialise ();
-
-        private:
-            sqlite3* OpenInternalDatabase ();
-        };
+        const std::string SERVICE_PROVIDER_API_NAME = "api";
+        const int SERVICE_PROVIDER_API_PORT = 8000;
 
     }   // namespace accountsSvc
 }   // namespace items
-
-#endif
