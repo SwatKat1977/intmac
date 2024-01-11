@@ -21,136 +21,71 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 -----------------------------------------------------------------------------
 */
 #include "BasicAuthAuthenticate.h"
+#include "Definitions.h"
+#include "DTOs/BasicAuthDTOs.h"
+#include "SqliteInterface.h"
 
 namespace items
 {
     namespace accountsSvc
     {
-        BasicAuthAuthenticate::BasicAuthAuthenticate (std::string name) : ApiRoute (name)
+        const int BASIC_AUTH_RESPONSE_STATUS_BAD = 0;
+        const int BASIC_AUTH_RESPONSE_STATUS_OK = 1;
+
+        BasicAuthAuthenticate::BasicAuthAuthenticate (
+            std::string name,
+            SqliteInterface* sqlite) : ApiRoute (name)
         {
+            m_sqlite = sqlite;
         }
 
         ApiOutResponsePtr BasicAuthAuthenticate::Route (const ApiIncomingReqPtr& request)
         {
+            auto response = BasicAuthenticateResponse::createShared ();
+            auto requestMsg = request->readBodyToDto<oatpp::Object
+                <BasicAuthenticateRequest>> (m_objectMapper.get ());
+
+            if ((!requestMsg.get ()->email_address) ||
+                (!requestMsg.get ()->password))
+            {
+                response->status = BASIC_AUTH_RESPONSE_STATUS_BAD;
+                response->error = "Invalid request format";
+                return ApiResponseFactory::createResponse (
+                    ApiResponseStatus::CODE_200, response,
+                    m_objectMapper);
+            }
+
+            std::string emailAddress = requestMsg.get ()->email_address;
+            std::string password = requestMsg.get ()->password;
+
+            int userId = m_sqlite->GetUserIdForUser (
+                emailAddress, LogonType_BASIC);
+
+            if (userId == -1)
+            {
+                response->status = BASIC_AUTH_RESPONSE_STATUS_BAD;
+                response->error = "Invalid username/password";
+                return ApiResponseFactory::createResponse (
+                    ApiResponseStatus::CODE_200, response,
+                    m_objectMapper);
+            }
+
+            bool authStatus = m_sqlite->BasicAuthenticateUser (userId, password);
+
+            if (authStatus)
+            {
+                response->status = BASIC_AUTH_RESPONSE_STATUS_OK;
+                response->error = "";
+            }
+            else
+            {
+                response->status = BASIC_AUTH_RESPONSE_STATUS_BAD;
+                response->error = "Invalid username/password";
+            }
+
             return ApiResponseFactory::createResponse (
-                ApiResponseStatus::CODE_200,
-                "Basic Auth authentication endpoint");
+                ApiResponseStatus::CODE_200, response,
+                m_objectMapper);
         }
     }   // namespace accountsSvc
 }   // namespace items
-
-#ifdef ___PYTHON___
-from http import HTTPStatus
-import json
-import logging
-import mimetypes
-from quart import Blueprint, request, Response
-from base_view import ApiResponse, BaseView
-from logging_consts import LOGGING_DATETIME_FORMAT_STRING, \
-                           LOGGING_DEFAULT_LOG_LEVEL, \
-                           LOGGING_LOG_FORMAT_STRING
-from logon_type import LogonType
-from sqlite_interface import SqliteInterface
-
-def create_basic_auth_blueprint(sql_interface : SqliteInterface,
-                                logger : logging.Logger):
-    view = View(sql_interface, logger)
-
-    blueprint = Blueprint('basic_auth_api', __name__)
-
-    @blueprint.route('/basic_auth/authenticate', methods=['POST'])
-    async def authenticate_request():
-        return await view.authenticate(request)
-
-    return blueprint
-
-class AuthenticateRequest:
-    ''' Definition of the basic_auth/authenticate request '''
-    #pylint: disable=too-few-public-methods
-
-    identifier = 'identifier'
-
-    schema = \
-    {
-        "$schema": "http://json-schema.org/draft-07/schema#",
-
-        "type" : "object",
-        "additionalProperties" : False,
-
-        "properties":
-        {
-            "email_address":
-            {
-                "type" : "string"
-            },
-            "password":
-            {
-                "type" : "string"
-            },
-        },
-        "required" : ["email_address", "password"]
-    }
-
-class View(BaseView):
-    __slots__ = ['_logger', '_sql_interface']
-
-    def __init__(self, sql_interface : SqliteInterface,
-                 logger : logging.Logger) -> None:
-        self._sql_interface = sql_interface
-        self._logger = logger.getChild(__name__)
-
-    async def authenticate(self, api_request):
-
-        response : ApiResponse = self._validate_json_body(
-            await api_request.get_data(), AuthenticateRequest.schema)
-
-        if response.status_code != HTTPStatus.OK:
-            response_json = {
-                'status': 0,
-                'error': response.exception_msg
-            }
-            return Response(json.dumps(response_json),
-                            status=HTTPStatus.INTERNAL_SERVER_ERROR,
-                            mimetype=mimetypes.types_map['.json'])
-
-        try:
-            user_id, _ = self._sql_interface.valid_user_to_logon(
-                response.body.email_address, LogonType.BASIC)
-
-            if user_id:
-                status, err_str = self._sql_interface.basic_user_authenticate(
-                    user_id, response.body.password)
-
-                response_status = HTTPStatus.OK
-
-                if status:
-                    response_json = {
-                        'status': 1,
-                        'error': ''
-                    }
-
-                else:
-                    response_json = {
-                        'status': 0,
-                        'error': err_str
-                    }
-
-            else:
-                response_json = {
-                    'status': 0,
-                    'error': 'Invalid username/password'
-                }
-                response_status = HTTPStatus.OK
-
-        except RuntimeError as ex:
-            self._logger.critical(ex)
-            response_json = {
-                'status': 0,
-                'error': "Internal server error"
-            }
-            response_status = HTTPStatus.INTERNAL_SERVER_ERROR
-
-        return Response(json.dumps(response_json), status = response_status,
-                                   mimetype = mimetypes.types_map['.json'])
-
-#endif

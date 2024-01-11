@@ -82,6 +82,8 @@ namespace items
             int GetUserIdForUser (std::string emailAddress,
                 int logonType);
 
+            bool BasicAuthenticateUser (int userId, std::string password);
+
         private:
             sqlite3* m_connection;
             std::string m_dbFilename;

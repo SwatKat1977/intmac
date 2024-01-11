@@ -69,6 +69,10 @@ namespace items
             "SELECT id, account_status FROM user_profile "
             "WHERE email_address = ? AND logon_type = ?";
 
+        const std::string QUERY_BASIC_AUTHENTICATE_USER =
+            "SELECT password, password_salt FROM user_auth_details "
+            "WHERE user_id = ?";
+
         SqliteInterface::SqliteInterface (std::string dbFilename) : m_connection (nullptr),
             m_dbFilename (dbFilename), m_isConnected (false)
         {
@@ -230,13 +234,13 @@ namespace items
                 << accountStatus << ", "
                 << logonType << ")";
 
-            char *errMsg = 0;
+            char* errMsg = 0;
 
             int result = sqlite3_exec (m_connection,
-                                       query.str ().c_str(),
-                                       nullptr,
-                                       0,
-                                       &errMsg);
+                query.str ().c_str (),
+                nullptr,
+                0,
+                &errMsg);
             if (result != SQLITE_OK)
             {
                 std::string exceptStr = "Unable to add user profile : " +
@@ -254,14 +258,17 @@ namespace items
         {
             std::string toHash = password + passwordSalt;
             std::string passwordHash = GenerateSha256 (toHash);
-            
+
             std::stringstream query;
             query << "INSERT INTO user_auth_details (password, password_salt, "
-                  << "user_id) "
-                  << "VALUES('"
-                  << passwordHash << "', '"
-                  << passwordSalt << "', "
-                  << userId << ")";
+                << "user_id) "
+                << "VALUES('"
+                << passwordHash << "', '"
+                << passwordSalt << "', "
+                << userId << ")";
+
+            printf ("PASSWORD : %s\n", password.c_str ());
+            printf ("INSERT : %s\n", query.str ().c_str ());
 
             char* errMsg = 0;
 
@@ -280,7 +287,7 @@ namespace items
         }
 
         int SqliteInterface::GetUserIdForUser (std::string emailAddress,
-                                               int logonType)
+            int logonType)
         {
             sqlite3_stmt* stmt = 0;
 
@@ -338,6 +345,70 @@ namespace items
             sqlite3_finalize (stmt);
 
             return userId;
+        }
+
+        bool SqliteInterface::BasicAuthenticateUser (
+            int userId,
+            std::string password)
+        {
+            bool status = false;
+            sqlite3_stmt* stmt = 0;
+
+            int prepareStatus = sqlite3_prepare_v2 (
+                m_connection,
+                QUERY_BASIC_AUTHENTICATE_USER.c_str (),
+                (int)QUERY_BASIC_AUTHENTICATE_USER.size (),
+                &stmt,
+                NULL);
+
+            if (prepareStatus != SQLITE_OK)
+            {
+                LOGGER->critical ("BasicAuthenticateUser SQL statement threw"
+                    "error on prepare stage : {0}",
+                    sqlite3_errmsg (m_connection));
+                return false;
+            }
+
+            sqlite3_bind_int (stmt, 1, userId);
+
+            int stepStatus = 0;
+            int queryCount = 0;
+
+            while ((stepStatus = sqlite3_step (stmt)) == SQLITE_ROW)
+            {
+                queryCount++;
+
+                if (queryCount > 1)
+                {
+                    throw SqliteInterfaceException ("Duplicate entries");
+                }
+
+                std::string recordPassword = (char *)sqlite3_column_text (stmt, 0);
+                std::string recordPasswordSalt = (char *)sqlite3_column_text (stmt, 1);
+
+                // Neither should be null, but just in case...
+                if (recordPassword.empty () || recordPasswordSalt.empty ())
+                {
+                    break;
+                }
+
+                std::string hashStr = std::string (password) +
+                    std::string (recordPasswordSalt);
+                std::string passwordHash = GenerateSha256 (hashStr);
+
+                if (passwordHash == recordPassword)
+                {
+                    status = true;
+                }
+            }
+
+            if (stepStatus != SQLITE_DONE) {
+                printf ("error: %s\n", sqlite3_errmsg (m_connection));
+            }
+
+            sqlite3_finalize (stmt);
+
+            return status;
         }
 
     }   // namespace accountsSvc

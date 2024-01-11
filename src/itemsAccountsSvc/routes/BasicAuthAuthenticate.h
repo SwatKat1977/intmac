@@ -21,6 +21,7 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 -----------------------------------------------------------------------------
 */
 #include "ServiceContext.h"
+#include "SqliteInterface.h"
 
 namespace items
 {
@@ -31,9 +32,12 @@ namespace items
         class BasicAuthAuthenticate : public ApiRoute
         {
         public:
-            BasicAuthAuthenticate (std::string name);
+            BasicAuthAuthenticate (std::string name, SqliteInterface *sqlite);
 
             ApiOutResponsePtr Route (const ApiIncomingReqPtr& request);
+
+        private:
+            SqliteInterface* m_sqlite;
         };
 
     }   // namespace accountsSvc
