@@ -138,7 +138,7 @@ namespace items
             {
                 m_context->AddServiceProvider (
                     SERVICE_PROVIDER_API_NAME,
-                    "localhost",
+                    "0.0.0.0",
                     SERVICE_PROVIDER_API_PORT,
                     SERVICENETWORKTYPE_IPV4);
             }

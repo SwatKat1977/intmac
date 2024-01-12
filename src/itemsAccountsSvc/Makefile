@@ -1,29 +1,29 @@
 CPPFLAGS = -std=c++17 -Wall -g -I.
 CPPFLAGS += -I../externalLibraries/INIReader \
             -I../externalLibraries/spdlog \
+            -I../externalLibraries/sqlite \
             -I../serviceFramework \
+			-I../common \
             -I ${ITEMS_OATPP_INCLUDE_DIR}
 
-LIB_DIR = ../lib/
+LIB_DIRS = -L ../lib/ -L /usr/local/lib/oatpp-1.3.0
+
+LIBRARIES = -lServiceFramework -loatpp
 
 OBJS = AccountsSvc.o \
        UUID.o \
        Sha256.o \
-       routes/basicAuthenticate.o \
-       serviceModules/StartupModule.o
+	   SqliteInterface.o \
+       routes/BasicAuthAuthenticate.o \
+       serviceModules/StartupModule.o \
+	   ../externalLibraries/sqlite/sqlite3.o
 
-PROG = ./Tutorial
+ACCOUNTSSVC = ${ITEMS_ACCOUNTS_SVC_BIN_DIR}/itemsAccountsSvc
 
-$(PROG): $(OBJS)
-	$(MAKE) -C $(OPENGL_DIR)
-	$(MAKE) -C $(WAVEFRONT_DIR)
-	$(MAKE) -C $(MATRIX_DIR)
-	g++ -o $(PROG) $(INCLUDES) $(OBJS) $(LIBS) $(FRAMEWORKS)
+$(ACCOUNTSSVC): $(OBJS)
+	g++ -o $(ACCOUNTSSVC) $(OBJS) $(LIB_DIRS) $(LIBRARIES)
 
-all: $(PROG)
+all: $(ACCOUNTSSVC)
 
 clean:
-	$(RM) $(PROG) $(OBJS)
-	$(MAKE) -C $(OPENGL_DIR) clean
-	$(MAKE) -C $(WAVEFRONT_DIR) clean
-	$(MAKE) -C $(MATRIX_DIR) clean
+	$(RM) $(ACCOUNTSSVC) $(OBJS)
