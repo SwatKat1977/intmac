@@ -20,10 +20,11 @@ OBJS = AccountsSvc.o \
 ACCOUNTSSVC = ${ITEMS_ACCOUNTS_SVC_BIN_DIR}/itemsAccountsSvc
 
 $(ACCOUNTSSVC): $(OBJS)
-	$(MAKE) -C ../../externalLibraries/sqlite
+	$(MAKE) -C ../externalLibraries/sqlite
 	g++ -o $(ACCOUNTSSVC) $(OBJS) $(LIB_DIRS) $(LIBRARIES)
 
 all: $(ACCOUNTSSVC)
 
 clean:
+	$(MAKE) -C ../externalLibraries/sqlite clean
 	$(RM) $(ACCOUNTSSVC) $(OBJS)
