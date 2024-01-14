@@ -22,17 +22,37 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 */
 #include <iostream>
 #include "Platform.h"
+#include "ConfigurationLayout.h"
+#include "ServiceContext.h"
+
+using namespace items::gatewaySvc;
+using namespace items::serviceFramework;
 
 const std::string SERVICE_CONTEXT_NAME = "Items Gateway Svc";
 
 int main ()
 {
-    auto configFile = GetEnv ("ITEMS_ACCOUNTS_SVC_CONFIG_FILE");
-    auto configFileRequired = GetEnv ("ITEMS_ACCOUNTS_SVC_CONFIG_FILE_REQUIRED");
+    auto configFile = GetEnv ("ITEMS_GATEWAY_SVC_CONFIG_FILE");
+    auto configFileRequired = GetEnv ("ITEMS_GATEWAY_SVC_CONFIG_FILE_REQUIRED");
 
     bool fileIsRequired = true ? (!configFileRequired.empty () &&
         configFileRequired == "YES")
         : false;
+
+    if (configFile.empty () && fileIsRequired)
+    {
+        std::cout << "[FATAL ERROR] Configuration file missing!" << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    auto context = new ServiceContext (SERVICE_CONTEXT_NAME);
+
+    if (!context->Initialise (&CONFIGURATION_LAYOUT_MAP, configFile))
+    {
+        return EXIT_FAILURE;
+    }
+
+    context->Execute ();
 
     return EXIT_SUCCESS;
 }
