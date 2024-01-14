@@ -17,7 +17,7 @@ OBJS = AccountsSvc.o \
        routes/BasicAuthAuthenticate.o \
        serviceModules/StartupModule.o
 
-ACCOUNTSSVC = ${ITEMS_ACCOUNTS_SVC_BIN_DIR}/itemsAccountsSvc
+ACCOUNTSSVC = ${ITEMS_BIN_DIR}/itemsAccountsSvc
 
 $(ACCOUNTSSVC): $(OBJS)
 	$(MAKE) -C ../externalLibraries/sqlite

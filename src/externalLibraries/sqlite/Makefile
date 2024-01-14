@@ -4,14 +4,12 @@
 
 CPPFLAGS = -Wall -g -I.
 
-LIB_DIR = ../../lib/
-
 OBJS = sqlite3.o
 
-ARCHIVE = $(LIB_DIR)libSqliteLibrary.a
+ARCHIVE = ${ITEMS_BIN_DIR}/libSqliteLibrary.a
 
 $(ARCHIVE): $(OBJS)
-	mkdir -p $(LIB_DIR)
+	mkdir -p $(ITEMS_BIN_DIR)
 	ar -r $(ARCHIVE) $(OBJS)
 
 all: $(ARCHIVE)
