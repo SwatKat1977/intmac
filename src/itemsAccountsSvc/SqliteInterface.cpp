@@ -163,7 +163,7 @@ namespace items
 
                 LOGGER->info ("Database built successfully...");
             }
-            catch (SqliteInterfaceException interface_except)
+            catch (SqliteInterfaceException &interface_except)
             {
                 throw;
             }
