@@ -2,7 +2,7 @@ FROM intmac/intmac_serviceframework:LATEST
 
 # Build environment variables
 ARG oatpp_include_dir=/usr/local/include/oatpp-1.3.0/oatpp/
-ARG bin_dir=/items/dir
+ARG bin_dir=/items/src/lib
 ENV ITEMS_OATPP_INCLUDE_DIR=$oatpp_include_dir
 ENV ITEMS_BIN_DIR=$bin_dir
 
@@ -11,6 +11,8 @@ ARG accounts_svc_config_file=/items/configs/accounts_svc.config
 ARG accounts_svc_config_file_required=1
 ENV ITEMS_ACCOUNTS_SVC_CONFIG_FILE=$accounts_svc_config_file
 ENV ITEMS_ACCOUNTS_SVC_CONFIG_FILE_REQUIRED=$accounts_svc_config_file_required
+
+RUN mkdir -p ${ITEMS_BIN_DIR} && chown items:items ${ITEMS_BIN_DIR}
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt update && \
