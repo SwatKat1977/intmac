@@ -46,6 +46,13 @@ namespace items
         const int SESSIONS_REDIS_PORT_DEFAULT = 10000;
         const int SESSIONS_REDIS_RETRIES_DEFAULT = 3;
 
+        const std::string SECTION_INTERNAL_APIS = "internal_apis";
+
+        const std::string SESSIONS_INTERNAL_APIS_ACCOUNTS_SVC = "accounts_svc";
+        const std::string SESSIONS_INTERNAL_APIS_CMS_SVC = "cms_svc";
+        const std::string SESSIONS_INTERNAL_APIS_ACCOUNTS_SVC_DEFAULT = "http://localhost:3000/";
+        const std::string SESSIONS_INTERNAL_APIS_CMS_SVC_DEFAULT = "http://localhost:4000/";
+
         const SectionList SessionsRedisSettings =
         {
             {
@@ -75,10 +82,25 @@ namespace items
             }
         };
 
+        const SectionList InternalApisSettings =
+        {
+            {
+                SESSIONS_INTERNAL_APIS_ACCOUNTS_SVC,
+                ConfigSetupItem (SESSIONS_INTERNAL_APIS_ACCOUNTS_SVC, CONFIG_ITEM_TYPE_STRING)
+                        .DefaultValue (SESSIONS_REDIS_HOSTNAME_DEFAULT)
+            },
+            {
+                SESSIONS_INTERNAL_APIS_CMS_SVC,
+                ConfigSetupItem (SESSIONS_INTERNAL_APIS_CMS_SVC, CONFIG_ITEM_TYPE_STRING)
+                        .DefaultValue (SESSIONS_INTERNAL_APIS_CMS_SVC_DEFAULT)
+            }
+        };
+
         SectionsMap CONFIGURATION_LAYOUT_MAP =
         {
             {LOGGING_SECTION, LoggerSettings },
-            {SECTION_SESSIONS_REDIS, SessionsRedisSettings }
+            {SECTION_SESSIONS_REDIS, SessionsRedisSettings },
+            {SECTION_INTERNAL_APIS, InternalApisSettings }
         };
 
     }   // namespace accountsSvc
