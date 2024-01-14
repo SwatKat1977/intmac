@@ -8,6 +8,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "itemsAccountsSvc", "itemsAccountsSvc\itemsAccountsSvc.vcxproj", "{27E691B8-BF10-485C-B283-9AFD584F245C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "itemsGatewaySvc", "itemsGatewaySvc\itemsGatewaySvc.vcxproj", "{B6F19664-4BE9-4D0F-943A-EAFC1C2553A9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{234BD163-15D8-4F3F-B111-D95CB57FEF58} = {234BD163-15D8-4F3F-B111-D95CB57FEF58}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

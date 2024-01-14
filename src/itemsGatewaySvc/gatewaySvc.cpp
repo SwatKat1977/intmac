@@ -20,8 +20,19 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
+#include <iostream>
+#include "Platform.h"
+
+const std::string SERVICE_CONTEXT_NAME = "Items Gateway Svc";
 
 int main ()
 {
+    auto configFile = GetEnv ("ITEMS_ACCOUNTS_SVC_CONFIG_FILE");
+    auto configFileRequired = GetEnv ("ITEMS_ACCOUNTS_SVC_CONFIG_FILE_REQUIRED");
+
+    bool fileIsRequired = true ? (!configFileRequired.empty () &&
+        configFileRequired == "YES")
+        : false;
+
     return EXIT_SUCCESS;
 }
