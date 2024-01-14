@@ -31,4 +31,4 @@ RUN mkdir -p ${ITEMS_BIN_DIR} && mkdir -p /items/configs
 
 RUN make
 
-CMD ${ITEMS_ACCOUNTS_SVC_BIN_DIR}/itemsAccountsSvc
+CMD ${ITEMS_BIN_DIR}/itemsAccountsSvc
