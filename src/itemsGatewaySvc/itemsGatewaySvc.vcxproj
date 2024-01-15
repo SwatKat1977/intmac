@@ -114,6 +114,11 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>ws2_32.lib;serviceFramework.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>IF NOT EXIST  $(SolutionDir)build mkdir $(SolutionDir)build
+copy $(OutDir)$(TargetName)$(TargetExt) $(SolutionDir)build</Command>
+      <Message>Copy Gateway Service executable</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
