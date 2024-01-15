@@ -24,6 +24,7 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 #include "Platform.h"
 #include "ConfigurationLayout.h"
 #include "ServiceContext.h"
+#include "serviceModules/StartupModule.h"
 
 using namespace items::gatewaySvc;
 using namespace items::serviceFramework;
@@ -45,7 +46,11 @@ int main ()
         return EXIT_FAILURE;
     }
 
+    StartupModule startupModule = StartupModule ("Startup Module");
+
     auto context = new ServiceContext (SERVICE_CONTEXT_NAME);
+
+    context->AddServiceModule (&startupModule);
 
     if (!context->Initialise (&CONFIGURATION_LAYOUT_MAP, configFile))
     {

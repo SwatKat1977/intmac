@@ -73,13 +73,27 @@ namespace items
                 m_context->GetConfigManager ().GetStringEntry (
                     "logging", "log_format").c_str ());
 
-            LOGGER->info ("[BACKEND]");
-            LOGGER->info ("-> DB filename          : {0}",
+            LOGGER->info ("[SESSIONS REDIS]");
+            LOGGER->info ("-> Hostname             : {0}",
                 m_context->GetConfigManager ().GetStringEntry (
-                    "backend", "internal_db_filename").c_str ());
-            LOGGER->info ("-> Create DB if missing : {0}",
+                    "sessions_redis", "hostname").c_str ());
+            LOGGER->info ("-> Username             : {0}",
                 m_context->GetConfigManager ().GetStringEntry (
-                    "backend", "create_db_if_missing").c_str ());
+                    "sessions_redis", "username").c_str ());
+            LOGGER->info ("-> Network Port         : {0:d}",
+                m_context->GetConfigManager ().GetIntEntry (
+                    "sessions_redis", "port"));
+            LOGGER->info ("-> Max Retries          : {0:d}",
+                m_context->GetConfigManager ().GetIntEntry (
+                    "sessions_redis", "retries"));
+
+            LOGGER->info ("[INTERNAL APIS]");
+            LOGGER->info ("-> Accounts Service API : {0}",
+                m_context->GetConfigManager ().GetStringEntry (
+                    "internal_apis", "accounts_svc").c_str ());
+            LOGGER->info ("-> CMS Service API      : {0}",
+                m_context->GetConfigManager ().GetStringEntry (
+                    "internal_apis", "cms_svc").c_str ());
 
             if (!AddServiceProviders ())
             {
@@ -109,5 +123,5 @@ namespace items
             return true;
         }
 
-    }   // namespace accountsSvc
+    }   // namespace gatewaySvc
 }   // namespace items

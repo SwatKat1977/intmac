@@ -45,7 +45,7 @@ namespace items
             bool AddServiceProviders ();
         };
 
-    }   // namespace accountsSvc
+    }   // namespace gatewaySvc
 }   // namespace items
 
 #endif

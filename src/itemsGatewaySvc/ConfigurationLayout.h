@@ -103,7 +103,7 @@ namespace items
             {SECTION_INTERNAL_APIS, InternalApisSettings }
         };
 
-    }   // namespace accountsSvc
+    }   // namespace gatewaySvc
 }   // namespace items
 
 
