@@ -258,16 +258,18 @@ namespace items
                 }
             }
 
-            if (!intValue && fmt.IsRequired ())
+            if (!intValue)
             {
-                if (fmt.IsUnset ())
+                if (fmt.IsUnset () && fmt.IsRequired ())
                 {
                     std::string except = "Missing required config option " +
                         section + "::" + fmt.ItemName ();
                     throw std::invalid_argument (except);
                 }
-
-                intValue = new int (fmt.DefaultIntValue ());
+                else if (!fmt.IsUnset ())
+                {
+                    intValue = new int (fmt.DefaultIntValue ());
+                }
             }
 
             if (intValue && fmt.ValidIntValues ().size ())
