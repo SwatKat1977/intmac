@@ -108,6 +108,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -138,9 +139,13 @@ copy $(OutDir)$(TargetName)$(TargetExt) $(SolutionDir)build</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="gatewaySvc.cpp" />
+    <ClCompile Include="serviceModules\StartupModule.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ConfigurationLayout.h" />
+    <ClInclude Include="Definitions.h" />
+    <ClInclude Include="Logger.h" />
+    <ClInclude Include="serviceModules\StartupModule.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
