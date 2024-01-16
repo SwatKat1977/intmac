@@ -31,20 +31,16 @@ namespace items
     {
         using namespace serviceFramework;
 
+        const int ONE_MINUTE = 60;
+
         const std::string BOOL_YES = "YES";
         const std::string BOOL_NO = "NO";
 
-        const std::string SECTION_SESSIONS_REDIS = "sessions_redis";
+        const std::string SECTION_SESSIONS = "sessions";
 
-        const std::string SESSIONS_REDIS_HOSTNAME = "hostname";
-        const std::string SESSIONS_REDIS_USERNAME = "username";
-        const std::string SESSIONS_REDIS_PASSWORD = "password";
-        const std::string SESSIONS_REDIS_PORT = "port";
-        const std::string SESSIONS_REDIS_RETRIES = "retries";
+        const std::string SESSIONS_SESSION_TIMEOUT_SECS = "timeout_secs";
 
-        const std::string SESSIONS_REDIS_HOSTNAME_DEFAULT = "localhost";
-        const int SESSIONS_REDIS_PORT_DEFAULT = 10000;
-        const int SESSIONS_REDIS_RETRIES_DEFAULT = 3;
+        const int SESSIONS_SESSION_TIMEOUT_SECS_DEFAULT = ONE_MINUTE * 60;
 
         const std::string SECTION_INTERNAL_APIS = "internal_apis";
 
@@ -53,32 +49,12 @@ namespace items
         const std::string SESSIONS_INTERNAL_APIS_ACCOUNTS_SVC_DEFAULT = "http://localhost:3000/";
         const std::string SESSIONS_INTERNAL_APIS_CMS_SVC_DEFAULT = "http://localhost:4000/";
 
-        const SectionList SessionsRedisSettings =
+        const SectionList SessionsSettings =
         {
             {
-                SESSIONS_REDIS_HOSTNAME,
-                ConfigSetupItem (SESSIONS_REDIS_HOSTNAME, CONFIG_ITEM_TYPE_STRING)
-                        .DefaultValue (SESSIONS_REDIS_HOSTNAME_DEFAULT)
-            },
-            {
-                SESSIONS_REDIS_USERNAME,
-                ConfigSetupItem (SESSIONS_REDIS_USERNAME, CONFIG_ITEM_TYPE_STRING)
-                        .IsRequired(true)
-            },
-            {
-                SESSIONS_REDIS_PASSWORD,
-                ConfigSetupItem (SESSIONS_REDIS_PASSWORD, CONFIG_ITEM_TYPE_STRING)
-                        .IsRequired (true)
-            },
-            {
-                SESSIONS_REDIS_PORT,
-                ConfigSetupItem (SESSIONS_REDIS_PORT, CONFIG_ITEM_TYPE_INTEGER)
-                        .DefaultValue (SESSIONS_REDIS_PORT_DEFAULT)
-            },
-            {
-                SESSIONS_REDIS_RETRIES,
-                ConfigSetupItem (SESSIONS_REDIS_RETRIES, CONFIG_ITEM_TYPE_INTEGER)
-                        .DefaultValue (SESSIONS_REDIS_RETRIES_DEFAULT)
+                SESSIONS_SESSION_TIMEOUT_SECS,
+                ConfigSetupItem (SESSIONS_SESSION_TIMEOUT_SECS, CONFIG_ITEM_TYPE_INTEGER)
+                        .DefaultValue (SESSIONS_SESSION_TIMEOUT_SECS_DEFAULT)
             }
         };
 
@@ -87,7 +63,7 @@ namespace items
             {
                 SESSIONS_INTERNAL_APIS_ACCOUNTS_SVC,
                 ConfigSetupItem (SESSIONS_INTERNAL_APIS_ACCOUNTS_SVC, CONFIG_ITEM_TYPE_STRING)
-                        .DefaultValue (SESSIONS_REDIS_HOSTNAME_DEFAULT)
+                        .DefaultValue (SESSIONS_INTERNAL_APIS_ACCOUNTS_SVC_DEFAULT)
             },
             {
                 SESSIONS_INTERNAL_APIS_CMS_SVC,
@@ -99,7 +75,7 @@ namespace items
         SectionsMap CONFIGURATION_LAYOUT_MAP =
         {
             {LOGGING_SECTION, LoggerSettings },
-            {SECTION_SESSIONS_REDIS, SessionsRedisSettings },
+            {SECTION_SESSIONS, SessionsSettings },
             {SECTION_INTERNAL_APIS, InternalApisSettings }
         };
 
