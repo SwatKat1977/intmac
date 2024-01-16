@@ -20,10 +20,36 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
+#ifndef SESSIONS_MANAGER_H
+#define SESSIONS_MANAGER_H
+#include <map>
+#include <string>
+#include <thread> 
+#include "SessionEntry.h"
 
-namespace items
-{
-    namespace gatewaySvc
+namespace items { namespace gatewaySvc {
+
+    class SessionsManager
     {
-    }   // namespace gatewaySvc
-}   // namespace items
+    public:
+        SessionsManager ();
+
+        bool AddSession (
+            std::string emailAddress,
+            std::string token,
+            AuthenticationType authType);
+
+        bool DeleteSession (std::string emailAddress);
+
+        bool IsValidSession (std::string emailAddress, std::string token);
+
+        bool HasSession (std::string email_address);
+
+    private:
+        std::map<std::string, SessionEntry *> m_sessions;
+        std::mutex m_mutex;
+    };
+
+} }   // namespace items::gatewaySvc
+
+#endif

@@ -140,12 +140,15 @@ copy $(OutDir)$(TargetName)$(TargetExt) $(SolutionDir)build</Command>
   <ItemGroup>
     <ClCompile Include="gatewaySvc.cpp" />
     <ClCompile Include="serviceModules\StartupModule.cpp" />
+    <ClCompile Include="SessionsManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ConfigurationLayout.h" />
     <ClInclude Include="Definitions.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="serviceModules\StartupModule.h" />
+    <ClInclude Include="SessionEntry.h" />
+    <ClInclude Include="SessionsManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

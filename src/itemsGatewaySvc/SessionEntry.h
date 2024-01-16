@@ -20,10 +20,45 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
+#ifndef SESSION_ENTRY_H
+#define SESSION_ENTRY_H
+#include <string>
 
-namespace items
-{
-    namespace gatewaySvc
+namespace items { namespace gatewaySvc {
+
+    // Enumeration for account authentication type
+    enum AuthenticationType
     {
-    }   // namespace gatewaySvc
-}   // namespace items
+        AuthenticationType_GOOGLE_API = 0,
+        AuthenticationType_FACEBOOK = 1,
+        AuthenticationType_MANUAL = 2
+    };
+
+    class SessionEntry
+    {
+    public:
+        SessionEntry (std::string emailAddress,
+            AuthenticationType authenticationType,
+            std::string token)
+            : m_emailAddress(emailAddress),
+              m_authenticationType(authenticationType),
+              m_sessionExpiry(0),
+              m_token(token)
+        {
+        }
+
+        std::string GetEmailAddress () { return m_emailAddress; }
+        AuthenticationType GetAuthenticationType () { return m_authenticationType; }
+        int GetSessionExpiry () { return m_sessionExpiry; }
+        std::string GetToken () { return m_token; }
+
+    private:
+        std::string m_emailAddress;
+        AuthenticationType m_authenticationType;
+        int m_sessionExpiry;
+        std::string m_token;
+    };
+
+} }   // namespace items::gatewaySvc
+
+#endif
