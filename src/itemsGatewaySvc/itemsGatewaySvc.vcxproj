@@ -139,13 +139,18 @@ copy $(OutDir)$(TargetName)$(TargetExt) $(SolutionDir)build</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="gatewaySvc.cpp" />
+    <ClCompile Include="routes\HandshakeRoutes.cpp" />
     <ClCompile Include="serviceModules\StartupModule.cpp" />
     <ClCompile Include="SessionsManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\common\apis\accountsSvc\AccountsSvcClient.h" />
+    <ClInclude Include="..\common\apis\accountsSvc\AccountsSvcDTOs.h" />
     <ClInclude Include="ConfigurationLayout.h" />
     <ClInclude Include="Definitions.h" />
+    <ClInclude Include="DTOs\HandshakeDTOs.h" />
     <ClInclude Include="Logger.h" />
+    <ClInclude Include="routes\HandshakeRoutes.h" />
     <ClInclude Include="serviceModules\StartupModule.h" />
     <ClInclude Include="SessionEntry.h" />
     <ClInclude Include="SessionsManager.h" />
