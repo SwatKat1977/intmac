@@ -22,8 +22,29 @@ Copyright 2014-2024 Integrated Test Management Suite Development Team
 */
 #ifndef ACCOUNTSSVCCLIENT_H
 #define ACCOUNTSSVCCLIENT_H
+#include "oatpp/core/macro/codegen.hpp"
+#include "oatpp/network/tcp/server/ConnectionProvider.hpp"
+#include "oatpp/web/client/ApiClient.hpp"
+#include "oatpp/web/client/HttpRequestExecutor.hpp"
+#include "apis/accountsSvc/AccountsSvcDTOs.h"
 
 namespace items { namespace common { namespace apis { namespace accountsSvc {
+
+    class AccountsSvcClient : public oatpp::web::client::ApiClient {
+#include OATPP_CODEGEN_BEGIN(ApiClient)
+
+        API_CLIENT_INIT (AccountsSvcClient)
+
+            // Basic authentication
+            API_CALL (
+                "POST",
+                "basic_auth/authenticate",
+                basicAuthenticateDTO,
+                BODY_DTO (Object<AccountsSvcBasicAuthRequestDto>, body)
+            )
+
+#include OATPP_CODEGEN_END(ApiClient)
+    };
 
  } } } } // namespace items::common::apis::accountsSvc
 

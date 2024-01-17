@@ -22,8 +22,23 @@ Copyright 2014-2024 Integrated Test Management Suite Development Team
 */
 #ifndef ACCOUNTSSVCDTOS_H
 #define ACCOUNTSSVCDTOS_H
+#include "oatpp/core/macro/codegen.hpp"
+#include "oatpp/network/tcp/server/ConnectionProvider.hpp"
 
 namespace items { namespace common { namespace apis { namespace accountsSvc {
+
+#include OATPP_CODEGEN_BEGIN(DTO)
+
+    class AccountsSvcBasicAuthRequestDto : public oatpp::DTO {
+
+        DTO_INIT (AccountsSvcBasicAuthRequestDto, DTO)
+
+        DTO_FIELD (String, email_address);
+        DTO_FIELD (String, password);
+
+    };
+
+#include OATPP_CODEGEN_END(DTO)
 
  } } } } // namespace items::common::apis::accountsSvc
 
