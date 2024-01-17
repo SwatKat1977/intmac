@@ -23,4 +23,8 @@ Copyright 2014-2024 Integrated Test Management Suite Development Team
 #ifndef ACCOUNTSSVCCLIENT_H
 #define ACCOUNTSSVCCLIENT_H
 
+namespace items { namespace common { namespace apis { namespace accountsSvc {
+
+ } } } } // namespace items::common::apis::accountsSvc
+
 #endif
