@@ -91,6 +91,8 @@ namespace items
                 return false;
             }
 
+            oatpp::base::Environment::init ();
+
 #if ITEMS_PLATFORM == ITEMS_PLATFORM_WINDOWS_CORE || \
     ITEMS_PLATFORM == ITEMS_PLATFORM_WINDOWS_MSVC
             int iResult;
@@ -168,7 +170,7 @@ namespace items
                 networkType,
                 provider,
                 router,
-                oatpp::web::server::HttpConnectionHandler::createShared (router)
+                oatpp::web::server::HttpConnectionHandler::createShared (router),
             };
             m_providers[name] = entry;
         }
@@ -224,8 +226,13 @@ namespace items
                     (*provider).second.provider,
                     (*provider).second.connectionHandler);
 
-                server->run (true);
-                m_servers.push_back (server);
+                std::thread *serviceThread = new std::thread ([&server]
+                {
+                    server->run ();
+                });
+
+                ServerThreadEntry serverThreadEntry = { server, serviceThread };
+                m_servers[(*provider).first] = serverThreadEntry;
             }
 
             while (!m_shutdownRequested)
@@ -245,6 +252,37 @@ namespace items
                 module++)
             {
                 (*module)->Shutdown ();
+            }
+
+            for (auto provider = m_providers.begin ();
+                provider != m_providers.end ();
+                provider++)
+            {
+                // Stop the ServerConnectionProvider so we don't accept any new
+                // connections.
+                provider->second.provider->stop ();
+
+                ServerThreadEntry entry = m_servers[provider->first];
+
+                // Check to see if server is still running and stop if needed.
+                if (entry.server->getStatus () == oatpp::network::Server::STATUS_RUNNING)
+                {
+                    entry.server->stop ();
+                }
+
+                // Finally, stop the ConnectionHandler and wait until all
+                // running connections are closed.
+                provider->second.connectionHandler->stop ();
+
+                // Check if the server-thread has already stopped or if we need
+                // to wait for the server to stop .
+                if (entry.serverThread->joinable ())
+                {
+                    // Wait until the thread is done.
+                    entry.serverThread->join ();
+                }
+
+                delete entry.serverThread;
             }
         }
 
