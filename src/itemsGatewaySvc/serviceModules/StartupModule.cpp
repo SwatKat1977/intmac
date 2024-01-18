@@ -161,7 +161,10 @@ namespace items { namespace gatewaySvc {
         LOGGER->info ("Added basic auth route '{0}' to '{1}' provider",
             BASIC_AUTHENTICATE_ROUTE, SERVICE_PROVIDER_API_NAME);
 
-        auto* logoutRoute = new Logout (LOGOUT_ROUTE_NAME, m_sessionsManager);
+        auto* logoutRoute = new Logout (
+            LOGOUT_ROUTE_NAME,
+            m_sessionsManager,
+            m_context->GetConfigManager ());
         try
         {
             m_context->AddRoute (

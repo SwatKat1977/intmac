@@ -49,9 +49,14 @@ namespace items
         const std::string INTERNAL_APIS_CMS_SVC_HOST = "cms_svc_host";
         const std::string INTERNAL_APIS_CMS_SVC_PORT = "cms_svc_port";
         const std::string INTERNAL_APIS_ACCOUNTS_SVC_HOST_DEFAULT = "localhost";
+
         const int INTERNAL_APIS_ACCOUNTS_SVC_PORT_DEFAULT = 3000;
         const std::string INTERNAL_APIS_CMS_SVC_HOST_DEFAULT = "localhost";
         const int INTERNAL_APIS_CMS_SVC_PORT_DEFAULT = 4000;
+
+        const std::string SECTION_AUTHENTICATION = "authentication";
+
+        const std::string AUTHENTICATION_TOKEN = "token";
 
         const SectionList SessionsSettings =
         {
@@ -86,11 +91,21 @@ namespace items
             }
         };
 
+        const SectionList AuthenticationSettings =
+        {
+            {
+                AUTHENTICATION_TOKEN,
+                ConfigSetupItem (AUTHENTICATION_TOKEN, CONFIG_ITEM_TYPE_STRING)
+                        .IsRequired(true)
+            },
+        };
+
         const SectionsMap CONFIGURATION_LAYOUT_MAP =
         {
             {LOGGING_SECTION, LoggerSettings },
             {SECTION_SESSIONS, SessionsSettings },
-            {SECTION_INTERNAL_APIS, InternalApisSettings }
+            {SECTION_INTERNAL_APIS, InternalApisSettings },
+            {SECTION_AUTHENTICATION, AuthenticationSettings }
         };
 
     }   // namespace gatewaySvc
