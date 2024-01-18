@@ -51,12 +51,14 @@ namespace items { namespace gatewaySvc {
     public:
         Logout (
             std::string name,
-            std::shared_ptr < SessionsManager> sessionManager);
+            std::shared_ptr < SessionsManager> sessionManager,
+            serviceFramework::ConfigManager configManager);
 
         ApiOutResponsePtr Route (const ApiIncomingReqPtr& request);
 
     private:
         std::shared_ptr < SessionsManager> m_sessionManager;
+        serviceFramework::ConfigManager m_configManager;
     };
 
     class IsValidToken : public ApiRoute

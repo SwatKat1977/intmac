@@ -24,6 +24,7 @@ The following is based on Ogre3D code:
 -----------------------------------------------------------------------------
 */
 #include "HandshakeRoutes.h"
+#include "ConfigurationLayout.h"
 #include "DTOs/HandshakeDTOs.h"
 #include "Logger.h"
 #include "UUID.h"
@@ -31,6 +32,16 @@ The following is based on Ogre3D code:
 namespace items { namespace gatewaySvc {
 
     const std::string HEADERKEY_TOKEN = "auth_token";
+
+    bool IsValidAuthToken (oatpp::String headerToken, std::string authToken)
+    {
+        if (!headerToken || headerToken->empty ())
+        {
+            return false;
+        }
+
+        return (headerToken == authToken);
+    }
 
     BasicAuthenticate::BasicAuthenticate (
         std::string name,
@@ -118,8 +129,10 @@ namespace items { namespace gatewaySvc {
 
     Logout::Logout (
         std::string name,
-        std::shared_ptr < SessionsManager> sessionManager)
-        : ApiRoute (name), m_sessionManager (sessionManager)
+        std::shared_ptr < SessionsManager> sessionManager,
+        serviceFramework::ConfigManager configManager)
+        : ApiRoute (name), m_sessionManager (sessionManager),
+        m_configManager(configManager)
     {
     }
 
@@ -127,7 +140,25 @@ namespace items { namespace gatewaySvc {
     {
         auto headerToken = request->getHeader (HEADERKEY_TOKEN.c_str());
 
+        std::string authToken = m_configManager.GetStringEntry (
+            SECTION_AUTHENTICATION, AUTHENTICATION_TOKEN);
+
+        if (!IsValidAuthToken (headerToken, authToken))
+        {
+            return ApiResponseFactory::createResponse (
+                ApiResponseStatus::CODE_401, "voooo");
+        }
+
         if (!headerToken || headerToken->empty ())
+        {
+            return ApiResponseFactory::createResponse (
+                ApiResponseStatus::CODE_401, "");
+        }
+
+        std::string authToken2 = m_configManager.GetStringEntry (
+            SECTION_AUTHENTICATION, AUTHENTICATION_TOKEN);
+
+        if (headerToken != authToken)
         {
             return ApiResponseFactory::createResponse (
                 ApiResponseStatus::CODE_401, "");
