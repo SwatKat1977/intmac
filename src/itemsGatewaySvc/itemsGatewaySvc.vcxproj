@@ -138,6 +138,7 @@ copy $(OutDir)$(TargetName)$(TargetExt) $(SolutionDir)build</Command>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\common\UUID.cpp" />
     <ClCompile Include="gatewaySvc.cpp" />
     <ClCompile Include="routes\HandshakeRoutes.cpp" />
     <ClCompile Include="serviceModules\StartupModule.cpp" />
@@ -146,6 +147,8 @@ copy $(OutDir)$(TargetName)$(TargetExt) $(SolutionDir)build</Command>
   <ItemGroup>
     <ClInclude Include="..\common\apis\accountsSvc\AccountsSvcClient.h" />
     <ClInclude Include="..\common\apis\accountsSvc\AccountsSvcDTOs.h" />
+    <ClInclude Include="..\common\UUID.h" />
+    <ClInclude Include="..\serviceFramework\ItemTypes.h" />
     <ClInclude Include="ConfigurationLayout.h" />
     <ClInclude Include="Definitions.h" />
     <ClInclude Include="DTOs\HandshakeDTOs.h" />

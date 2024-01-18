@@ -146,15 +146,16 @@ copy $(OutDir)$(TargetName)$(TargetExt) $(SolutionDir)build
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\common\UUID.cpp" />
     <ClCompile Include="..\externalLibraries\sqlite\sqlite3.c" />
     <ClCompile Include="AccountsSvc.cpp" />
     <ClCompile Include="routes\BasicAuthAuthenticate.cpp" />
     <ClCompile Include="serviceModules\StartupModule.cpp" />
     <ClCompile Include="Sha256.cpp" />
     <ClCompile Include="SqliteInterface.cpp" />
-    <ClCompile Include="UUID.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\common\UUID.h" />
     <ClInclude Include="..\common\Version.h" />
     <ClInclude Include="..\externalLibraries\sqlite\sqlite3.h" />
     <ClInclude Include="..\externalLibraries\sqlite\sqlite3ext.h" />
@@ -166,7 +167,6 @@ copy $(OutDir)$(TargetName)$(TargetExt) $(SolutionDir)build
     <ClInclude Include="serviceModules\StartupModule.h" />
     <ClInclude Include="Sha256.h" />
     <ClInclude Include="SqliteInterface.h" />
-    <ClInclude Include="UUID.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
