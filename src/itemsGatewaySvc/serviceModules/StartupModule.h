@@ -43,6 +43,8 @@ namespace items
 
         private:
             bool AddServiceProviders ();
+
+            bool AddBasicAuthenticationRoutes ();
         };
 
     }   // namespace gatewaySvc
