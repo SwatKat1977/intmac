@@ -52,7 +52,7 @@ int main ()
 
     context->AddServiceModule (&startupModule);
 
-    if (!context->Initialise (&CONFIGURATION_LAYOUT_MAP, configFile))
+    if (!context->Initialise ((SectionsMap *) & CONFIGURATION_LAYOUT_MAP, configFile))
     {
         return EXIT_FAILURE;
     }

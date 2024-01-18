@@ -284,6 +284,8 @@ namespace items
 
                 delete entry.serverThread;
             }
+
+            oatpp::base::Environment::destroy ();
         }
 
         void ServiceContext::NotifyShutdownRequested ()
