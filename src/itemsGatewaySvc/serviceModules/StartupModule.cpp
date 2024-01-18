@@ -38,11 +38,16 @@ namespace items { namespace gatewaySvc {
 
     using namespace serviceFramework;
 
-    const std::string BASIC_AUTH_BASE = "/basic_auth/";
+    const std::string AUTH_BASE = "auth/";
+    const std::string BASIC_AUTH_BASE = "basic/";
 
     // Route : Basic authentication
-    const std::string BASIC_AUTHENTICATE_ROUTE = BASIC_AUTH_BASE + "authenticate";
+    const std::string BASIC_AUTHENTICATE_ROUTE = AUTH_BASE +
+        BASIC_AUTH_BASE + "authenticate";
     const std::string BASIC_AUTHENTICATE_ROUTE_NAME = "basicAuth_auth";
+
+    const std::string LOGOUT_ROUTE = AUTH_BASE + "logout";
+    const std::string LOGOUT_ROUTE_NAME = "logout";
 
     StartupModule::StartupModule (std::string name)
         : ServiceModule (name)
@@ -134,20 +139,18 @@ namespace items { namespace gatewaySvc {
         return true;
     }
 
-
     bool StartupModule::AddBasicAuthenticationRoutes ()
     {
-        auto* basicAuth = new BasicAuthenticate (
+        auto* basicAuthRoute = new BasicAuthenticate (
             BASIC_AUTHENTICATE_ROUTE_NAME, m_accountsSvcClient,
             m_sessionsManager);
-
         try
         {
             m_context->AddRoute (
                 SERVICE_PROVIDER_API_NAME,
                 HTTPRequestMethod_POST,
                 BASIC_AUTHENTICATE_ROUTE,
-                basicAuth);
+                basicAuthRoute);
         }
         catch (std::runtime_error& e)
         {
@@ -155,9 +158,27 @@ namespace items { namespace gatewaySvc {
                 BASIC_AUTHENTICATE_ROUTE_NAME, e.what ());
             return false;
         }
-
         LOGGER->info ("Added basic auth route '{0}' to '{1}' provider",
             BASIC_AUTHENTICATE_ROUTE, SERVICE_PROVIDER_API_NAME);
+
+        auto* logoutRoute = new Logout (LOGOUT_ROUTE_NAME, m_sessionsManager);
+        try
+        {
+            m_context->AddRoute (
+                SERVICE_PROVIDER_API_NAME,
+                HTTPRequestMethod_POST,
+                LOGOUT_ROUTE,
+                logoutRoute);
+        }
+        catch (std::runtime_error& e)
+        {
+            LOGGER->critical ("Unable to create route '{0}' : {1}",
+                LOGOUT_ROUTE_NAME, e.what ());
+            return false;
+        }
+
+        LOGGER->info ("Added basic auth route '{0}' to '{1}' provider",
+            LOGOUT_ROUTE, SERVICE_PROVIDER_API_NAME);
 
         return true;
     }
