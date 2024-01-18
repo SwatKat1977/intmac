@@ -38,6 +38,17 @@ namespace items { namespace common { namespace apis { namespace accountsSvc {
 
     };
 
+    class AccountsSvcBasicAuthResponseDto : public oatpp::DTO
+    {
+        DTO_INIT (AccountsSvcBasicAuthResponseDto, DTO)
+
+        DTO_FIELD (Int32, status);
+        DTO_FIELD (String, error);
+    };
+
+    const int ACCOUNTSSVC_BASICAUTH_RESPONSE_STATUS_BAD = 0;
+    const int ACCOUNTSSVC_BASICAUTH_RESPONSE_STATUS_OK = 1;
+
 #include OATPP_CODEGEN_END(DTO)
 
  } } } } // namespace items::common::apis::accountsSvc

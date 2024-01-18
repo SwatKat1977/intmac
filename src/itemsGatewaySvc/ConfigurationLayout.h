@@ -44,10 +44,14 @@ namespace items
 
         const std::string SECTION_INTERNAL_APIS = "internal_apis";
 
-        const std::string SESSIONS_INTERNAL_APIS_ACCOUNTS_SVC = "accounts_svc";
-        const std::string SESSIONS_INTERNAL_APIS_CMS_SVC = "cms_svc";
-        const std::string SESSIONS_INTERNAL_APIS_ACCOUNTS_SVC_DEFAULT = "http://localhost:3000/";
-        const std::string SESSIONS_INTERNAL_APIS_CMS_SVC_DEFAULT = "http://localhost:4000/";
+        const std::string INTERNAL_APIS_ACCOUNTS_SVC_HOST = "accounts_svc_host";
+        const std::string INTERNAL_APIS_ACCOUNTS_SVC_PORT = "accounts_svc_port";
+        const std::string INTERNAL_APIS_CMS_SVC_HOST = "cms_svc_host";
+        const std::string INTERNAL_APIS_CMS_SVC_PORT = "cms_svc_port";
+        const std::string INTERNAL_APIS_ACCOUNTS_SVC_HOST_DEFAULT = "localhost";
+        const int INTERNAL_APIS_ACCOUNTS_SVC_PORT_DEFAULT = 3000;
+        const std::string INTERNAL_APIS_CMS_SVC_HOST_DEFAULT = "localhost";
+        const int INTERNAL_APIS_CMS_SVC_PORT_DEFAULT = 4000;
 
         const SectionList SessionsSettings =
         {
@@ -61,18 +65,28 @@ namespace items
         const SectionList InternalApisSettings =
         {
             {
-                SESSIONS_INTERNAL_APIS_ACCOUNTS_SVC,
-                ConfigSetupItem (SESSIONS_INTERNAL_APIS_ACCOUNTS_SVC, CONFIG_ITEM_TYPE_STRING)
-                        .DefaultValue (SESSIONS_INTERNAL_APIS_ACCOUNTS_SVC_DEFAULT)
+                INTERNAL_APIS_ACCOUNTS_SVC_HOST,
+                ConfigSetupItem (INTERNAL_APIS_ACCOUNTS_SVC_HOST, CONFIG_ITEM_TYPE_STRING)
+                        .DefaultValue (INTERNAL_APIS_ACCOUNTS_SVC_HOST_DEFAULT)
             },
             {
-                SESSIONS_INTERNAL_APIS_CMS_SVC,
-                ConfigSetupItem (SESSIONS_INTERNAL_APIS_CMS_SVC, CONFIG_ITEM_TYPE_STRING)
-                        .DefaultValue (SESSIONS_INTERNAL_APIS_CMS_SVC_DEFAULT)
+                INTERNAL_APIS_ACCOUNTS_SVC_PORT,
+                ConfigSetupItem (INTERNAL_APIS_ACCOUNTS_SVC_PORT, CONFIG_ITEM_TYPE_INTEGER)
+                        .DefaultValue (INTERNAL_APIS_ACCOUNTS_SVC_PORT_DEFAULT)
+            },
+            {
+                INTERNAL_APIS_CMS_SVC_HOST,
+                ConfigSetupItem (INTERNAL_APIS_CMS_SVC_HOST, CONFIG_ITEM_TYPE_STRING)
+                        .DefaultValue (INTERNAL_APIS_CMS_SVC_HOST_DEFAULT)
+            },
+            {
+                INTERNAL_APIS_CMS_SVC_PORT,
+                ConfigSetupItem (INTERNAL_APIS_CMS_SVC_PORT, CONFIG_ITEM_TYPE_INTEGER)
+                        .DefaultValue (INTERNAL_APIS_CMS_SVC_PORT_DEFAULT)
             }
         };
 
-        SectionsMap CONFIGURATION_LAYOUT_MAP =
+        const SectionsMap CONFIGURATION_LAYOUT_MAP =
         {
             {LOGGING_SECTION, LoggerSettings },
             {SECTION_SESSIONS, SessionsSettings },

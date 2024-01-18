@@ -35,18 +35,18 @@ namespace items { namespace gatewaySvc {
 #include OATPP_CODEGEN_BEGIN(DTO)
 
     // Definition of the basic authenticate request.
-    class BasicAuthenticateRequest : public oatpp::DTO
+    class BasicAuthenticateRequestDTO : public oatpp::DTO
     {
-        DTO_INIT (BasicAuthenticateRequest, DTO)
+        DTO_INIT (BasicAuthenticateRequestDTO, DTO)
 
         DTO_FIELD (String, email_address);
         DTO_FIELD (String, password);
     };
 
     // Definition of the basic authenticate response.
-    class BasicAuthenticateResponse : public oatpp::DTO
+    class BasicAuthenticateResponseDTO : public oatpp::DTO
     {
-        DTO_INIT (BasicAuthenticateResponse, DTO)
+        DTO_INIT (BasicAuthenticateResponseDTO, DTO)
 
         DTO_FIELD (Int8, status);
         DTO_FIELD (String, error);
