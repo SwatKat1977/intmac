@@ -26,7 +26,7 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 
 namespace items
 {
-    namespace accountsSvc
+    namespace common
     {
         /*
         * This class is heavily based upon code written by rkg82 in
