@@ -25,19 +25,29 @@ The following is based on Ogre3D code:
 */
 #include <filesystem>
 #include "spdlog/spdlog.h"
+#include "ConfigurationLayout.h"
 #include "Definitions.h"
-#include "SessionsManager.h"
 #include "StartupModule.h"
 #include "Logger.h"
 #include "Version.h"
+#include "routes/HandshakeRoutes.h"
+#include "apis/accountsSvc/AccountsSvcClient.h"
+#include "oatpp/network/tcp/client/ConnectionProvider.hpp"
 
 namespace items { namespace gatewaySvc {
 
     using namespace serviceFramework;
 
+    const std::string BASIC_AUTH_BASE = "/basic_auth/";
+
+    // Route : Basic authentication
+    const std::string BASIC_AUTHENTICATE_ROUTE = BASIC_AUTH_BASE + "authenticate";
+    const std::string BASIC_AUTHENTICATE_ROUTE_NAME = "basicAuth_auth";
+
     StartupModule::StartupModule (std::string name)
         : ServiceModule (name)
     {
+        m_sessionsManager = std::shared_ptr<SessionsManager>(new SessionsManager ());
     }
 
     bool StartupModule::Initialise ()
@@ -73,19 +83,30 @@ namespace items { namespace gatewaySvc {
                 "logging", "log_format").c_str ());
 
         LOGGER->info ("[SESSIONS]");
-        LOGGER->info ("-> Session TYmeout (secs) : {0:d}",
+        LOGGER->info ("-> Session Timeout (secs) : {0:d}",
             m_context->GetConfigManager ().GetIntEntry (
                 "sessions", "timeout_secs"));
 
         LOGGER->info ("[INTERNAL APIS]");
-        LOGGER->info ("-> Accounts Service API : {0}",
+        LOGGER->info ("-> Accounts Service API : {0}:{1:d}",
             m_context->GetConfigManager ().GetStringEntry (
-                "internal_apis", "accounts_svc").c_str ());
-        LOGGER->info ("-> CMS Service API      : {0}",
+                SECTION_INTERNAL_APIS, INTERNAL_APIS_ACCOUNTS_SVC_HOST).c_str (),
+            m_context->GetConfigManager ().GetIntEntry (
+                SECTION_INTERNAL_APIS, INTERNAL_APIS_ACCOUNTS_SVC_PORT));
+        LOGGER->info ("-> CMS Service API      : {0}:{1:d}",
             m_context->GetConfigManager ().GetStringEntry (
-                "internal_apis", "cms_svc").c_str ());
+                SECTION_INTERNAL_APIS, INTERNAL_APIS_CMS_SVC_HOST).c_str (),
+            m_context->GetConfigManager ().GetIntEntry (
+                SECTION_INTERNAL_APIS, INTERNAL_APIS_CMS_SVC_PORT));
 
         if (!AddServiceProviders ())
+        {
+            return false;
+        }
+
+        CreateAccountsSvcClient ();
+
+        if (!AddBasicAuthenticationRoutes ())
         {
             return false;
         }
@@ -111,6 +132,50 @@ namespace items { namespace gatewaySvc {
         }
 
         return true;
+    }
+
+
+    bool StartupModule::AddBasicAuthenticationRoutes ()
+    {
+        auto* basicAuth = new BasicAuthenticate (
+            BASIC_AUTHENTICATE_ROUTE_NAME, m_accountsSvcClient,
+            m_sessionsManager);
+
+        try
+        {
+            m_context->AddRoute (
+                SERVICE_PROVIDER_API_NAME,
+                HTTPRequestMethod_POST,
+                BASIC_AUTHENTICATE_ROUTE,
+                basicAuth);
+        }
+        catch (std::runtime_error& e)
+        {
+            LOGGER->critical ("Unable to create route '{0}' : {1}",
+                BASIC_AUTHENTICATE_ROUTE_NAME, e.what ());
+            return false;
+        }
+
+        LOGGER->info ("Added basic auth route '{0}' to '{1}' provider",
+            BASIC_AUTHENTICATE_ROUTE, SERVICE_PROVIDER_API_NAME);
+
+        return true;
+    }
+
+    void StartupModule::CreateAccountsSvcClient ()
+    {
+        std::string accountsSvcHost = m_context->GetConfigManager ().GetStringEntry (
+            SECTION_INTERNAL_APIS, INTERNAL_APIS_ACCOUNTS_SVC_HOST).c_str ();
+        int accountsSvcPort = m_context->GetConfigManager ().GetIntEntry (
+            SECTION_INTERNAL_APIS, INTERNAL_APIS_ACCOUNTS_SVC_PORT);
+
+        auto objectMapper = oatpp::parser::json::mapping::ObjectMapper::createShared ();
+        auto connectionProvider = oatpp::network::tcp::client::ConnectionProvider::createShared (
+            { accountsSvcHost, (v_uint16)accountsSvcPort });
+        auto requestExecutor = oatpp::web::client::HttpRequestExecutor::createShared (connectionProvider);
+
+        m_accountsSvcClient = AccountsSvcClient::createShared (requestExecutor, objectMapper);
+        LOGGER->info ("Created client for Account Svc api");
     }
 
 } }   // namespace items::gatewaySvc

@@ -26,6 +26,8 @@ The following is based on Ogre3D code:
 #ifndef STARTUPMODULE_H
 #define STARTUPMODULE_H
 #include "ServiceContext.h"
+#include "ItemTypes.h"
+#include "SessionsManager.h"
 
 namespace items
 {
@@ -42,9 +44,14 @@ namespace items
             bool Initialise ();
 
         private:
+            AccountsSvcClientptr m_accountsSvcClient;
+            std::shared_ptr<SessionsManager> m_sessionsManager;
+
             bool AddServiceProviders ();
 
             bool AddBasicAuthenticationRoutes ();
+
+            void CreateAccountsSvcClient ();
         };
 
     }   // namespace gatewaySvc
