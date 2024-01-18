@@ -30,6 +30,8 @@ The following is based on Ogre3D code:
 
 namespace items { namespace gatewaySvc {
 
+    const std::string HEADERKEY_TOKEN = "auth_token";
+
     BasicAuthenticate::BasicAuthenticate (
         std::string name,
         std::shared_ptr< common::apis::accountsSvc::AccountsSvcClient> accountsSvcClient,
@@ -107,50 +109,54 @@ namespace items { namespace gatewaySvc {
         std::string loginType = hasSession ? "re-logged in" : "logged in";
         LOGGER->info ("User '{0}' {1}", emailAddress, loginType);
 
+        response->status = BASIC_AUTH_RESPONSE_STATUS_OK;
+        response->error = "";
         return ApiResponseFactory::createResponse (
             ApiResponseStatus::CODE_200, response,
             m_objectMapper);
     }
 
-    Logout::Logout (std::string name)
-        : ApiRoute (name)
+    Logout::Logout (
+        std::string name,
+        std::shared_ptr < SessionsManager> sessionManager)
+        : ApiRoute (name), m_sessionManager (sessionManager)
     {
     }
 
     ApiOutResponsePtr Logout::Route (const ApiIncomingReqPtr& request)
     {
-        return nullptr;
+        auto headerToken = request->getHeader (HEADERKEY_TOKEN.c_str());
+
+        if (!headerToken || headerToken->empty ())
+        {
+            return ApiResponseFactory::createResponse (
+                ApiResponseStatus::CODE_401, "");
+        }
+
+        return ApiResponseFactory::createResponse (
+            ApiResponseStatus::CODE_200, "response");
+
 #ifdef __OLD_PYTHON_CODE__
-        """
-            Handler method for user session logout endpoint.
+        request_obj, err_msg = await self._convert_json_body_to_object (
+            api_request, self.logoutRequestSchema)
 
-            parameters :
-        api_request - REST API request object
-
-            returns :
-        Instance of Quart Response class.
-            """
-
-            request_obj, err_msg = await self._convert_json_body_to_object (
-                api_request, self.logoutRequestSchema)
-
-            if not request_obj:
-        self._logger.error ("Received bad logout request")
+        if not request_obj:
+            self._logger.error ("Received bad logout request")
             response = "BAD REQUEST"
             response_status = HTTPStatus.NOT_ACCEPTABLE
 
-            else:
-        if self._sessions.is_valid_session (request_obj.email_address,
-            request_obj.token) :
-            self._sessions.del_auth_session (request_obj.email_address)
-            self._logger.info ("User '%s' logged out",
-                request_obj.email_address)
+        else:
+            if self._sessions.is_valid_session (request_obj.email_address,
+                request_obj.token) :
+                self._sessions.del_auth_session (request_obj.email_address)
+                self._logger.info ("User '%s' logged out",
+                    request_obj.email_address)
 
-            response = "OK"
-            response_status = HTTPStatus.OK
+        response = "OK"
+        response_status = HTTPStatus.OK
 
-            return Response (response, status = response_status,
-                mimetype = mimetypes.types_map['.txt'])
+        return Response (response, status = response_status,
+            mimetype = mimetypes.types_map['.txt'])
 #endif
     }
 
@@ -258,17 +264,6 @@ test_sets = [
 
 #ifdef __OLD_PYTHON_CODE__
 
-def create_handshake_blueprint (sessions : RedisInterface,
-    logger : logging.Logger) :
-            view = View (sessions, logger)
-
-            blueprint = Blueprint ('handshake_api', __name__)
-
-            @blueprint.route ('/handshake/basic_authenticate', methods = ['POST'])
-            async def basic_authenticate_request () :
-            # pylint : disable = unused - variable
-            return await view.basic_authenticate_handler (request)
-
             @blueprint.route ('/handshake/logout', methods = ['POST'])
             async def logout_user_request () :
             # pylint : disable = unused - variable
@@ -357,20 +352,11 @@ def create_handshake_blueprint (sessions : RedisInterface,
                 "required" : ["email_address", "token"]
         }
 
-        def __init__ (self, sessions : RedisInterface, logger : logging.Logger) :
-            self._sessions = sessions
-
-            self._logger : logging.Logger = logger.getChild (__name__)
-
-            mimetypes.init ()
-
-
-
             async def valid_token_handler (self, api_request) :
             """
             Endpoint to check to see if a token is valid.
 
-            parameters :
+           parameters :
             api_request - Request from Quart
 
             returns :
