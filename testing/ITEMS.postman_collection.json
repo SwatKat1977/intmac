@@ -59,12 +59,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{GATEWAY_BASE_URL}}/handsake/auth/basic/authenticate",
+									"raw": "{{GATEWAY_BASE_URL}}/handshake/auth/basic/authenticate",
 									"host": [
 										"{{GATEWAY_BASE_URL}}"
 									],
 									"path": [
-										"handsake",
+										"handshake",
 										"auth",
 										"basic",
 										"authenticate"
@@ -96,6 +96,40 @@
 									"path": [
 										"handshake",
 										"logout"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Is Valid User Token",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "auth_token",
+										"value": "robo",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email_address\": \"admin@localhost\",\r\n    \"token\": \"b2f9227d-8f25-4325-aebf-226ae2fc4cd2\"\r\n}"
+								},
+								"url": {
+									"raw": "{{GATEWAY_BASE_URL}}/handshake/isvalidusertoken?",
+									"host": [
+										"{{GATEWAY_BASE_URL}}"
+									],
+									"path": [
+										"handshake",
+										"isvalidusertoken"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": null
+										}
 									]
 								}
 							},
