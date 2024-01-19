@@ -54,6 +54,14 @@ namespace items { namespace gatewaySvc {
     const std::string ISVALIDUSERTOKEN_ROUTE = HANDSHAKE_BASE + "isvalidusertoken";
     const std::string ISVALIDUSERTOKEN_ROUTE_NAME = "isvalidusertoken";
 
+    // Route : Get Projects
+    const std::string GETPROJECTS_ROUTE = HANDSHAKE_BASE + "getprojects";
+    const std::string GETPROJECTS_ROUTE_NAME = "getprojects";
+
+    // Route : Select Project
+    const std::string SELECTPROJECT_ROUTE = HANDSHAKE_BASE + "selectproject";
+    const std::string SELECTPROJECT_ROUTE_NAME = "selectproject";
+
     StartupModule::StartupModule (std::string name)
         : ServiceModule (name)
     {
@@ -207,6 +215,42 @@ namespace items { namespace gatewaySvc {
         }
         LOGGER->info ("Added is valid user token route '{0}' to '{1}' provider",
             ISVALIDUSERTOKEN_ROUTE, SERVICE_PROVIDER_API_NAME);
+
+        auto* getProjectsRoute = new GetProjects (GETPROJECTS_ROUTE_NAME);
+        try
+        {
+            m_context->AddRoute (
+                SERVICE_PROVIDER_API_NAME,
+                HTTPRequestMethod_POST,
+                GETPROJECTS_ROUTE,
+                getProjectsRoute);
+        }
+        catch (std::runtime_error& e)
+        {
+            LOGGER->critical ("Unable to create route '{0}' : {1}",
+                GETPROJECTS_ROUTE_NAME, e.what ());
+            return false;
+        }
+        LOGGER->info ("Added get projects route '{0}' to '{1}' provider",
+            GETPROJECTS_ROUTE, SERVICE_PROVIDER_API_NAME);
+
+        auto* selectProjectRoute = new SelectProject (SELECTPROJECT_ROUTE_NAME);
+        try
+        {
+            m_context->AddRoute (
+                SERVICE_PROVIDER_API_NAME,
+                HTTPRequestMethod_POST,
+                SELECTPROJECT_ROUTE,
+                selectProjectRoute);
+        }
+        catch (std::runtime_error& e)
+        {
+            LOGGER->critical ("Unable to create route '{0}' : {1}",
+                SELECTPROJECT_ROUTE_NAME, e.what ());
+            return false;
+        }
+        LOGGER->info ("Added select projects route '{0}' to '{1}' provider",
+            SELECTPROJECT_ROUTE, SERVICE_PROVIDER_API_NAME);
 
         return true;
     }
