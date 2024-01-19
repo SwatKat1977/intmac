@@ -46,8 +46,13 @@ namespace items { namespace gatewaySvc {
         BASIC_AUTH_BASE + "authenticate";
     const std::string BASIC_AUTHENTICATE_ROUTE_NAME = "basicAuth_auth";
 
+    // Route : Logout user session
     const std::string LOGOUT_ROUTE = HANDSHAKE_BASE + "logout";
     const std::string LOGOUT_ROUTE_NAME = "logout";
+
+    // Route : Is Valid User Token
+    const std::string ISVALIDUSERTOKEN_ROUTE = HANDSHAKE_BASE + "isvalidusertoken";
+    const std::string ISVALIDUSERTOKEN_ROUTE_NAME = "isvalidusertoken";
 
     StartupModule::StartupModule (std::string name)
         : ServiceModule (name)
@@ -179,9 +184,29 @@ namespace items { namespace gatewaySvc {
                 LOGOUT_ROUTE_NAME, e.what ());
             return false;
         }
-
-        LOGGER->info ("Added basic auth route '{0}' to '{1}' provider",
+        LOGGER->info ("Added logout route '{0}' to '{1}' provider",
             LOGOUT_ROUTE, SERVICE_PROVIDER_API_NAME);
+
+        auto* isValidUserTokenRoute = new IsValidUserToken (
+            ISVALIDUSERTOKEN_ROUTE_NAME,
+            m_sessionsManager,
+            m_context->GetConfigManager ());
+        try
+        {
+            m_context->AddRoute (
+                SERVICE_PROVIDER_API_NAME,
+                HTTPRequestMethod_POST,
+                ISVALIDUSERTOKEN_ROUTE,
+                isValidUserTokenRoute);
+        }
+        catch (std::runtime_error& e)
+        {
+            LOGGER->critical ("Unable to create route '{0}' : {1}",
+                ISVALIDUSERTOKEN_ROUTE_NAME, e.what ());
+            return false;
+        }
+        LOGGER->info ("Added is valid user token route '{0}' to '{1}' provider",
+            ISVALIDUSERTOKEN_ROUTE, SERVICE_PROVIDER_API_NAME);
 
         return true;
     }
