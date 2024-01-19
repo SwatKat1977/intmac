@@ -38,15 +38,15 @@ namespace items { namespace gatewaySvc {
 
     using namespace serviceFramework;
 
-    const std::string AUTH_BASE = "auth/";
-    const std::string BASIC_AUTH_BASE = "basic/";
+    const std::string HANDSHAKE_BASE = "handshake/";
 
     // Route : Basic authentication
-    const std::string BASIC_AUTHENTICATE_ROUTE = AUTH_BASE +
+    const std::string BASIC_AUTH_BASE = "auth/basic/";
+    const std::string BASIC_AUTHENTICATE_ROUTE = HANDSHAKE_BASE +
         BASIC_AUTH_BASE + "authenticate";
     const std::string BASIC_AUTHENTICATE_ROUTE_NAME = "basicAuth_auth";
 
-    const std::string LOGOUT_ROUTE = AUTH_BASE + "logout";
+    const std::string LOGOUT_ROUTE = HANDSHAKE_BASE + "logout";
     const std::string LOGOUT_ROUTE_NAME = "logout";
 
     StartupModule::StartupModule (std::string name)

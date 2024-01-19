@@ -61,12 +61,19 @@ namespace items { namespace gatewaySvc {
         serviceFramework::ConfigManager m_configManager;
     };
 
-    class IsValidToken : public ApiRoute
+    class IsValidUserToken : public ApiRoute
     {
     public:
-        IsValidToken (std::string name);
+        IsValidUserToken (
+            std::string name,
+            std::shared_ptr < SessionsManager> sessionsManager,
+            serviceFramework::ConfigManager configManager);
 
         ApiOutResponsePtr Route (const ApiIncomingReqPtr& request);
+
+    private:
+        std::shared_ptr < SessionsManager> m_sessionsManager;
+        serviceFramework::ConfigManager m_configManager;
     };
 
     class GetProjects : public ApiRoute

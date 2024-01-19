@@ -59,11 +59,12 @@
 									}
 								},
 								"url": {
-									"raw": "{{GATEWAY_BASE_URL}}/auth/basic/authenticate",
+									"raw": "{{GATEWAY_BASE_URL}}/handsake/auth/basic/authenticate",
 									"host": [
 										"{{GATEWAY_BASE_URL}}"
 									],
 									"path": [
+										"handsake",
 										"auth",
 										"basic",
 										"authenticate"
@@ -85,15 +86,15 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"email_address\": \"admin@localhost\",\r\n    \"token\": \"3500a99e-4881-41fd-bca5-2cd6c1dbdfcb\"\r\n}"
+									"raw": "{\r\n    \"email_address\": \"admin@localhost\",\r\n    \"token\": \"9abf9e11-738b-444f-9996-69c68b645595\"\r\n}"
 								},
 								"url": {
-									"raw": "{{GATEWAY_BASE_URL}}/auth/logout",
+									"raw": "{{GATEWAY_BASE_URL}}/handshake/logout",
 									"host": [
 										"{{GATEWAY_BASE_URL}}"
 									],
 									"path": [
-										"auth",
+										"handshake",
 										"logout"
 									]
 								}

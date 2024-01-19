@@ -198,15 +198,65 @@ namespace items { namespace gatewaySvc {
             m_objectMapper);
     }
 
-#ifdef __OLD_PYTHON_CODE__
-        class IsValidToken : public ApiRoute
+    IsValidUserToken::IsValidUserToken (std::string name,
+        std::shared_ptr < SessionsManager> sessionsManager,
+        serviceFramework::ConfigManager configManager)
+        : ApiRoute (name), m_sessionsManager (sessionsManager),
+          m_configManager (configManager)
+    {
+    }
+
+    ApiOutResponsePtr IsValidUserToken::Route (const ApiIncomingReqPtr& request)
+    {
+        auto response = IsValidUserTokenResponseDTO::createShared ();
+
+        // ============== STEP 1 ==============
+        // Validate the authentication token
+        // ====================================
+
+        auto headerToken = request->getHeader (HEADERKEY_TOKEN.c_str ());
+
+        std::string authToken = m_configManager.GetStringEntry (
+            SECTION_AUTHENTICATION, AUTHENTICATION_TOKEN);
+
+        if (!IsValidAuthToken (headerToken, authToken))
         {
-        public:
-            IsValidToken (std::string name);
+            return ApiResponseFactory::createResponse (
+                ApiResponseStatus::CODE_401, "");
+        }
 
-            ApiOutResponsePtr Route (const ApiIncomingReqPtr& request);
-        };
+        // ============== STEP 2 ==============
+        // Validate the message body
+        // ====================================
+        auto requestMsg = request->readBodyToDto<oatpp::Object
+            <IsValidUserTokenRequestDTO>> (m_objectMapper.get ());
 
+        if ((!requestMsg.get ()->email_address) ||
+            (!requestMsg.get ()->token))
+        {
+            response->status = BASIC_AUTH_RESPONSE_STATUS_BAD;
+            response->error = "Invalid request format";
+            return ApiResponseFactory::createResponse (
+                ApiResponseStatus::CODE_200, response,
+                m_objectMapper);
+        }
+
+        std::string emailAddress = requestMsg.get ()->email_address;
+        std::string userToken = requestMsg.get ()->token;
+
+        bool validSession = m_sessionsManager->IsValidSession (
+            emailAddress, userToken);
+
+        response->status = BASIC_AUTH_RESPONSE_STATUS_OK;
+        response->error = "";
+        response->is_valid = validSession;
+
+        return ApiResponseFactory::createResponse (
+            ApiResponseStatus::CODE_200, response,
+            m_objectMapper);
+    }
+
+#ifdef __OLD_PYTHON_CODE__
         class GetProjects : public ApiRoute
         {
         public:
@@ -302,15 +352,7 @@ test_sets = [
 
 #ifdef __OLD_PYTHON_CODE__
 
-            @blueprint.route ('/handshake/logout', methods = ['POST'])
-            async def logout_user_request () :
-            # pylint : disable = unused - variable
-            return await view.logout_user_handler (request)
-
             @blueprint.route ('/handshake/valid_token', methods = ['GET'])
-            async def valid_token_request () :
-            # pylint : disable = unused - variable
-            return await view.valid_token_handler (request)
 
             @blueprint.route ('/handshake/get_projects', methods = ['GET'])
             async def get_projects_request () :
@@ -390,33 +432,6 @@ test_sets = [
                 "required" : ["email_address", "token"]
         }
 
-            async def valid_token_handler (self, api_request) :
-            """
-            Endpoint to check to see if a token is valid.
-
-           parameters :
-            api_request - Request from Quart
-
-            returns :
-        Response instance
-            """
-
-            request_obj : ApiResponse = self._validate_json_body (
-                await api_request.get_data (), self.tokenValidationCheckRequestSchema)
-
-            if request_obj.status_code != HTTPStatus.OK :
-                response_json = { 'status': 'BAD REQUEST' }
-                return Response (json.dumps (response_json),
-                    status = HTTPStatus.NOT_ACCEPTABLE,
-                    mimetype = mimetypes.types_map['.json'])
-
-                valid = self._sessions.is_valid_session (request_obj.body.email_address,
-                    request_obj.body.token)
-                response_json = { "status": "VALID" if valid else "INVALID" }
-                response_status = HTTPStatus.OK
-
-                return Response (json.dumps (response_json), response_status,
-                    mimetype = mimetypes.types_map['.json'])
 
                 async def get_projects_handler (self, api_request) :
                 """ PLACEHOLDER """
