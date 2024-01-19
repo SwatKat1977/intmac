@@ -50,6 +50,24 @@ namespace items { namespace gatewaySvc {
 
         DTO_FIELD (Int8, status);
         DTO_FIELD (String, error);
+        DTO_FIELD (String, userToken);
+    };
+
+    // Definition of the logout request.
+    class LogoutRequestDTO : public oatpp::DTO
+    {
+        DTO_INIT (LogoutRequestDTO, DTO)
+
+        DTO_FIELD (String, email_address);
+        DTO_FIELD (String, token);
+    };
+
+    class LogoutResponseDTO : public oatpp::DTO
+    {
+        DTO_INIT (LogoutResponseDTO, DTO)
+
+        DTO_FIELD (Int8, status);
+        DTO_FIELD (String, error);
     };
 
 #include OATPP_CODEGEN_END(DTO)

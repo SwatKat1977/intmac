@@ -111,17 +111,21 @@ namespace items { namespace gatewaySvc {
                 m_objectMapper);
         }
 
-        std::string token = common::UUID::New ().ToString ();
+        std::string userToken = common::UUID::New ().ToString ();
 
         bool hasSession = m_sessionManager->HasSession (emailAddress);
 
-        m_sessionManager->AddSession (emailAddress, token, AuthenticationType_MANUAL);
+        m_sessionManager->AddSession (
+            emailAddress,
+            userToken,
+            AuthenticationType_MANUAL);
 
         std::string loginType = hasSession ? "re-logged in" : "logged in";
         LOGGER->info ("User '{0}' {1}", emailAddress, loginType);
 
         response->status = BASIC_AUTH_RESPONSE_STATUS_OK;
         response->error = "";
+        response->userToken = userToken;
         return ApiResponseFactory::createResponse (
             ApiResponseStatus::CODE_200, response,
             m_objectMapper);
@@ -129,15 +133,21 @@ namespace items { namespace gatewaySvc {
 
     Logout::Logout (
         std::string name,
-        std::shared_ptr < SessionsManager> sessionManager,
+        std::shared_ptr < SessionsManager> sessionsManager,
         serviceFramework::ConfigManager configManager)
-        : ApiRoute (name), m_sessionManager (sessionManager),
+        : ApiRoute (name), m_sessionsManager (sessionsManager),
         m_configManager(configManager)
     {
     }
 
     ApiOutResponsePtr Logout::Route (const ApiIncomingReqPtr& request)
     {
+        auto response = LogoutResponseDTO::createShared ();
+
+        // ============== STEP 1 ==============
+        // Validate the authentication token
+        // ====================================
+
         auto headerToken = request->getHeader (HEADERKEY_TOKEN.c_str());
 
         std::string authToken = m_configManager.GetStringEntry (
@@ -146,49 +156,46 @@ namespace items { namespace gatewaySvc {
         if (!IsValidAuthToken (headerToken, authToken))
         {
             return ApiResponseFactory::createResponse (
-                ApiResponseStatus::CODE_401, "voooo");
-        }
-
-        if (!headerToken || headerToken->empty ())
-        {
-            return ApiResponseFactory::createResponse (
                 ApiResponseStatus::CODE_401, "");
         }
 
-        std::string authToken2 = m_configManager.GetStringEntry (
-            SECTION_AUTHENTICATION, AUTHENTICATION_TOKEN);
+        // ============== STEP 2 ==============
+        // Validate the message body
+        // ====================================
+        auto requestMsg = request->readBodyToDto<oatpp::Object
+            <LogoutRequestDTO>> (m_objectMapper.get ());
 
-        if (headerToken != authToken)
+        if ((!requestMsg.get ()->email_address) ||
+            (!requestMsg.get ()->token))
         {
+            response->status = BASIC_AUTH_RESPONSE_STATUS_BAD;
+            response->error = "Invalid request format";
             return ApiResponseFactory::createResponse (
-                ApiResponseStatus::CODE_401, "");
+                ApiResponseStatus::CODE_200, response,
+                m_objectMapper);
         }
 
+        std::string emailAddress = requestMsg.get ()->email_address;
+        std::string userToken = requestMsg.get ()->token;
+
+        if (!m_sessionsManager->IsValidSession (emailAddress,
+            userToken))
+        {
+            response->status = BASIC_AUTH_RESPONSE_STATUS_BAD;
+            response->error = "Invalid user session";
+            return ApiResponseFactory::createResponse (
+                ApiResponseStatus::CODE_200, response,
+                m_objectMapper);
+        }
+
+        m_sessionsManager->DeleteSession (emailAddress);
+        LOGGER->info ("User '{0}' logged out", emailAddress);
+
+        response->status = BASIC_AUTH_RESPONSE_STATUS_OK;
+        response->error = "";
         return ApiResponseFactory::createResponse (
-            ApiResponseStatus::CODE_200, "response");
-
-#ifdef __OLD_PYTHON_CODE__
-        request_obj, err_msg = await self._convert_json_body_to_object (
-            api_request, self.logoutRequestSchema)
-
-        if not request_obj:
-            self._logger.error ("Received bad logout request")
-            response = "BAD REQUEST"
-            response_status = HTTPStatus.NOT_ACCEPTABLE
-
-        else:
-            if self._sessions.is_valid_session (request_obj.email_address,
-                request_obj.token) :
-                self._sessions.del_auth_session (request_obj.email_address)
-                self._logger.info ("User '%s' logged out",
-                    request_obj.email_address)
-
-        response = "OK"
-        response_status = HTTPStatus.OK
-
-        return Response (response, status = response_status,
-            mimetype = mimetypes.types_map['.txt'])
-#endif
+            ApiResponseStatus::CODE_200, response,
+            m_objectMapper);
     }
 
 #ifdef __OLD_PYTHON_CODE__
