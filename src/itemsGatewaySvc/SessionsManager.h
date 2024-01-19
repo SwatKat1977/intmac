@@ -1,7 +1,7 @@
 /*
 -----------------------------------------------------------------------------
 This source file is part of ITEMS
-(Integrated Test Management Suite)
+(Integrated Test Management Suite )
 For the latest info, see https://github.com/SwatKat1977/intmac/
 
 Copyright 2014-2023 Integrated Test Management Suite Development Team
@@ -20,33 +20,36 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
-#ifndef UUID_H
-#define UUID_H
+#ifndef SESSIONS_MANAGER_H
+#define SESSIONS_MANAGER_H
+#include <map>
 #include <string>
+#include <thread> 
+#include "SessionEntry.h"
 
-namespace items
-{
-    namespace accountsSvc
+namespace items { namespace gatewaySvc {
+
+    class SessionsManager
     {
-        /*
-        * This class is heavily based upon code written by rkg82 in
-        * repository https://github.com/rkg82/uuid-v4.
-        */
-        class UUID
-        {
-        public:
-            static UUID New ();
+    public:
+        SessionsManager ();
 
-            std::string ToString ();
+        bool AddSession (
+            std::string emailAddress,
+            std::string token,
+            AuthenticationType authType);
 
-        private:
-            UUID () {}
+        bool DeleteSession (std::string emailAddress);
 
-            unsigned char m_data[16] = { 0 };
-        };
+        bool IsValidSession (std::string emailAddress, std::string token);
 
-    }   // namespace accountsSvc
-}   // namespace items
+        bool HasSession (std::string email_address);
 
+    private:
+        std::map<std::string, SessionEntry *> m_sessions;
+        std::mutex m_mutex;
+    };
+
+} }   // namespace items::gatewaySvc
 
 #endif

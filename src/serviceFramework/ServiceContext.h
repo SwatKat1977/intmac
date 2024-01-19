@@ -58,6 +58,12 @@ namespace items
             std::shared_ptr<oatpp::web::server::HttpConnectionHandler> connectionHandler;
         };
 
+        struct ServerThreadEntry
+        {
+            std::shared_ptr<oatpp::network::Server> server;
+            std::thread *serverThread;
+        };
+
         class RouteHandler : public oatpp::web::server::HttpRequestHandler
         {
         public:
@@ -142,7 +148,8 @@ namespace items
             std::shared_ptr<oatpp::parser::json::mapping::ObjectMapper> m_objectMapper;
 
             ProvidersMap m_providers;
-            std::list<std::shared_ptr<oatpp::network::Server>> m_servers;
+            std::map<std::string, ServerThreadEntry> m_servers;
+
             std::map<std::string, std::shared_ptr<RouteHandler>> m_routes;
 
             std::string HttpRequestMethodToStr (HTTPRequestMethod method);

@@ -141,8 +141,8 @@ namespace items
                 CreateTable (CREATE_USER_AUTH_DETAILS_TABLE,
                     "user_auth_details");
 
-                std::string adminPassword = UUID::New ().ToString ();
-                std::string adminPasswordSalt = UUID::New ().ToString ();
+                std::string adminPassword = common::UUID::New ().ToString ();
+                std::string adminPasswordSalt = common::UUID::New ().ToString ();
 
                 LOGGER->info ("-> Creating admin with password '{0}'",
                     adminPassword);

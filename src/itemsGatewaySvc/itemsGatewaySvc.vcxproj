@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{27e691b8-bf10-485c-b283-9afd584f245c}</ProjectGuid>
-    <RootNamespace>itemsAccountsSvc</RootNamespace>
+    <ProjectGuid>{b6f19664-4be9-4d0f-943a-eafc1c2553a9}</ProjectGuid>
+    <RootNamespace>itemsGatewaySvc</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -71,7 +71,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>.;..\externalLibraries\spdlog;..\externalLibraries\INIReader;..\externalLibraries\sqlite;..\serviceFramework;..\common;$(ITEMS_OATPP_BASE_DIR)\include\oatpp-1.3.0\oatpp;$(IncludePath)</IncludePath>
+    <IncludePath>.;..\externalLibraries\spdlog;..\externalLibraries\INIReader;..\serviceFramework;..\common;$(ITEMS_OATPP_BASE_DIR)\include\oatpp-1.3.0\oatpp;$(IncludePath)</IncludePath>
     <LibraryPath>..\build;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -117,11 +117,8 @@
     </Link>
     <PostBuildEvent>
       <Command>IF NOT EXIST  $(SolutionDir)build mkdir $(SolutionDir)build
-copy $(OutDir)$(TargetName)$(TargetExt) $(SolutionDir)build
-</Command>
-    </PostBuildEvent>
-    <PostBuildEvent>
-      <Message>Copy Accounts Service executable</Message>
+copy $(OutDir)$(TargetName)$(TargetExt) $(SolutionDir)build</Command>
+      <Message>Copy Gateway Service executable</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -141,32 +138,25 @@ copy $(OutDir)$(TargetName)$(TargetExt) $(SolutionDir)build
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="..\serviceFramework\serviceFramework.vcxproj">
-      <Project>{234bd163-15d8-4f3f-b111-d95cb57fef58}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\common\UUID.cpp" />
-    <ClCompile Include="..\externalLibraries\sqlite\sqlite3.c" />
-    <ClCompile Include="AccountsSvc.cpp" />
-    <ClCompile Include="routes\BasicAuthAuthenticate.cpp" />
+    <ClCompile Include="gatewaySvc.cpp" />
+    <ClCompile Include="routes\HandshakeRoutes.cpp" />
     <ClCompile Include="serviceModules\StartupModule.cpp" />
-    <ClCompile Include="Sha256.cpp" />
-    <ClCompile Include="SqliteInterface.cpp" />
+    <ClCompile Include="SessionsManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\common\apis\accountsSvc\AccountsSvcClient.h" />
+    <ClInclude Include="..\common\apis\accountsSvc\AccountsSvcDTOs.h" />
     <ClInclude Include="..\common\UUID.h" />
-    <ClInclude Include="..\common\Version.h" />
-    <ClInclude Include="..\externalLibraries\sqlite\sqlite3.h" />
-    <ClInclude Include="..\externalLibraries\sqlite\sqlite3ext.h" />
+    <ClInclude Include="..\serviceFramework\ItemTypes.h" />
     <ClInclude Include="ConfigurationLayout.h" />
     <ClInclude Include="Definitions.h" />
-    <ClInclude Include="DTOs\BasicAuthDTOs.h" />
+    <ClInclude Include="DTOs\HandshakeDTOs.h" />
     <ClInclude Include="Logger.h" />
-    <ClInclude Include="routes\BasicAuthAuthenticate.h" />
+    <ClInclude Include="routes\HandshakeRoutes.h" />
     <ClInclude Include="serviceModules\StartupModule.h" />
-    <ClInclude Include="Sha256.h" />
-    <ClInclude Include="SqliteInterface.h" />
+    <ClInclude Include="SessionEntry.h" />
+    <ClInclude Include="SessionsManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
