@@ -140,16 +140,16 @@
 				{
 					"name": "Get Projects List",
 					"request": {
-						"method": "GET",
+						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{GATEWAY_BASE_URL}}/handshake/get_projects",
+							"raw": "{{GATEWAY_BASE_URL}}/handshake/getprojects",
 							"host": [
 								"{{GATEWAY_BASE_URL}}"
 							],
 							"path": [
 								"handshake",
-								"get_projects"
+								"getprojects"
 							]
 						}
 					},
@@ -161,13 +161,13 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{GATEWAY_BASE_URL}}/handshake/select_project",
+							"raw": "{{GATEWAY_BASE_URL}}/handshake/selectproject",
 							"host": [
 								"{{GATEWAY_BASE_URL}}"
 							],
 							"path": [
 								"handshake",
-								"select_project"
+								"selectproject"
 							]
 						}
 					},
