@@ -1,13 +1,13 @@
 {
 	"info": {
-		"_postman_id": "adce5943-473f-44c4-9acb-8b4ddef95e40",
+		"_postman_id": "3df1bcdb-c026-4d57-b93d-c86615d36ebc",
 		"name": "ITEMS",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "10935426"
 	},
 	"item": [
 		{
-			"name": "Accounts Service",
+			"name": "Auth Service",
 			"item": [
 				{
 					"name": "Basic Logon Authenticate",
@@ -16,7 +16,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email_address\": \"admin@localhost\",\n    \"password\": \"7461d6da-a974\"\n}",
+							"raw": "{\n    \"email_address\": \"admin@localhost\",\n    \"password\": \"aa5e453f-626e\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -24,9 +24,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{ACCOUNTS_SVC_URL}}/basic_auth/authenticate",
+							"raw": "{{AUTH_BASE_URL}}/basic_auth/authenticate",
 							"host": [
-								"{{ACCOUNTS_SVC_URL}}"
+								"{{AUTH_BASE_URL}}"
 							],
 							"path": [
 								"basic_auth",
@@ -42,19 +42,16 @@
 			"name": "Gateway API",
 			"item": [
 				{
-					"name": "Testcases",
+					"name": "handshake",
 					"item": [
 						{
-							"name": "Get Testsuites",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
+							"name": "Basic Authenticate",
 							"request": {
-								"method": "GET",
+								"method": "POST",
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"project_id\" : 1\n}",
+									"raw": "{\r\n    \"email_address\" : \"admin@localhost\",\r\n    \"password\" : \"112ebea3-54c2-4bc8-b17a-da25faa11692\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -62,45 +59,42 @@
 									}
 								},
 								"url": {
-									"raw": "{{GATEWAY_SVC_URL}}/internal/testcases/get_testsuites",
+									"raw": "{{GATEWAY_BASE_URL}}/auth/basic/authenticate",
 									"host": [
-										"{{GATEWAY_SVC_URL}}"
+										"{{GATEWAY_BASE_URL}}"
 									],
 									"path": [
-										"internal",
-										"testcases",
-										"get_testsuites"
+										"auth",
+										"basic",
+										"authenticate"
 									]
 								}
 							},
 							"response": []
 						},
 						{
-							"name": "Get Testcases overview",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
+							"name": "Logout",
 							"request": {
-								"method": "GET",
-								"header": [],
+								"method": "POST",
+								"header": [
+									{
+										"key": "auth_token",
+										"value": "robo",
+										"type": "text"
+									}
+								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"project_id\" : 1\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
+									"raw": "{\r\n    \"email_address\": \"admin@localhost\",\r\n    \"token\": \"3500a99e-4881-41fd-bca5-2cd6c1dbdfcb\"\r\n}"
 								},
 								"url": {
-									"raw": "{{GATEWAY_SVC_URL}}/internal/testcases/get_testsuites",
+									"raw": "{{GATEWAY_BASE_URL}}/auth/logout",
 									"host": [
-										"{{GATEWAY_SVC_URL}}"
+										"{{GATEWAY_BASE_URL}}"
 									],
 									"path": [
-										"internal",
-										"testcases",
-										"get_testsuites"
+										"auth",
+										"logout"
 									]
 								}
 							},
@@ -109,98 +103,14 @@
 					]
 				},
 				{
-					"name": "Basic User Authenticate",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"email_address\": \"admin@localhost\",\n    \"password\": \"fe39a583-d45e\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{GATEWAY_SVC_URL}}/handshake/basic_authenticate",
-							"host": [
-								"{{GATEWAY_SVC_URL}}"
-							],
-							"path": [
-								"handshake",
-								"basic_authenticate"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Valid Token",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"email_address\": \"admin@localhost\",\n    \"token\": \"445b751d7e4747b49c29ce788b81a923\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{GATEWAY_SVC_URL}}/handshake/valid_token",
-							"host": [
-								"{{GATEWAY_SVC_URL}}"
-							],
-							"path": [
-								"handshake",
-								"valid_token"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Logout",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"email_address\": \"admin@localhost\",\n    \"token\": \"589c73deadd74a189189b24af3a19755\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{GATEWAY_SVC_URL}}/handshake/logout",
-							"host": [
-								"{{GATEWAY_SVC_URL}}"
-							],
-							"path": [
-								"handshake",
-								"logout"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Get Projects List",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{GATEWAY_SVC_URL}}/handshake/get_projects",
+							"raw": "{{GATEWAY_BASE_URL}}/handshake/get_projects",
 							"host": [
-								"{{GATEWAY_SVC_URL}}"
+								"{{GATEWAY_BASE_URL}}"
 							],
 							"path": [
 								"handshake",
@@ -209,67 +119,20 @@
 						}
 					},
 					"response": []
-				}
-			]
-		},
-		{
-			"name": "CMS Service",
-			"item": [
-				{
-					"name": "Get Testsuites",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"project_id\" : 1\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{CMS_SVC_URL}}/testsuite/testsuites",
-							"host": [
-								"{{CMS_SVC_URL}}"
-							],
-							"path": [
-								"testsuite",
-								"testsuites"
-							]
-						}
-					},
-					"response": []
 				},
 				{
-					"name": "Get Testcases",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
+					"name": "Select Project",
 					"request": {
-						"method": "GET",
+						"method": "POST",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"project_id\" : 1\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
 						"url": {
-							"raw": "{{CMS_SVC_URL}}/testcase/testcases",
+							"raw": "{{GATEWAY_BASE_URL}}/handshake/select_project",
 							"host": [
-								"{{CMS_SVC_URL}}"
+								"{{GATEWAY_BASE_URL}}"
 							],
 							"path": [
-								"testcase",
-								"testcases"
+								"handshake",
+								"select_project"
 							]
 						}
 					},
