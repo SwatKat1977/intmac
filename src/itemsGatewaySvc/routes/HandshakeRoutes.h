@@ -73,14 +73,6 @@ namespace items { namespace gatewaySvc { namespace routes { namespace handshake 
         serviceFramework::ConfigManager m_configManager;
     };
 
-    class GetProjects : public ApiRoute
-    {
-    public:
-        GetProjects (std::string name);
-
-        ApiOutResponsePtr Route (const ApiIncomingReqPtr& request);
-    };
-
     class SelectProject : public ApiRoute
     {
     public:

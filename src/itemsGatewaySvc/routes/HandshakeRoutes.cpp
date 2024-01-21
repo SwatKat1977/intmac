@@ -253,34 +253,6 @@ namespace items { namespace gatewaySvc { namespace routes { namespace handshake 
             m_objectMapper);
     }
 
-    GetProjects::GetProjects (std::string name) : ApiRoute (name)
-    {
-    }
-
-    ApiOutResponsePtr GetProjects::Route (const ApiIncomingReqPtr& request)
-    {
-        LOGGER->critical ("GetProjects route currently returns a hard-coded list");
-        LOGGER->critical ("GetProjects does not check user, usertoken or auth key - NOT CURRENTLY IMPLEMENTED!!!!");
-
-        auto response = GetProjectsResponseDTO::createShared ();
-        oatpp::List<oatpp::Object<GetProjectsProjectDTO>> projectsList ({});
-
-        auto projectEntry = GetProjectsProjectDTO::createShared ();
-        projectEntry->name = "test project #1";
-        projectEntry->description = "This is test project #1";
-        projectsList->emplace (projectsList->end (), projectEntry);
-
-        projectEntry->name = "test project #2";
-        projectEntry->description = "This is test project #2";
-        projectsList->emplace (projectsList->end (), projectEntry);
-
-        response->projects = projectsList;
-
-        return ApiResponseFactory::createResponse (
-            ApiResponseStatus::CODE_200, response,
-            m_objectMapper);
-    }
-
     SelectProject::SelectProject (std::string name) : ApiRoute (name)
     {
     }

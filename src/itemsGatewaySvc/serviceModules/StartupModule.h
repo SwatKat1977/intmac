@@ -48,9 +48,8 @@ namespace items
             std::shared_ptr<SessionsManager> m_sessionsManager;
 
             bool AddServiceProviders ();
-
-            bool AddBasicAuthenticationRoutes ();
-
+            bool AddHandshakeRoutes ();
+            bool AddProjectsRoutes ();
             void CreateAccountsSvcClient ();
         };
 
