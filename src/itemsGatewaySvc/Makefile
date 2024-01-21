@@ -13,6 +13,7 @@ OBJS = SessionsManager.o \
        gatewaySvc.o \
 	   serviceModules/StartupModule.o \
 	   routes/HandshakeRoutes.o \
+	   routes/TestcasesRoutes.o \
 	   ../common/UUID.o
 
 GATEWAYSVC = ${ITEMS_BIN_DIR}/itemsGatewaySvc
