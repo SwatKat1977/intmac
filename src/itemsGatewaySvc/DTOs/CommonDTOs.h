@@ -40,8 +40,8 @@ namespace items { namespace gatewaySvc {
     {
         DTO_INIT (ResponseListHeaderDTO, DTO)
 
-        DTO_FIELD (Int8, offset);
-        DTO_FIELD (Int8, limit);
+        DTO_FIELD (Int32, offset);
+        DTO_FIELD (Int16, limit);
         DTO_FIELD (Int8, size);
     };
 
