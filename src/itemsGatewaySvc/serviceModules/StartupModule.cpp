@@ -51,15 +51,15 @@ namespace items { namespace gatewaySvc {
     const std::string LOGOUT_ROUTE_NAME = "logout";
 
     // Route : Is Valid User Token
-    const std::string ISVALIDUSERTOKEN_ROUTE = HANDSHAKE_BASE + "isvalidusertoken";
+    const std::string ISVALIDUSERTOKEN_ROUTE = HANDSHAKE_BASE + "is_valid_user_token";
     const std::string ISVALIDUSERTOKEN_ROUTE_NAME = "isvalidusertoken";
 
     // Route : Get Projects
-    const std::string GETPROJECTS_ROUTE = HANDSHAKE_BASE + "getprojects";
+    const std::string GETPROJECTS_ROUTE = HANDSHAKE_BASE + "get_projects";
     const std::string GETPROJECTS_ROUTE_NAME = "getprojects";
 
     // Route : Select Project
-    const std::string SELECTPROJECT_ROUTE = HANDSHAKE_BASE + "selectproject";
+    const std::string SELECTPROJECT_ROUTE = HANDSHAKE_BASE + "select_project";
     const std::string SELECTPROJECT_ROUTE_NAME = "selectproject";
 
     StartupModule::StartupModule (std::string name)
