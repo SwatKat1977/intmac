@@ -71,6 +71,10 @@ namespace items { namespace gatewaySvc {
     const std::string GETPROJECTS_ROUTE = PROJECTS_BASE + "get_projects";
     const std::string GETPROJECTS_ROUTE_NAME = "getprojects";
 
+    // Route : Get Projects
+    const std::string GETPROJECT_ROUTE = PROJECTS_BASE + "get_project/{project_id}";
+    const std::string GETPROJECT_ROUTE_NAME = "getprojects";
+
     StartupModule::StartupModule (std::string name)
         : ServiceModule (name)
     {
@@ -253,7 +257,7 @@ namespace items { namespace gatewaySvc {
         {
             m_context->AddRoute (
                 SERVICE_PROVIDER_API_NAME,
-                HTTPRequestMethod_POST,
+                HTTPRequestMethod_GET,
                 GETPROJECTS_ROUTE,
                 getProjectsRoute);
         }
@@ -265,6 +269,24 @@ namespace items { namespace gatewaySvc {
         }
         LOGGER->info ("Added get projects route '{0}' to '{1}' provider",
             GETPROJECTS_ROUTE, SERVICE_PROVIDER_API_NAME);
+
+        auto* getProjectRoute = new routes::projects::GetProject (GETPROJECT_ROUTE_NAME);
+        try
+        {
+            m_context->AddRoute (
+                SERVICE_PROVIDER_API_NAME,
+                HTTPRequestMethod_GET,
+                GETPROJECT_ROUTE,
+                getProjectRoute);
+        }
+        catch (std::runtime_error& e)
+        {
+            LOGGER->critical ("Unable to create route '{0}' : {1}",
+                GETPROJECTS_ROUTE_NAME, e.what ());
+            return false;
+        }
+        LOGGER->info ("Added get project route '{0}' to '{1}' provider",
+            GETPROJECT_ROUTE, SERVICE_PROVIDER_API_NAME);
 
         return true;
     }
