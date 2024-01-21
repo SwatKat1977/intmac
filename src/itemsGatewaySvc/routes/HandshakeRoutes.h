@@ -24,7 +24,7 @@ Copyright 2014-2024 Integrated Test Management Suite Development Team
 #include "apis/accountsSvc/AccountsSvcClient.h"
 #include "SessionsManager.h"
 
-namespace items { namespace gatewaySvc {
+namespace items { namespace gatewaySvc { namespace routes { namespace handshake {
 
     using namespace serviceFramework;
 
@@ -89,4 +89,4 @@ namespace items { namespace gatewaySvc {
         ApiOutResponsePtr Route (const ApiIncomingReqPtr& request);
     };
 
-} }   // namespace items::gatewaySvc
+} } } }   // namespace items::gatewaySvc::routes::handshake

@@ -26,7 +26,7 @@ Copyright 2014-2024 Integrated Test Management Suite Development Team
 #include "Logger.h"
 #include "UUID.h"
 
-namespace items { namespace gatewaySvc {
+namespace items { namespace gatewaySvc { namespace routes { namespace handshake {
 
     const std::string HEADERKEY_TOKEN = "auth_token";
 
@@ -300,4 +300,4 @@ namespace items { namespace gatewaySvc {
             m_objectMapper);
     }
 
-} }   // namespace items::gatewaySvc
+} } } }   // namespace items::gatewaySvc::routes::handshake

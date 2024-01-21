@@ -154,7 +154,7 @@ namespace items { namespace gatewaySvc {
 
     bool StartupModule::AddBasicAuthenticationRoutes ()
     {
-        auto* basicAuthRoute = new BasicAuthenticate (
+        auto* basicAuthRoute = new routes::handshake::BasicAuthenticate (
             BASIC_AUTHENTICATE_ROUTE_NAME, m_accountsSvcClient,
             m_sessionsManager);
         try
@@ -174,7 +174,7 @@ namespace items { namespace gatewaySvc {
         LOGGER->info ("Added basic auth route '{0}' to '{1}' provider",
             BASIC_AUTHENTICATE_ROUTE, SERVICE_PROVIDER_API_NAME);
 
-        auto* logoutRoute = new Logout (
+        auto* logoutRoute = new routes::handshake::Logout (
             LOGOUT_ROUTE_NAME,
             m_sessionsManager,
             m_context->GetConfigManager ());
@@ -195,7 +195,7 @@ namespace items { namespace gatewaySvc {
         LOGGER->info ("Added logout route '{0}' to '{1}' provider",
             LOGOUT_ROUTE, SERVICE_PROVIDER_API_NAME);
 
-        auto* isValidUserTokenRoute = new IsValidUserToken (
+        auto* isValidUserTokenRoute = new routes::handshake::IsValidUserToken (
             ISVALIDUSERTOKEN_ROUTE_NAME,
             m_sessionsManager,
             m_context->GetConfigManager ());
@@ -216,7 +216,7 @@ namespace items { namespace gatewaySvc {
         LOGGER->info ("Added is valid user token route '{0}' to '{1}' provider",
             ISVALIDUSERTOKEN_ROUTE, SERVICE_PROVIDER_API_NAME);
 
-        auto* getProjectsRoute = new GetProjects (GETPROJECTS_ROUTE_NAME);
+        auto* getProjectsRoute = new routes::handshake::GetProjects (GETPROJECTS_ROUTE_NAME);
         try
         {
             m_context->AddRoute (
@@ -234,7 +234,7 @@ namespace items { namespace gatewaySvc {
         LOGGER->info ("Added get projects route '{0}' to '{1}' provider",
             GETPROJECTS_ROUTE, SERVICE_PROVIDER_API_NAME);
 
-        auto* selectProjectRoute = new SelectProject (SELECTPROJECT_ROUTE_NAME);
+        auto* selectProjectRoute = new routes::handshake::SelectProject (SELECTPROJECT_ROUTE_NAME);
         try
         {
             m_context->AddRoute (
