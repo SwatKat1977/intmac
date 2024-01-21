@@ -24,7 +24,7 @@ Copyright 2014-2024 Integrated Test Management Suite Development Team
 #define PROJECTSROUTES_H
 #include "ServiceContext.h"
 
-namespace items { namespace gatewaySvc {
+namespace items { namespace gatewaySvc { namespace routes { namespace projects {
 
     using namespace serviceFramework;
 
@@ -44,6 +44,6 @@ namespace items { namespace gatewaySvc {
         ApiOutResponsePtr Route (const ApiIncomingReqPtr& request);
     };
 
-} }   // namespace items::gatewaySvc
+} } } }   // namespace items::gatewaySvc::routes::projects
 
 #endif // #ifndef PROJECTSROUTES_H
