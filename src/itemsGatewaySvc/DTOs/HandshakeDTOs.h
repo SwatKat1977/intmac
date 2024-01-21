@@ -91,23 +91,6 @@ namespace items { namespace gatewaySvc {
         DTO_FIELD (Int8, is_valid);
     };
 
-    // Definition of a project DTO for GetProjects response.
-    class GetProjectsProjectDTO : public oatpp::DTO
-    {
-        DTO_INIT (GetProjectsProjectDTO, DTO)
-
-        DTO_FIELD (String, name);
-        DTO_FIELD (String, description);
-    };
-
-    // Definition of GetProjects response.
-    class GetProjectsResponseDTO : public oatpp::DTO
-    {
-        DTO_INIT (GetProjectsResponseDTO, DTO)
-
-        DTO_FIELD (List<Object<GetProjectsProjectDTO>>, projects);
-    };
-
     // Definition of SelectProject response.
     class SelectProjectResponseDTO : public oatpp::DTO
     {
