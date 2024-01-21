@@ -20,28 +20,49 @@ Copyright 2014-2024 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
+#include "Logger.h"
+#include "DTOs/HandshakeDTOs.h"
 #include "routes/ProjectsRoutes.h"
 
 namespace items { namespace gatewaySvc { namespace routes { namespace projects {
 
     GetProjects::GetProjects (std::string name) : ApiRoute (name)
     {
-        // Return list of available projects.
-        // GET get_projects
     }
 
     ApiOutResponsePtr GetProjects::Route (const ApiIncomingReqPtr& request)
     {
+        LOGGER->critical ("GetProjects route currently returns a hard-coded list");
+        LOGGER->critical ("GetProjects does not check user, usertoken or auth key - NOT CURRENTLY IMPLEMENTED!!!!");
+
+        auto response = GetProjectsResponseDTO::createShared ();
+        oatpp::List<oatpp::Object<GetProjectsProjectDTO>> projectsList ({});
+
+        auto projectEntry = GetProjectsProjectDTO::createShared ();
+        projectEntry->name = "test project #1";
+        projectEntry->description = "This is test project #1";
+        projectsList->emplace (projectsList->end (), projectEntry);
+
+        projectEntry->name = "test project #2";
+        projectEntry->description = "This is test project #2";
+        projectsList->emplace (projectsList->end (), projectEntry);
+
+        response->projects = projectsList;
+
+        return ApiResponseFactory::createResponse (
+            ApiResponseStatus::CODE_200, response,
+            m_objectMapper);
     }
 
     GetProject::GetProject (std::string name) : ApiRoute (name)
     {
-        // Return an existing project.
         // GET get_project/{project_id}
     }
 
     ApiOutResponsePtr GetProject::Route (const ApiIncomingReqPtr& request)
     {
+        return ApiResponseFactory::createResponse (
+            ApiResponseStatus::CODE_200, "");
     }
 
 } } } }   // namespace items::gatewaySvc::routes::projects
