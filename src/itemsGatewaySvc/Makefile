@@ -13,7 +13,7 @@ OBJS = SessionsManager.o \
        gatewaySvc.o \
 	   serviceModules/StartupModule.o \
 	   routes/HandshakeRoutes.o \
-	   routes/TestcasesRoutes.o \
+	   routes/CasesRoutes.o \
 	   routes/ProjectsRoutes.o \
 	   ../common/UUID.o
 

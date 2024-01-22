@@ -20,19 +20,31 @@ Copyright 2014-2024 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
+#ifndef CASESROUTES_H
+#define CASESROUTES_H
 #include "ServiceContext.h"
 
 
 namespace items { namespace gatewaySvc { namespace routes { namespace cases {
 
-#ifdef _PLACEHOLDER_
-    class GetProjects : public ApiRoute
+    using namespace serviceFramework;
+
+    class GetCases : public ApiRoute
     {
     public:
-        GetProjects (std::string name);
+        GetCases (std::string name);
 
         ApiOutResponsePtr Route (const ApiIncomingReqPtr& request);
     };
-#endif
+
+    class GetCase : public ApiRoute
+    {
+    public:
+        GetCase (std::string name);
+
+        ApiOutResponsePtr Route (const ApiIncomingReqPtr& request);
+    };
 
 } } } }   // namespace items::gatewaySvc::routes::cases
+
+#endif // #ifndef CASESROUTES_H

@@ -178,6 +178,48 @@
 							"response": []
 						}
 					]
+				},
+				{
+					"name": "cases",
+					"item": [
+						{
+							"name": "Get Case",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{GATEWAY_BASE_URL}}/cases/get_case/1023",
+									"host": [
+										"{{GATEWAY_BASE_URL}}"
+									],
+									"path": [
+										"cases",
+										"get_case",
+										"1023"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Cases",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{GATEWAY_BASE_URL}}/cases/get_cases",
+									"host": [
+										"{{GATEWAY_BASE_URL}}"
+									],
+									"path": [
+										"cases",
+										"get_cases"
+									]
+								}
+							},
+							"response": []
+						}
+					]
 				}
 			]
 		}

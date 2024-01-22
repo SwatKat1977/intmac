@@ -20,7 +20,27 @@ Copyright 2014-2024 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
+#include "routes/CasesRoutes.h"
 
 namespace items { namespace gatewaySvc { namespace routes { namespace cases {
+
+    GetCases::GetCases (std::string name) : ApiRoute (name)
+    {
+    }
+
+    ApiOutResponsePtr GetCases::Route (const ApiIncomingReqPtr& request)
+    {
+        return ApiResponseFactory::createResponse (
+            ApiResponseStatus::CODE_500, "NOT IMPLEMENTED");
+    }
+
+    GetCase::GetCase (std::string name) : ApiRoute (name)
+    {}
+
+    ApiOutResponsePtr GetCase::Route (const ApiIncomingReqPtr& request)
+    {
+        return ApiResponseFactory::createResponse (
+            ApiResponseStatus::CODE_500, "NOT IMPLEMENTED");
+    }
 
 } } } }   // namespace items::gatewaySvc::routes::cases
