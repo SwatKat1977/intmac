@@ -45,11 +45,7 @@ int main ()
         return EXIT_FAILURE;
     }
 
-    StartupModule startupModule = StartupModule ("Startup Module");
-
     auto context = new ServiceContext (SERVICE_CONTEXT_NAME);
-
-    context->AddServiceModule (&startupModule);
 
     if (!context->Initialise ((SectionsMap *) & CONFIGURATION_LAYOUT_MAP, configFile))
     {

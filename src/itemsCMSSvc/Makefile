@@ -9,20 +9,14 @@ LIB_DIRS = -L ../lib/ -L /usr/local/lib/oatpp-1.3.0
 
 LIBRARIES = -lServiceFramework -loatpp
 
-OBJS = SessionsManager.o \
-       gatewaySvc.o \
-	   serviceModules/StartupModule.o \
-	   routes/HandshakeRoutes.o \
-	   routes/CasesRoutes.o \
-	   routes/ProjectsRoutes.o \
-	   ../common/UUID.o
+OBJS = ItemsCMSSvc.o
 
-GATEWAYSVC = ${ITEMS_BIN_DIR}/itemsGatewaySvc
+CMSSVC = ${ITEMS_BIN_DIR}/itemsCMSSvc
 
-$(GATEWAYSVC): $(OBJS)
-	g++ -o $(GATEWAYSVC) $(OBJS) $(LIB_DIRS) $(LIBRARIES)
+$(CMSSVC): $(OBJS)
+	g++ -o $(CMSSVC) $(OBJS) $(LIB_DIRS) $(LIBRARIES)
 
-all: $(GATEWAYSVC)
+all: $(CMSSVC)
 
 clean:
-	$(RM) $(GATEWAYSVC) $(OBJS)
+	$(RM) $(CMSSVC) $(OBJS)
