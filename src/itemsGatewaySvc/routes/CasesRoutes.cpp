@@ -4,7 +4,7 @@ This source file is part of ITEMS
 (Integrated Test Management Suite)
 For the latest info, see https://github.com/SwatKat1977/intmac/
 
-Copyright 2014-2023 Integrated Test Management Suite Development Team
+Copyright 2014-2024 Integrated Test Management Suite Development Team
 
     This program is free software : you can redistribute it and /or modify
     it under the terms of the GNU General Public License as published by
@@ -18,45 +18,29 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 
     You should have received a copy of the GNU General Public License
     along with this program.If not, see < https://www.gnu.org/licenses/>.
-
-The following is based on Ogre3D code:
-* GetEnv from os-int.h
 -----------------------------------------------------------------------------
 */
-#ifndef STARTUPMODULE_H
-#define STARTUPMODULE_H
-#include "ServiceContext.h"
-#include "ItemTypes.h"
-#include "SessionsManager.h"
+#include "routes/CasesRoutes.h"
 
-namespace items
-{
-    namespace gatewaySvc
+namespace items { namespace gatewaySvc { namespace routes { namespace cases {
+
+    GetCases::GetCases (std::string name) : ApiRoute (name)
     {
-        using namespace serviceFramework;
+    }
 
-        class StartupModule : public ServiceModule
-        {
-        public:
+    ApiOutResponsePtr GetCases::Route (const ApiIncomingReqPtr& request)
+    {
+        return ApiResponseFactory::createResponse (
+            ApiResponseStatus::CODE_500, "NOT IMPLEMENTED");
+    }
 
-            StartupModule (std::string name);
+    GetCase::GetCase (std::string name) : ApiRoute (name)
+    {}
 
-            bool Initialise ();
+    ApiOutResponsePtr GetCase::Route (const ApiIncomingReqPtr& request)
+    {
+        return ApiResponseFactory::createResponse (
+            ApiResponseStatus::CODE_500, "NOT IMPLEMENTED");
+    }
 
-        private:
-            AccountsSvcClientptr m_accountsSvcClient;
-            std::shared_ptr<SessionsManager> m_sessionsManager;
-
-            bool AddServiceProviders ();
-
-            bool AddHandshakeRoutes ();
-            bool AddProjectsRoutes ();
-            bool AddCasesRoutes ();
-
-            void CreateAccountsSvcClient ();
-        };
-
-    }   // namespace gatewaySvc
-}   // namespace items
-
-#endif
+} } } }   // namespace items::gatewaySvc::routes::cases

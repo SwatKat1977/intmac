@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "3df1bcdb-c026-4d57-b93d-c86615d36ebc",
+		"_postman_id": "62ca0830-4b76-42f6-acaf-1fa46d7baeb4",
 		"name": "ITEMS",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "10935426"
@@ -117,19 +117,13 @@
 									"raw": "{\r\n    \"email_address\": \"admin@localhost\",\r\n    \"token\": \"b2f9227d-8f25-4325-aebf-226ae2fc4cd2\"\r\n}"
 								},
 								"url": {
-									"raw": "{{GATEWAY_BASE_URL}}/handshake/isvalidusertoken?",
+									"raw": "{{GATEWAY_BASE_URL}}/handshake/is_valid_user_token",
 									"host": [
 										"{{GATEWAY_BASE_URL}}"
 									],
 									"path": [
 										"handshake",
-										"isvalidusertoken"
-									],
-									"query": [
-										{
-											"key": "",
-											"value": null
-										}
+										"is_valid_user_token"
 									]
 								}
 							},
@@ -138,40 +132,94 @@
 					]
 				},
 				{
-					"name": "Get Projects List",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{GATEWAY_BASE_URL}}/handshake/get_projects",
-							"host": [
-								"{{GATEWAY_BASE_URL}}"
-							],
-							"path": [
-								"handshake",
-								"get_projects"
-							]
+					"name": "projects",
+					"item": [
+						{
+							"name": "Get Projects List",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{GATEWAY_BASE_URL}}/projects/get_projects?name=test",
+									"host": [
+										"{{GATEWAY_BASE_URL}}"
+									],
+									"path": [
+										"projects",
+										"get_projects"
+									],
+									"query": [
+										{
+											"key": "name",
+											"value": "test"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Project",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{GATEWAY_BASE_URL}}/projects/get_project/1023",
+									"host": [
+										"{{GATEWAY_BASE_URL}}"
+									],
+									"path": [
+										"projects",
+										"get_project",
+										"1023"
+									]
+								}
+							},
+							"response": []
 						}
-					},
-					"response": []
+					]
 				},
 				{
-					"name": "Select Project",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "{{GATEWAY_BASE_URL}}/handshake/select_project",
-							"host": [
-								"{{GATEWAY_BASE_URL}}"
-							],
-							"path": [
-								"handshake",
-								"select_project"
-							]
+					"name": "cases",
+					"item": [
+						{
+							"name": "Get Case",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{GATEWAY_BASE_URL}}/cases/get_case/1023",
+									"host": [
+										"{{GATEWAY_BASE_URL}}"
+									],
+									"path": [
+										"cases",
+										"get_case",
+										"1023"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Cases",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{GATEWAY_BASE_URL}}/cases/get_cases",
+									"host": [
+										"{{GATEWAY_BASE_URL}}"
+									],
+									"path": [
+										"cases",
+										"get_cases"
+									]
+								}
+							},
+							"response": []
 						}
-					},
-					"response": []
+					]
 				}
 			]
 		}

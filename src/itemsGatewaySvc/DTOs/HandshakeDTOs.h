@@ -25,6 +25,7 @@ The following is based on Ogre3D code:
 */
 #ifndef HANDSHAKEDTOS_H
 #define HANDSHAKEDTOS_H
+#include "oatpp/core/macro/codegen.hpp"
 #include "oatpp/network/tcp/server/ConnectionProvider.hpp"
 
 namespace items { namespace gatewaySvc {
