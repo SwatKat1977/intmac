@@ -106,6 +106,11 @@ namespace items
             }
 #endif
 
+            if (m_modules.size() == 0)
+            {
+                return true;
+            }
+
             for (auto init = m_modules.begin ();
                 init != m_modules.end ();
                 init++)
