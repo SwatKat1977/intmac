@@ -21,7 +21,7 @@ Copyright 2014-2024 Integrated Test Management Suite Development Team
 -----------------------------------------------------------------------------
 */
 #include "Logger.h"
-#include "DTOs/HandshakeDTOs.h"
+#include "DTOs/ProjectsDTOs.h"
 #include "routes/ProjectsRoutes.h"
 
 namespace items { namespace gatewaySvc { namespace routes { namespace projects {
@@ -35,17 +35,33 @@ namespace items { namespace gatewaySvc { namespace routes { namespace projects {
         LOGGER->critical ("GetProjects route currently returns a hard-coded list");
         LOGGER->critical ("GetProjects does not check user, usertoken or auth key - NOT CURRENTLY IMPLEMENTED!!!!");
 
+        auto name = request->getQueryParameter("name");
+        if (name)
+        {
+            printf("[UNUSED] Project name : %s\n", name->c_str());
+        }
+
         auto response = GetProjectsResponseDTO::createShared ();
-        oatpp::List<oatpp::Object<GetProjectsProjectDTO>> projectsList ({});
 
-        auto projectEntry = GetProjectsProjectDTO::createShared ();
-        projectEntry->name = "test project #1";
-        projectEntry->description = "This is test project #1";
-        projectsList->emplace (projectsList->end (), projectEntry);
+        response->header = ResponseListHeaderDTO::createShared ();
+        // HARD-CODED HEADER FOR NOW!
+        response->header->offset = 0;
+        response->header->limit = 250;
+        response->header->size = 2;
 
-        projectEntry->name = "test project #2";
-        projectEntry->description = "This is test project #2";
-        projectsList->emplace (projectsList->end (), projectEntry);
+        oatpp::List<oatpp::Object<ProjectDTO>> projectsList ({});
+
+        auto projectEntry1 = ProjectDTO::createShared ();
+        projectEntry1->id = 1;
+        projectEntry1->name = "test project #1";
+        projectEntry1->description = "This is test project #1";
+        projectsList->emplace (projectsList->end (), projectEntry1);
+
+        auto projectEntry2 = ProjectDTO::createShared ();
+        projectEntry2->id = 2;
+        projectEntry2->name = "test project #2";
+        projectEntry2->description = "This is test project #2";
+        projectsList->emplace (projectsList->end (), projectEntry2);
 
         response->projects = projectsList;
 
@@ -56,13 +72,21 @@ namespace items { namespace gatewaySvc { namespace routes { namespace projects {
 
     GetProject::GetProject (std::string name) : ApiRoute (name)
     {
-        // GET get_project/{project_id}
     }
 
     ApiOutResponsePtr GetProject::Route (const ApiIncomingReqPtr& request)
     {
+        auto projectId = request->getPathVariables().getVariable("project_id");
+        printf("Project ID : %s\n", projectId->c_str());
+
+        auto projectEntry = ProjectDTO::createShared();
+        projectEntry->id = 2;
+        projectEntry->name = "test project #2";
+        projectEntry->description = "This is test project #2";
+
         return ApiResponseFactory::createResponse (
-            ApiResponseStatus::CODE_200, "");
+            ApiResponseStatus::CODE_200, projectEntry,
+            m_objectMapper);
     }
 
 } } } }   // namespace items::gatewaySvc::routes::projects
