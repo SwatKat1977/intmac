@@ -253,23 +253,4 @@ namespace items { namespace gatewaySvc { namespace routes { namespace handshake 
             m_objectMapper);
     }
 
-    SelectProject::SelectProject (std::string name) : ApiRoute (name)
-    {
-    }
-
-    ApiOutResponsePtr SelectProject::Route (const ApiIncomingReqPtr& request)
-    {
-        LOGGER->critical ("SelectProject route currently returns a hard-coded list");
-        LOGGER->critical ("SelectProject does not check user, usertoken or auth key - NOT CURRENTLY IMPLEMENTED!!!!");
-
-        auto response = SelectProjectResponseDTO::createShared ();
-
-        response->status = BASIC_AUTH_RESPONSE_STATUS_OK;
-        response->error = "";
-
-        return ApiResponseFactory::createResponse (
-            ApiResponseStatus::CODE_200, response,
-            m_objectMapper);
-    }
-
 } } } }   // namespace items::gatewaySvc::routes::handshake

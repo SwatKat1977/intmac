@@ -91,15 +91,6 @@ namespace items { namespace gatewaySvc {
         DTO_FIELD (Int8, is_valid);
     };
 
-    // Definition of SelectProject response.
-    class SelectProjectResponseDTO : public oatpp::DTO
-    {
-        DTO_INIT (SelectProjectResponseDTO, DTO)
-
-        DTO_FIELD (Int8, status);
-        DTO_FIELD (String, error);
-    };
-
 #include OATPP_CODEGEN_END(DTO)
 
 } }   // namespace items::gatewaySvc

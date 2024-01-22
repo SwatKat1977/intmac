@@ -58,10 +58,6 @@ namespace items { namespace gatewaySvc {
     const std::string ISVALIDUSERTOKEN_ROUTE = HANDSHAKE_BASE + "is_valid_user_token";
     const std::string ISVALIDUSERTOKEN_ROUTE_NAME = "isvalidusertoken";
 
-    // Route : Select Project
-    const std::string SELECTPROJECT_ROUTE = HANDSHAKE_BASE + "select_project";
-    const std::string SELECTPROJECT_ROUTE_NAME = "selectproject";
-
     // +++++++++++++++++++++++++++++++++++++++++++++++
     // +++++++++++++++ Projects routes +++++++++++++++
     // +++++++++++++++++++++++++++++++++++++++++++++++
@@ -228,24 +224,6 @@ namespace items { namespace gatewaySvc {
         }
         LOGGER->info ("Added is valid user token route '{0}' to '{1}' provider",
             ISVALIDUSERTOKEN_ROUTE, SERVICE_PROVIDER_API_NAME);
-
-        auto* selectProjectRoute = new routes::handshake::SelectProject (SELECTPROJECT_ROUTE_NAME);
-        try
-        {
-            m_context->AddRoute (
-                SERVICE_PROVIDER_API_NAME,
-                HTTPRequestMethod_POST,
-                SELECTPROJECT_ROUTE,
-                selectProjectRoute);
-        }
-        catch (std::runtime_error& e)
-        {
-            LOGGER->critical ("Unable to create route '{0}' : {1}",
-                SELECTPROJECT_ROUTE_NAME, e.what ());
-            return false;
-        }
-        LOGGER->info ("Added select projects route '{0}' to '{1}' provider",
-            SELECTPROJECT_ROUTE, SERVICE_PROVIDER_API_NAME);
 
         return true;
     }
