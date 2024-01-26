@@ -26,34 +26,31 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 #include "ItemTypes.h"
 #include "SessionsManager.h"
 
-namespace items
-{
-    namespace gatewaySvc
+namespace items { namespace gatewaySvc {
+
+    using namespace serviceFramework;
+
+    class StartupModule : public ServiceModule
     {
-        using namespace serviceFramework;
+    public:
 
-        class StartupModule : public ServiceModule
-        {
-        public:
+        StartupModule (std::string name);
 
-            StartupModule (std::string name);
+        bool Initialise ();
 
-            bool Initialise ();
+    private:
+        AccountsSvcClientptr m_accountsSvcClient;
+        std::shared_ptr<SessionsManager> m_sessionsManager;
 
-        private:
-            AccountsSvcClientptr m_accountsSvcClient;
-            std::shared_ptr<SessionsManager> m_sessionsManager;
+        bool AddServiceProviders ();
 
-            bool AddServiceProviders ();
+        bool AddHandshakeRoutes ();
+        bool AddProjectsRoutes ();
+        bool AddCasesRoutes ();
 
-            bool AddHandshakeRoutes ();
-            bool AddProjectsRoutes ();
-            bool AddCasesRoutes ();
+        void CreateAccountsSvcClient ();
+    };
 
-            void CreateAccountsSvcClient ();
-        };
-
-    }   // namespace gatewaySvc
-}   // namespace items
+} }  // namespace items::gatewaySvc
 
 #endif
