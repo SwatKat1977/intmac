@@ -140,7 +140,9 @@ copy $(OutDir)$(TargetName)$(TargetExt) $(SolutionDir)build</Command>
   <ItemGroup>
     <ClCompile Include="..\common\UUID.cpp" />
     <ClCompile Include="gatewaySvc.cpp" />
+    <ClCompile Include="routes\CasesRoutes.cpp" />
     <ClCompile Include="routes\HandshakeRoutes.cpp" />
+    <ClCompile Include="routes\ProjectsRoutes.cpp" />
     <ClCompile Include="serviceModules\StartupModule.cpp" />
     <ClCompile Include="SessionsManager.cpp" />
   </ItemGroup>
@@ -151,9 +153,13 @@ copy $(OutDir)$(TargetName)$(TargetExt) $(SolutionDir)build</Command>
     <ClInclude Include="..\serviceFramework\ItemTypes.h" />
     <ClInclude Include="ConfigurationLayout.h" />
     <ClInclude Include="Definitions.h" />
+    <ClInclude Include="DTOs\CommonDTOs.h" />
     <ClInclude Include="DTOs\HandshakeDTOs.h" />
+    <ClInclude Include="DTOs\ProjectsDTOs.h" />
     <ClInclude Include="Logger.h" />
+    <ClInclude Include="routes\CasesRoutes.h" />
     <ClInclude Include="routes\HandshakeRoutes.h" />
+    <ClInclude Include="routes\ProjectsRoutes.h" />
     <ClInclude Include="serviceModules\StartupModule.h" />
     <ClInclude Include="SessionEntry.h" />
     <ClInclude Include="SessionsManager.h" />
