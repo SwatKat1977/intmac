@@ -34,7 +34,7 @@ const std::string SERVICE_CONTEXT_NAME = "Items Web Portal Svc";
 int main ()
 {
     auto configFile = GetEnv ("ITEMS_WEBPORTAL_SVC_CONFIG_FILE");
-    auto configFileRequired = GetEnv ("ITEMS_WEBPORTA_SVC_CONFIG_FILE_REQUIRED");
+    auto configFileRequired = GetEnv ("ITEMS_WEBPORTAL_SVC_CONFIG_FILE_REQUIRED");
 
     bool fileIsRequired = true ? (!configFileRequired.empty () &&
         configFileRequired == "YES")
