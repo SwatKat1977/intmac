@@ -20,37 +20,23 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
-#ifndef STARTUPMODULE_H
-#define STARTUPMODULE_H
-#include "ServiceContext.h"
-#include "ItemTypes.h"
-#include "SessionsManager.h"
+#ifndef CONFIGURATIONLAYOUT_H
+#define CONFIGURATIONLAYOUT_H
+#include "ConfigSetup.h"
+#include "LoggerSettings.h"
 
-namespace items { namespace gatewaySvc {
-
+namespace items { namespace webPortalSvc {
     using namespace serviceFramework;
 
-    class StartupModule : public ServiceModule
+    const std::string BOOL_YES = "YES";
+    const std::string BOOL_NO = "NO";
+
+    const SectionsMap CONFIGURATION_LAYOUT_MAP =
     {
-    public:
-
-        StartupModule (std::string name);
-
-        bool Initialise ();
-
-    private:
-        AccountsSvcClientptr m_accountsSvcClient;
-        std::shared_ptr<SessionsManager> m_sessionsManager;
-
-        bool AddServiceProviders ();
-
-        bool AddHandshakeRoutes ();
-        bool AddProjectsRoutes ();
-        bool AddCasesRoutes ();
-
-        void CreateAccountsSvcClient ();
+        {LOGGING_SECTION, LoggerSettings }
     };
 
-} }  // namespace items::gatewaySvc
+
+} } // namespace items::webPortalSvc
 
 #endif

@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{b6f19664-4be9-4d0f-943a-eafc1c2553a9}</ProjectGuid>
-    <RootNamespace>itemsGatewaySvc</RootNamespace>
+    <ProjectGuid>{d87d96a4-56b0-4448-9893-f9282de665fb}</ProjectGuid>
+    <RootNamespace>itemsWebPortalSvc</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -118,7 +118,9 @@
     <PostBuildEvent>
       <Command>IF NOT EXIST  $(SolutionDir)build mkdir $(SolutionDir)build
 copy $(OutDir)$(TargetName)$(TargetExt) $(SolutionDir)build</Command>
-      <Message>Copy Gateway Service executable</Message>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Copy Web Portal Service Executable</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -138,31 +140,14 @@ copy $(OutDir)$(TargetName)$(TargetExt) $(SolutionDir)build</Command>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\common\UUID.cpp" />
-    <ClCompile Include="gatewaySvc.cpp" />
-    <ClCompile Include="routes\CasesRoutes.cpp" />
-    <ClCompile Include="routes\HandshakeRoutes.cpp" />
-    <ClCompile Include="routes\ProjectsRoutes.cpp" />
     <ClCompile Include="serviceModules\StartupModule.cpp" />
-    <ClCompile Include="SessionsManager.cpp" />
+    <ClCompile Include="WebPortalSvc.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\common\apis\accountsSvc\AccountsSvcClient.h" />
-    <ClInclude Include="..\common\apis\accountsSvc\AccountsSvcDTOs.h" />
-    <ClInclude Include="..\common\UUID.h" />
-    <ClInclude Include="..\serviceFramework\ItemTypes.h" />
     <ClInclude Include="ConfigurationLayout.h" />
     <ClInclude Include="Definitions.h" />
-    <ClInclude Include="DTOs\CommonDTOs.h" />
-    <ClInclude Include="DTOs\HandshakeDTOs.h" />
-    <ClInclude Include="DTOs\ProjectsDTOs.h" />
     <ClInclude Include="Logger.h" />
-    <ClInclude Include="routes\CasesRoutes.h" />
-    <ClInclude Include="routes\HandshakeRoutes.h" />
-    <ClInclude Include="routes\ProjectsRoutes.h" />
     <ClInclude Include="serviceModules\StartupModule.h" />
-    <ClInclude Include="SessionEntry.h" />
-    <ClInclude Include="SessionsManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
