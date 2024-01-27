@@ -40,7 +40,7 @@ namespace items { namespace webPortalSvc {
 
     bool StartupModule::Initialise ()
     {
-        LOGGER->info ("ITEMS Gateway Microservice V{0}.{1}.{2}-{3}",
+        LOGGER->info ("ITEMS Web Portal Microservice V{0}.{1}.{2}-{3}",
             common::VERSION_MAJOR, common::VERSION_MINOR,
             common::VERSION_PATCH, common::VERSION_TAG);
         LOGGER->info (common::COPYRIGHT_TEXT);
