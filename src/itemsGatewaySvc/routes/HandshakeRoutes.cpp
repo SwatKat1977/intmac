@@ -223,8 +223,21 @@ namespace items { namespace gatewaySvc { namespace routes { namespace handshake 
         }
 
         // ============== STEP 2 ==============
-        // Validate the message body
+        // Validate the message
         // ====================================
+        auto emailAddress = request->getQueryParameter ("email_address");
+        auto userToken = request->getQueryParameter ("token");
+        if (!emailAddress || !userToken)
+        {
+            printf ("[UNUSED] Project is invalid\n");
+            response->status = BASIC_AUTH_RESPONSE_STATUS_BAD;
+            response->error = "Missing email or token";
+            response->is_valid = false;
+            return ApiResponseFactory::createResponse (
+                ApiResponseStatus::CODE_200, response,
+                m_objectMapper);
+        }
+
         auto requestMsg = request->readBodyToDto<oatpp::Object
             <IsValidUserTokenRequestDTO>> (m_objectMapper.get ());
 
@@ -238,8 +251,8 @@ namespace items { namespace gatewaySvc { namespace routes { namespace handshake 
                 m_objectMapper);
         }
 
-        std::string emailAddress = requestMsg.get ()->email_address;
-        std::string userToken = requestMsg.get ()->token;
+        emailAddress = requestMsg.get ()->email_address;
+        userToken = requestMsg.get ()->token;
 
         bool validSession = m_sessionsManager->IsValidSession (
             emailAddress, userToken);
