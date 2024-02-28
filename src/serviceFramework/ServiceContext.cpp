@@ -60,9 +60,9 @@ namespace items
         ServiceContext::ServiceContext (std::string contextName) :
             m_contextName(contextName),
             m_initialised(false),
+            m_initLayout(nullptr),
             m_shutdownRequested(false),
-            m_usingIniConfig(false),
-            m_initLayout(nullptr)
+            m_usingIniConfig(false)
         {
             m_instance = this;
 
