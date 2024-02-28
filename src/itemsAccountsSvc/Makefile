@@ -11,13 +11,13 @@ LIB_DIRS = -L ../lib/ -L /usr/local/lib/oatpp-1.3.0
 LIBRARIES = -lServiceFramework -loatpp -lSqliteLibrary
 
 OBJS = AccountsSvc.o \
-       UUID.o \
+       ../common/UUID.o \
        Sha256.o \
 	   SqliteInterface.o \
        routes/BasicAuthAuthenticate.o \
        serviceModules/StartupModule.o
 
-ACCOUNTSSVC = ${ITEMS_BIN_DIR}/itemsAccountsSvc
+ACCOUNTSSVC = ${ITEMS_BIN_DIR}/accountsSvc
 
 $(ACCOUNTSSVC): $(OBJS)
 	$(MAKE) -C ../externalLibraries/sqlite
