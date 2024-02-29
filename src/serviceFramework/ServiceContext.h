@@ -31,6 +31,7 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 #include "oatpp/web/protocol/http/outgoing/Response.hpp"
 #include "ConfigManager.h"
 #include "ApiRoute.h"
+#include "ApiController.h"
 
 namespace items
 {
@@ -133,6 +134,9 @@ namespace items
                            HTTPRequestMethod method,
                            std::string endpoint,
                            ApiRoute *route);
+
+            void AddApiController(std::string providerName,
+                std::shared_ptr<ApiEndpointController> controller);
 
             ConfigManager& GetConfigManager () { return m_configManager; }
 

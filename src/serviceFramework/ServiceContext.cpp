@@ -106,6 +106,10 @@ namespace items
             }
 #endif
 
+            OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::data::mapping::ObjectMapper>, apiObjectMapper)([] {
+            return oatpp::parser::json::mapping::ObjectMapper::createShared();
+            }());
+
             if (m_modules.size() == 0)
             {
                 return true;
@@ -202,6 +206,20 @@ namespace items
             (*provider).second.router->route (HttpRequestMethodToStr(method),
                                               endpoint,
                                               routeEntry);
+        }
+
+        void ServiceContext::AddApiController(std::string providerName,
+            std::shared_ptr<ApiEndpointController> controller)
+        {
+            ProvidersMap::iterator provider = m_providers.find (providerName);
+            if (provider == m_providers.end ())
+            {
+                std::string errStr = std::string ("Unknown provider '") +
+                                     providerName + "'";
+                throw std::runtime_error (errStr);
+            }
+
+            provider->second.router->addController(controller);
         }
 
         void ServiceContext::Execute ()
