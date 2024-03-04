@@ -28,36 +28,6 @@ namespace items { namespace gatewaySvc { namespace routes { namespace handshake 
 
     using namespace serviceFramework;
 
-    class BasicAuthenticate : public ApiRoute
-    {
-    public:
-        BasicAuthenticate (
-            std::string name,
-            std::shared_ptr< common::apis::accountsSvc::AccountsSvcClient> accountsSvcClient,
-            std::shared_ptr < SessionsManager> sessionManager);
-
-        ApiOutResponsePtr Route (const ApiIncomingReqPtr& request);
-
-    private:
-        std::shared_ptr< common::apis::accountsSvc::AccountsSvcClient> m_accountsSvcClient;
-        std::shared_ptr < SessionsManager> m_sessionManager;
-    };
-
-    class Logout : public ApiRoute
-    {
-    public:
-        Logout (
-            std::string name,
-            std::shared_ptr < SessionsManager> sessionsManager,
-            serviceFramework::ConfigManager configManager);
-
-        ApiOutResponsePtr Route (const ApiIncomingReqPtr& request);
-
-    private:
-        std::shared_ptr < SessionsManager> m_sessionsManager;
-        serviceFramework::ConfigManager m_configManager;
-    };
-
     class IsValidUserToken : public ApiRoute
     {
     public:
