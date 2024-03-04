@@ -29,6 +29,8 @@ namespace items { namespace gatewaySvc { namespace controllers {
 
     using namespace serviceFramework;
 
+#include OATPP_CODEGEN_BEGIN(ApiController)
+
     class CasesApiController : public serviceFramework::ApiEndpointController
     {
     public:
@@ -41,7 +43,7 @@ namespace items { namespace gatewaySvc { namespace controllers {
                 ApiResponseStatus::CODE_400, "NOT INPLEMENTED");
         }
 
-        ENDPOINT("GET", "get_case/{case_id}", casesGetCase.
+        ENDPOINT("GET", "cases/get_case/{case_id}", casesGetCase,
             PATH(Int64, case_id))
         {
             return ApiResponseFactory::createResponse (
