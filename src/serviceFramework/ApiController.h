@@ -28,17 +28,23 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 
 namespace items { namespace serviceFramework {
 
-#include OATPP_CODEGEN_BEGIN(ApiController) ///< Begin Codegen
+#include OATPP_CODEGEN_BEGIN(ApiController)
 
     class ApiEndpointController : public oatpp::web::server::api::ApiController
     {
     public:
         ApiEndpointController(
-            OATPP_COMPONENT(std::shared_ptr<ObjectMapper>, m_objectMapper))
-                : oatpp::web::server::api::ApiController(m_objectMapper) { }
+            OATPP_COMPONENT(std::shared_ptr<ObjectMapper>, objectMapper))
+                : oatpp::web::server::api::ApiController(objectMapper)
+                {
+                    m_objectMapper = oatpp::parser::json::mapping::ObjectMapper::createShared ();
+                }
+
+    protected:
+        std::shared_ptr<ObjectMapper> m_objectMapper;
     };
 
-#include OATPP_CODEGEN_END(ApiController) ///< End Codegen
+#include OATPP_CODEGEN_END(ApiController)
 
 } } // namespace items::serviceFramework
 

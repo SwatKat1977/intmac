@@ -42,6 +42,9 @@ namespace items { namespace gatewaySvc {
         DTO_FIELD (Int8, size);
     };
 
+    class EmptyDTO : public oatpp::DTO
+    {};
+
 #include OATPP_CODEGEN_END(DTO)
 
 } }   // namespace items::gatewaySvc

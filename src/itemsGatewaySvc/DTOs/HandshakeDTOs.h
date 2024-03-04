@@ -71,16 +71,6 @@ namespace items { namespace gatewaySvc {
         DTO_FIELD (String, error);
     };
 
-    // Definition of the is valid user token request.
-    class IsValidUserTokenRequestDTO : public oatpp::DTO
-    {
-        DTO_INIT (IsValidUserTokenRequestDTO, DTO)
-
-        DTO_FIELD (String, email_address);
-        DTO_FIELD (String, token);
-    };
-
-
     // Definition of the is valid user token response.
     class IsValidUserTokenResponseDTO : public oatpp::DTO
     {

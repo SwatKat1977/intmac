@@ -27,6 +27,7 @@ Copyright 2014-2024 Integrated Test Management Suite Development Team
 #include "oatpp/core/macro/component.hpp"
 #include "oatpp/parser/json/mapping/ObjectMapper.hpp"
 #include "ApiController.h"
+#include "DTOs/CommonDTOs.h"
 #include "DTOs/HandshakeDTOs.h"
 #include "apis/accountsSvc/AccountsSvcClient.h"
 #include "SessionsManager.h"
@@ -34,9 +35,9 @@ Copyright 2014-2024 Integrated Test Management Suite Development Team
 
 namespace items { namespace gatewaySvc { namespace controllers {
 
-#include OATPP_CODEGEN_BEGIN(ApiController) ///< Begin Codegen
+#include OATPP_CODEGEN_BEGIN(ApiController)
 
-    class HandshakeApiController : public serviceFramework::ApiEndpointController //  public oatpp::web::server::api::ApiController
+    class HandshakeApiController : public serviceFramework::ApiEndpointController
     {
     public:
 
@@ -44,12 +45,13 @@ namespace items { namespace gatewaySvc { namespace controllers {
 
         HandshakeApiController (
             std::shared_ptr< common::apis::accountsSvc::AccountsSvcClient> accountsSvcClient,
-            std::shared_ptr < SessionsManager> sessionManager)
+            std::shared_ptr < SessionsManager> sessionManager,
+            serviceFramework::ConfigManager configManager)
             : ApiEndpointController(),
               m_accountsSvcClient(accountsSvcClient),
+              m_configManager(configManager),
               m_sessionManager(sessionManager) { }
 
-#ifndef __MUTED__
         bool IsValidAuthToken (oatpp::String headerToken, std::string authToken)
         {
             if (!headerToken || headerToken->empty ())
@@ -60,7 +62,8 @@ namespace items { namespace gatewaySvc { namespace controllers {
             return (headerToken == authToken);
         }
 
-        ENDPOINT("POST", "handshake/auth/basic/", root,
+        ENDPOINT("POST", "handshake/auth/basic/authenticate",
+           handshakeBasicAuthenticate,
            BODY_DTO(Object<BasicAuthenticateRequestDTO>, request))
         {
             auto response = BasicAuthenticateResponseDTO::createShared ();
@@ -92,7 +95,9 @@ namespace items { namespace gatewaySvc { namespace controllers {
             {
                 authResponse = m_accountsSvcClient
                     ->basicAuthenticateDTO (requestBody)
-                    ->readBodyToDto<oatpp::Object<common::apis::accountsSvc::AccountsSvcBasicAuthResponseDto>> (objectMapper.get ());
+                    ->readBodyToDto<
+                    oatpp::Object<common::apis::accountsSvc::AccountsSvcBasicAuthResponseDto>> (
+                        m_objectMapper.get ());
             }
             catch (std::runtime_error& ex)
             {
@@ -128,29 +133,116 @@ namespace items { namespace gatewaySvc { namespace controllers {
             return createDtoResponse(Status::CODE_200, response);
         }
 
-#ifdef __MUTED__
-        ENDPOINT("GET", "/hello/*", root,
+        ENDPOINT("POST", "handshake/logout", handshakeLogout,
+           BODY_DTO(Object<LogoutRequestDTO>, requestBody),
            REQUEST(std::shared_ptr<IncomingRequest>, request))
         {
-            auto emailAddress = request->getQueryParameter ("email_address");
-            auto userToken = request->getQueryParameter ("token");
+            auto response = LogoutResponseDTO::createShared ();
 
-#ifdef FOO
-            auto dto = MessageDto::createShared();
-            dto->statusCode = 200;
-            dto->message = "Hello World!";
-#endif
-            return createDtoResponse(Status::CODE_200, "dto");
+            // ============== STEP 1 ==============
+            // Validate the authentication token
+            // ====================================
+            auto headerToken = request->getHeader (HEADERKEY_TOKEN.c_str());
+
+            std::string authToken = m_configManager.GetStringEntry (
+                SECTION_AUTHENTICATION, AUTHENTICATION_TOKEN);
+
+            if (!IsValidAuthToken (headerToken, authToken))
+            {
+                return ApiResponseFactory::createResponse (
+                    ApiResponseStatus::CODE_401, "");
+            }
+
+            // ============== STEP 2 ==============
+            // Validate the message body
+            // ====================================
+            if ((!requestBody.get ()->email_address) ||
+                (!requestBody.get ()->token))
+            {
+                response->status = BASIC_AUTH_RESPONSE_STATUS_BAD;
+                response->error = "Invalid request format";
+                return ApiResponseFactory::createResponse (
+                    ApiResponseStatus::CODE_200, response,
+                    m_objectMapper);
+            }
+
+            std::string emailAddress = requestBody.get ()->email_address;
+            std::string userToken = requestBody.get ()->token;
+
+            if (!m_sessionManager->IsValidSession (emailAddress,
+                userToken))
+            {
+                response->status = BASIC_AUTH_RESPONSE_STATUS_BAD;
+                response->error = "Invalid user session";
+                return ApiResponseFactory::createResponse (
+                    ApiResponseStatus::CODE_200, response,
+                    m_objectMapper);
+            }
+
+            m_sessionManager->DeleteSession (emailAddress);
+            LOGGER->info ("User '{0}' logged out", emailAddress);
+
+            response->status = BASIC_AUTH_RESPONSE_STATUS_OK;
+            response->error = "";
+            return ApiResponseFactory::createResponse (
+                ApiResponseStatus::CODE_200, response,
+                m_objectMapper);
         }
-#endif
-#endif
+
+        ENDPOINT("GET", "handshake/is_valid_user_token",
+                 handshakeIsValidUserToken,
+            QUERY(String, emailAddress, "email_address"),
+            QUERY(String, userToken, "token"),
+            BODY_DTO(Object<EmptyDTO>, unused),
+            REQUEST(std::shared_ptr<IncomingRequest>, request))
+        {
+            auto response = IsValidUserTokenResponseDTO::createShared ();
+
+            // ============== STEP 1 ==============
+            // Validate the authentication token
+            // ====================================
+            auto headerToken = request->getHeader (HEADERKEY_TOKEN.c_str ());
+
+            std::string authToken = m_configManager.GetStringEntry (
+                SECTION_AUTHENTICATION, AUTHENTICATION_TOKEN);
+
+            if (!IsValidAuthToken (headerToken, authToken))
+            {
+                auto response = createResponse(Status::CODE_401, "Not authorised");
+                response->putHeader(Header::CONTENT_TYPE, "text/plain");
+                return response;
+            }
+
+            // ============== STEP 2 ==============
+            // Validate query parameters
+            // ====================================
+            if (emailAddress->empty() || userToken->empty())
+            {
+                response->status = BASIC_AUTH_RESPONSE_STATUS_BAD;
+                response->error = "Missing email or token";
+                response->is_valid = false;
+                return createDtoResponse(Status::CODE_200, response);
+            }
+
+            bool validSession = m_sessionManager->IsValidSession (
+                emailAddress, userToken);
+
+            response->status = BASIC_AUTH_RESPONSE_STATUS_OK;
+            response->error = "";
+            response->is_valid = validSession;
+
+            return ApiResponseFactory::createResponse (
+                ApiResponseStatus::CODE_200, response,
+                m_objectMapper);
+        }
 
     private:
         std::shared_ptr< common::apis::accountsSvc::AccountsSvcClient> m_accountsSvcClient;
+        serviceFramework::ConfigManager m_configManager;
         std::shared_ptr < SessionsManager> m_sessionManager;
     };
 
-#include OATPP_CODEGEN_END(ApiController) ///< End Codegen
+#include OATPP_CODEGEN_END(ApiController)
 
 } } }   // namespace items::gatewaySvc::controllers
 
