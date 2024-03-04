@@ -27,11 +27,9 @@ The following is based on Ogre3D code:
 #define HANDSHAKEDTOS_H
 #include "oatpp/core/macro/codegen.hpp"
 #include "oatpp/network/tcp/server/ConnectionProvider.hpp"
+#include "DTOs/CommonDTOs.h"
 
 namespace items { namespace gatewaySvc {
-
-    const int BASIC_AUTH_RESPONSE_STATUS_BAD = 0;
-    const int BASIC_AUTH_RESPONSE_STATUS_OK = 1;
 
 #include OATPP_CODEGEN_BEGIN(DTO)
 

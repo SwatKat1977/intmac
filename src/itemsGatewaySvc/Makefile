@@ -12,7 +12,6 @@ LIBRARIES = -lServiceFramework -loatpp
 OBJS = SessionsManager.o \
        gatewaySvc.o \
 	   serviceModules/StartupModule.o \
-	   routes/ProjectsRoutes.o \
 	   ../common/UUID.o
 
 GATEWAYSVC = ${ITEMS_BIN_DIR}/gatewaySvc

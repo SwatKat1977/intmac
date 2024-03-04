@@ -74,7 +74,7 @@ namespace items { namespace gatewaySvc { namespace controllers {
             if ((!request.get ()->email_address) ||
                 (!request.get ()->password))
             {
-                response->status = BASIC_AUTH_RESPONSE_STATUS_BAD;
+                response->status = RESPONSE_STATUS_BAD;
                 response->error = "Invalid request format";
                 return createDtoResponse(Status::CODE_200, response);
             }
@@ -103,14 +103,14 @@ namespace items { namespace gatewaySvc { namespace controllers {
             {
                 LOGGER->error ("Cannot connect to accounts service API, reason: {0}",
                     ex.what ());
-                response->status = BASIC_AUTH_RESPONSE_STATUS_BAD; 
+                response->status = RESPONSE_STATUS_BAD;
                 response->error = "Internal error";
                 return createDtoResponse(Status::CODE_200, response);
             }
 
-            if (authResponse->status == BASIC_AUTH_RESPONSE_STATUS_BAD)
+            if (authResponse->status == RESPONSE_STATUS_BAD)
             {
-                response->status = BASIC_AUTH_RESPONSE_STATUS_BAD;
+                response->status = RESPONSE_STATUS_BAD;
                 response->error = "Invalid username/password";
                 return createDtoResponse(Status::CODE_200, response);
             }
@@ -127,7 +127,7 @@ namespace items { namespace gatewaySvc { namespace controllers {
             std::string loginType = hasSession ? "re-logged in" : "logged in";
             LOGGER->info ("User '{0}' {1}", emailAddress, loginType);
 
-            response->status = BASIC_AUTH_RESPONSE_STATUS_OK;
+            response->status = RESPONSE_STATUS_OK;
             response->error = "";
             response->userToken = userToken;
             return createDtoResponse(Status::CODE_200, response);
@@ -159,7 +159,7 @@ namespace items { namespace gatewaySvc { namespace controllers {
             if ((!requestBody.get ()->email_address) ||
                 (!requestBody.get ()->token))
             {
-                response->status = BASIC_AUTH_RESPONSE_STATUS_BAD;
+                response->status = RESPONSE_STATUS_BAD;
                 response->error = "Invalid request format";
                 return ApiResponseFactory::createResponse (
                     ApiResponseStatus::CODE_200, response,
@@ -172,7 +172,7 @@ namespace items { namespace gatewaySvc { namespace controllers {
             if (!m_sessionManager->IsValidSession (emailAddress,
                 userToken))
             {
-                response->status = BASIC_AUTH_RESPONSE_STATUS_BAD;
+                response->status = RESPONSE_STATUS_BAD;
                 response->error = "Invalid user session";
                 return ApiResponseFactory::createResponse (
                     ApiResponseStatus::CODE_200, response,
@@ -182,7 +182,7 @@ namespace items { namespace gatewaySvc { namespace controllers {
             m_sessionManager->DeleteSession (emailAddress);
             LOGGER->info ("User '{0}' logged out", emailAddress);
 
-            response->status = BASIC_AUTH_RESPONSE_STATUS_OK;
+            response->status = RESPONSE_STATUS_OK;
             response->error = "";
             return ApiResponseFactory::createResponse (
                 ApiResponseStatus::CODE_200, response,
@@ -218,7 +218,7 @@ namespace items { namespace gatewaySvc { namespace controllers {
             // ====================================
             if (emailAddress->empty() || userToken->empty())
             {
-                response->status = BASIC_AUTH_RESPONSE_STATUS_BAD;
+                response->status = RESPONSE_STATUS_BAD;
                 response->error = "Missing email or token";
                 response->is_valid = false;
                 return createDtoResponse(Status::CODE_200, response);
@@ -227,7 +227,7 @@ namespace items { namespace gatewaySvc { namespace controllers {
             bool validSession = m_sessionManager->IsValidSession (
                 emailAddress, userToken);
 
-            response->status = BASIC_AUTH_RESPONSE_STATUS_OK;
+            response->status = RESPONSE_STATUS_OK;
             response->error = "";
             response->is_valid = validSession;
 

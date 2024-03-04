@@ -28,11 +28,10 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 #include "StartupModule.h"
 #include "Logger.h"
 #include "Version.h"
+#include "apis/accountsSvc/AccountsSvcClient.h"
 #include "controllers/CasesApiController.h"
 #include "controllers/HandshakeApiController.h"
-#include "routes/ProjectsRoutes.h"
-#include "apis/accountsSvc/AccountsSvcClient.h"
-
+#include "controllers/ProjectsApiController.h"
 
 namespace items { namespace gatewaySvc {
 
@@ -115,9 +114,7 @@ namespace items { namespace gatewaySvc {
 
         if (!AddHandshakeRoutes ()) return false;
         if (!AddCasesRoutes ()) return false;
-#ifdef __tmp__
         if (!AddProjectsRoutes ()) return false;
-#endif
 
         return true;
     }
@@ -146,12 +143,12 @@ namespace items { namespace gatewaySvc {
     {
         try
         {
-            auto myController = std::make_shared<
+            auto controller = std::make_shared<
                 controllers::HandshakeApiController> (
                     m_accountsSvcClient, m_sessionsManager,
                     m_context->GetConfigManager ());
             m_context->AddApiController(SERVICE_PROVIDER_API_NAME,
-                                        myController);
+                                        controller);
         }
         catch (std::runtime_error& e)
         {
@@ -167,41 +164,21 @@ namespace items { namespace gatewaySvc {
 
     bool StartupModule::AddProjectsRoutes ()
     {
-        auto* getProjectsRoute = new routes::projects::GetProjects (GETPROJECTS_ROUTE_NAME);
         try
         {
-            m_context->AddRoute (
-                SERVICE_PROVIDER_API_NAME,
-                HTTPRequestMethod_GET,
-                GETPROJECTS_ROUTE,
-                getProjectsRoute);
+            auto controller = std::make_shared<
+                controllers::ProjectsApiController> ();
+            m_context->AddApiController(SERVICE_PROVIDER_API_NAME,
+                                        controller);
         }
         catch (std::runtime_error& e)
         {
-            LOGGER->critical ("Unable to create route '{0}' : {1}",
-                GETPROJECTS_ROUTE_NAME, e.what ());
+            LOGGER->critical (
+                "Unable to create projects api controller, reason {0}",
+                e.what ());
             return false;
         }
-        LOGGER->info ("Added get projects route '{0}' to '{1}' provider",
-            GETPROJECTS_ROUTE, SERVICE_PROVIDER_API_NAME);
-
-        auto* getProjectRoute = new routes::projects::GetProject (GETPROJECT_ROUTE_NAME);
-        try
-        {
-            m_context->AddRoute (
-                SERVICE_PROVIDER_API_NAME,
-                HTTPRequestMethod_GET,
-                GETPROJECT_ROUTE,
-                getProjectRoute);
-        }
-        catch (std::runtime_error& e)
-        {
-            LOGGER->critical ("Unable to create route '{0}' : {1}",
-                GETPROJECTS_ROUTE_NAME, e.what ());
-            return false;
-        }
-        LOGGER->info ("Added get project route '{0}' to '{1}' provider",
-            GETPROJECT_ROUTE, SERVICE_PROVIDER_API_NAME);
+        LOGGER->info ("Added projects api controller");
 
         return true;
     }
