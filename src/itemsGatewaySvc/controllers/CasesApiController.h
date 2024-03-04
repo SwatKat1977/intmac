@@ -20,8 +20,8 @@ Copyright 2014-2024 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
-#ifndef CASESROUTES_H
-#define CASESROUTES_H
+#ifndef CASESAPICONTROLLER_H
+#define CASESAPICONTROLLER_H
 #include "oatpp/core/macro/codegen.hpp"
 #include "oatpp/core/macro/component.hpp"
 
@@ -55,4 +55,4 @@ namespace items { namespace gatewaySvc { namespace controllers {
 
 } } }   // namespace items::gatewaySvc::controllers
 
-#endif // #ifndef CASESROUTES_H
+#endif // #ifndef CASESAPICONTROLLER_H
