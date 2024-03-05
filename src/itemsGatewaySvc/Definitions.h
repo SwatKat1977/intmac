@@ -20,6 +20,8 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
+#ifndef DEFINITIONS_H_
+#define DEFINITIONS_H_
 #include <string>
 
 namespace items
@@ -31,3 +33,5 @@ namespace items
 
     }   // namespace gatewaySvc
 }   // namespace items
+
+#endif  // DEFINITIONS_H_

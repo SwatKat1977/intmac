@@ -27,6 +27,9 @@ Copyright 2014-2024 Integrated Test Management Suite Development Team
 
 namespace items { namespace gatewaySvc { namespace controllers {
 
+using serviceFramework::ApiResponseFactory;
+using serviceFramework::ApiResponseStatus;
+
 #include OATPP_CODEGEN_BEGIN(ApiController)
 
 class CasesApiController : public serviceFramework::ApiEndpointController {

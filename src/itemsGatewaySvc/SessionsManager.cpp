@@ -26,9 +26,10 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 
 namespace items { namespace gatewaySvc {
 
-    SessionsManager::SessionsManager ()
-    {
-        //LOGGER->info ("Initialised sessions manager...");
+using SessionEntryIterator = std::map<std::string, SessionEntry *>::iterator;
+
+    SessionsManager::SessionsManager() {
+        // LOGGER->info ("Initialised sessions manager...");
     }
 
     /*
@@ -43,28 +44,26 @@ namespace items { namespace gatewaySvc {
         returns :
             bool - Success status of the add.
     */
-    bool SessionsManager::AddSession (
+    bool SessionsManager::AddSession(
         std::string emailAddress,
         std::string token,
-        AuthenticationType authType)
-    {
+        AuthenticationType authType) {
         bool status = false;
 
         // Session timeouts haven't been implemented yet, so the expiry will
         // always be set to a value of 0 (no expiry).
-        auto entry = new SessionEntry (emailAddress, authType, token);
+        auto entry = new SessionEntry(emailAddress, authType, token);
 
-        m_mutex.lock ();
+        m_mutex.lock();
 
         // If you logon a second time it will invalid any previous session.
-        std::map<std::string, SessionEntry*>::iterator it = m_sessions.find (emailAddress);
-        if (m_sessions.end () != it)
-        {
+        SessionEntryIterator it = m_sessions.find(emailAddress);
+        if (m_sessions.end() != it) {
             delete &* it->second;
         }
         m_sessions[emailAddress] = entry;
 
-        m_mutex.unlock ();
+        m_mutex.unlock();
 
         status = true;
 
@@ -81,20 +80,18 @@ namespace items { namespace gatewaySvc {
         returns :
             bool - Success status of the session delete.
     */
-    bool SessionsManager::DeleteSession (std::string emailAddress)
-    {
+    bool SessionsManager::DeleteSession(std::string emailAddress) {
         bool status = false;
 
-        m_mutex.lock ();
+        m_mutex.lock();
 
-        std::map<std::string, SessionEntry *>::iterator it = m_sessions.find (emailAddress);
-        if (m_sessions.end () != it)
-        {
-            m_sessions.erase (it);
+        SessionEntryIterator it = m_sessions.find(emailAddress);
+        if (m_sessions.end() != it) {
+            m_sessions.erase(it);
             status = true;
         }
 
-        m_mutex.unlock ();
+        m_mutex.unlock();
 
         return status;
     }
@@ -109,16 +106,14 @@ namespace items { namespace gatewaySvc {
         returns :
             bool - Validity boolean.
     */
-    bool SessionsManager::IsValidSession (std::string emailAddress, std::string token)
-    {
+    bool SessionsManager::IsValidSession(
+        std::string emailAddress, std::string token) {
         bool status = false;
 
-        std::map<std::string, SessionEntry *>::iterator it = m_sessions.find (emailAddress);
-        if (m_sessions.end () != it)
-        {
+        SessionEntryIterator it = m_sessions.find(emailAddress);
+        if (m_sessions.end() != it) {
             SessionEntry entry = *it->second;
-            if (entry.GetToken () == token)
-            {
+            if (entry.GetToken() == token) {
                 status = true;
             }
         }
@@ -135,17 +130,16 @@ namespace items { namespace gatewaySvc {
         returns :
             bool - Validity boolean.
     */
-    bool SessionsManager::HasSession (std::string emailAddress)
-    {
+    bool SessionsManager::HasSession(std::string emailAddress) {
         bool status = false;
 
-        std::map<std::string, SessionEntry *>::iterator it = m_sessions.find (emailAddress);
-        if (m_sessions.end () != it)
-        {
+        SessionEntryIterator it = m_sessions.find(emailAddress);
+        if (m_sessions.end() != it) {
             status = true;
         }
 
         return status;
     }
 
-} }   // namespace items::gatewaySvc
+}   // namespace gatewaySvc
+}   // namespace items
