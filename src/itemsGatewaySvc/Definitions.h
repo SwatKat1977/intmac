@@ -24,14 +24,12 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 #define DEFINITIONS_H_
 #include <string>
 
-namespace items
-{
-    namespace gatewaySvc
-    {
-        const std::string SERVICE_PROVIDER_API_NAME = "api";
-        const int SERVICE_PROVIDER_API_PORT = 4000;
+namespace items { namespace gatewaySvc {
 
-    }   // namespace gatewaySvc
+const char SERVICE_PROVIDER_API_NAME[] = "api";
+const int SERVICE_PROVIDER_API_PORT = 4000;
+
+}   // namespace gatewaySvc
 }   // namespace items
 
 #endif  // DEFINITIONS_H_
