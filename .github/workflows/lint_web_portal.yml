@@ -1,4 +1,4 @@
-name: Lint CMS Microservice
+name: Lint Web Portal Microservice
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the development branch
@@ -6,7 +6,11 @@ on:
   pull_request:
     branches:
       - main
-      - project-restart
+
+  push:
+    branches:
+      - main
+
 jobs:
   build:
 
@@ -21,10 +25,7 @@ jobs:
     - name: Install Requirements
       run: |
         python -m pip install --upgrade pip
-        pip install pylint
-        pip install quart
-    - name: Run Pylint
+        pip install cpplint
+    - name: Execute Lint
       run: |
-        cd items
-        export PYTHONPATH=`pwd`/cms_svc:`pwd`/shared
-        pylint `pwd`/cms_svc
+        cpplint --recursive --output=vs7 --root=src/itemsWebPortalSvc src/itemsWebPortalSvc

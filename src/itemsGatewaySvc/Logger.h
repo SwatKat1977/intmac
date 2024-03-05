@@ -20,8 +20,8 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
-#ifndef LOGGER_H
-#define LOGGER_H
+#ifndef LOGGER_H_
+#define LOGGER_H_
 #include "spdlog/spdlog.h"
 #include "spdlog/async.h"
 #include "spdlog/sinks/basic_file_sink.h"
@@ -30,4 +30,4 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 
 #define LOGGER spdlog::get ("logger")
 
-#endif
+#endif  // LOGGER_H_

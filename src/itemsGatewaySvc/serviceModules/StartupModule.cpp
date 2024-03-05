@@ -35,189 +35,166 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 
 namespace items { namespace gatewaySvc {
 
-    using namespace serviceFramework;
+    using oatpp::network::tcp::client::ConnectionProvider;
+    using oatpp::web::client::HttpRequestExecutor;
+    using oatpp::parser::json::mapping::ObjectMapper;
 
-    // +++++++++++++++++++++++++++++++++++++++++++++++
-    // +++++++++++++++ Projects routes +++++++++++++++
-    // +++++++++++++++++++++++++++++++++++++++++++++++
-    const std::string PROJECTS_BASE = "projects/";
-
-    // Route : Get Projects
-    const std::string GETPROJECTS_ROUTE = PROJECTS_BASE + "get_projects";
-    const std::string GETPROJECTS_ROUTE_NAME = "getprojects";
-
-    // Route : Get Project
-    const std::string GETPROJECT_ROUTE = PROJECTS_BASE + "get_project/{project_id}";
-    const std::string GETPROJECT_ROUTE_NAME = "getprojects";
-
-    StartupModule::StartupModule (std::string name)
-        : ServiceModule (name)
-    {
-        m_sessionsManager = std::shared_ptr<SessionsManager>(new SessionsManager ());
+    StartupModule::StartupModule(std::string name) : ServiceModule(name) {
+        sessions_manager_ = std::shared_ptr<SessionsManager>(
+            new SessionsManager());
     }
 
-    bool StartupModule::Initialise ()
-    {
-        LOGGER->info ("ITEMS Gateway Microservice V{0}.{1}.{2}-{3}",
+    bool StartupModule::Initialise() {
+        LOGGER->info("ITEMS Gateway Microservice V{0}.{1}.{2}-{3}",
             common::VERSION_MAJOR, common::VERSION_MINOR,
             common::VERSION_PATCH, common::VERSION_TAG);
-        LOGGER->info (common::COPYRIGHT_TEXT);
-        LOGGER->info (common::LICENSE_TEXT);
+        LOGGER->info(common::COPYRIGHT_TEXT);
+        LOGGER->info(common::LICENSE_TEXT);
 
-        LOGGER->info ("|=====================|");
-        LOGGER->info ("|=== Configuration ===|");
-        LOGGER->info ("|=====================|");
+        LOGGER->info("|=====================|");
+        LOGGER->info("|=== Configuration ===|");
+        LOGGER->info("|=====================|");
 
-        LOGGER->info ("[LOGGING]");
-        LOGGER->info ("-> Log Level      : {0}",
-            m_context->GetConfigManager ().GetStringEntry (
-                "logging", "log_level").c_str ());
-        LOGGER->info ("-> Log To Console : {0}",
-            m_context->GetConfigManager ().GetStringEntry (
-                "logging", "log_to_console").c_str ());
-        LOGGER->info ("-> Log Filename   : {0}",
-            m_context->GetConfigManager ().GetStringEntry (
-                "logging", "log_filename").c_str ());
-        LOGGER->info ("-> Max File Size  : {0:d}",
-            m_context->GetConfigManager ().GetIntEntry (
+        LOGGER->info("[LOGGING]");
+        LOGGER->info("-> Log Level      : {0}",
+            m_context->GetConfigManager().GetStringEntry(
+                "logging", "log_level").c_str());
+        LOGGER->info("-> Log To Console : {0}",
+            m_context->GetConfigManager().GetStringEntry(
+                "logging", "log_to_console").c_str());
+        LOGGER->info("-> Log Filename   : {0}",
+            m_context->GetConfigManager().GetStringEntry(
+                "logging", "log_filename").c_str());
+        LOGGER->info("-> Max File Size  : {0:d}",
+            m_context->GetConfigManager().GetIntEntry(
                 "logging", "max_file_size"));
-        LOGGER->info ("-> Max File Count : {0:d}",
-            m_context->GetConfigManager ().GetIntEntry (
+        LOGGER->info("-> Max File Count : {0:d}",
+            m_context->GetConfigManager().GetIntEntry(
                 "logging", "max_file_count"));
-        LOGGER->info ("-> Log Format     : {0}",
-            m_context->GetConfigManager ().GetStringEntry (
-                "logging", "log_format").c_str ());
+        LOGGER->info("-> Log Format     : {0}",
+            m_context->GetConfigManager().GetStringEntry(
+                "logging", "log_format").c_str());
 
-        LOGGER->info ("[SESSIONS]");
-        LOGGER->info ("-> Session Timeout (secs) : {0:d}",
-            m_context->GetConfigManager ().GetIntEntry (
+        LOGGER->info("[SESSIONS]");
+        LOGGER->info("-> Session Timeout (secs) : {0:d}",
+            m_context->GetConfigManager().GetIntEntry(
                 "sessions", "timeout_secs"));
 
-        LOGGER->info ("[INTERNAL APIS]");
-        LOGGER->info ("-> Accounts Service API : {0}:{1:d}",
-            m_context->GetConfigManager ().GetStringEntry (
-                SECTION_INTERNAL_APIS, INTERNAL_APIS_ACCOUNTS_SVC_HOST).c_str (),
-            m_context->GetConfigManager ().GetIntEntry (
+        LOGGER->info("[INTERNAL APIS]");
+        LOGGER->info("-> Accounts Service API : {0}:{1:d}",
+            m_context->GetConfigManager().GetStringEntry(
+                SECTION_INTERNAL_APIS, INTERNAL_APIS_ACCOUNTS_SVC_HOST).c_str(),
+            m_context->GetConfigManager().GetIntEntry(
                 SECTION_INTERNAL_APIS, INTERNAL_APIS_ACCOUNTS_SVC_PORT));
-        LOGGER->info ("-> CMS Service API      : {0}:{1:d}",
-            m_context->GetConfigManager ().GetStringEntry (
-                SECTION_INTERNAL_APIS, INTERNAL_APIS_CMS_SVC_HOST).c_str (),
-            m_context->GetConfigManager ().GetIntEntry (
+        LOGGER->info("-> CMS Service API      : {0}:{1:d}",
+            m_context->GetConfigManager().GetStringEntry(
+                SECTION_INTERNAL_APIS, INTERNAL_APIS_CMS_SVC_HOST).c_str(),
+            m_context->GetConfigManager().GetIntEntry(
                 SECTION_INTERNAL_APIS, INTERNAL_APIS_CMS_SVC_PORT));
 
-        if (!AddServiceProviders ())
-        {
+        if (!AddServiceProviders()) {
             return false;
         }
 
-        CreateAccountsSvcClient ();
+        CreateAccountsSvcClient();
 
-        if (!AddHandshakeRoutes ()) return false;
-        if (!AddCasesRoutes ()) return false;
-        if (!AddProjectsRoutes ()) return false;
+        if (!AddHandshakeRoutes()) return false;
+        if (!AddCasesRoutes()) return false;
+        if (!AddProjectsRoutes()) return false;
 
         return true;
     }
 
-    bool StartupModule::AddServiceProviders ()
-    {
-        try
-        {
-            m_context->AddServiceProvider (
+    bool StartupModule::AddServiceProviders() {
+        try {
+            m_context->AddServiceProvider(
                 SERVICE_PROVIDER_API_NAME,
                 "0.0.0.0",
                 SERVICE_PROVIDER_API_PORT,
-                SERVICENETWORKTYPE_IPV4);
+                serviceFramework::SERVICENETWORKTYPE_IPV4);
         }
-        catch (std::runtime_error &e)
-        {
-            LOGGER->critical ("Unable to create service provider '{0}' : {1}",
-                SERVICE_PROVIDER_API_NAME, e.what ());
+        catch (std::runtime_error &e) {
+            LOGGER->critical("Unable to create service provider '{0}' : {1}",
+                SERVICE_PROVIDER_API_NAME, e.what());
             return false;
         }
 
         return true;
     }
 
-    bool StartupModule::AddHandshakeRoutes ()
-    {
-        try
-        {
+    bool StartupModule::AddHandshakeRoutes() {
+        try {
             auto controller = std::make_shared<
                 controllers::HandshakeApiController> (
-                    m_accountsSvcClient, m_sessionsManager,
-                    m_context->GetConfigManager ());
+                    accounts_service_client_, sessions_manager_,
+                    m_context->GetConfigManager());
             m_context->AddApiController(SERVICE_PROVIDER_API_NAME,
                                         controller);
         }
-        catch (std::runtime_error& e)
-        {
-            LOGGER->critical (
+        catch (std::runtime_error& e) {
+            LOGGER->critical(
                 "Unable to create handshake api controller, reason {0}",
-                e.what ());
+                e.what());
             return false;
         }
-        LOGGER->info ("Added handshake api controller");
+        LOGGER->info("Added handshake api controller");
 
         return true;
     }
 
-    bool StartupModule::AddProjectsRoutes ()
-    {
-        try
-        {
+    bool StartupModule::AddProjectsRoutes() {
+        try {
             auto controller = std::make_shared<
                 controllers::ProjectsApiController> ();
             m_context->AddApiController(SERVICE_PROVIDER_API_NAME,
                                         controller);
         }
-        catch (std::runtime_error& e)
-        {
-            LOGGER->critical (
+        catch (std::runtime_error& e) {
+            LOGGER->critical(
                 "Unable to create projects api controller, reason {0}",
-                e.what ());
+                e.what());
             return false;
         }
-        LOGGER->info ("Added projects api controller");
+        LOGGER->info("Added projects api controller");
 
         return true;
     }
 
-    bool StartupModule::AddCasesRoutes ()
-    {
-        try
-        {
+    bool StartupModule::AddCasesRoutes() {
+        try {
             auto controller = std::make_shared<
-                controllers::CasesApiController> ();
+                controllers::CasesApiController>();
             m_context->AddApiController(SERVICE_PROVIDER_API_NAME,
                                         controller);
         }
-        catch (std::runtime_error& e)
-        {
-            LOGGER->critical (
+        catch (std::runtime_error& e) {
+            LOGGER->critical(
                 "Unable to create cases api controller, reason {0}",
-                e.what ());
+                e.what());
             return false;
         }
-        LOGGER->info ("Added cases api controller");
+        LOGGER->info("Added cases api controller");
 
         return true;
     }
 
-    void StartupModule::CreateAccountsSvcClient ()
-    {
-        std::string accountsSvcHost = m_context->GetConfigManager ().GetStringEntry (
-            SECTION_INTERNAL_APIS, INTERNAL_APIS_ACCOUNTS_SVC_HOST).c_str ();
-        int accountsSvcPort = m_context->GetConfigManager ().GetIntEntry (
+    void StartupModule::CreateAccountsSvcClient() {
+        std::string accountsSvcHost = m_context->GetConfigManager()
+            .GetStringEntry(SECTION_INTERNAL_APIS,
+                            INTERNAL_APIS_ACCOUNTS_SVC_HOST).c_str();
+        int accountsSvcPort = m_context->GetConfigManager().GetIntEntry(
             SECTION_INTERNAL_APIS, INTERNAL_APIS_ACCOUNTS_SVC_PORT);
 
-        auto objectMapper = oatpp::parser::json::mapping::ObjectMapper::createShared ();
-        auto connectionProvider = oatpp::network::tcp::client::ConnectionProvider::createShared (
+        auto objectMapper = ObjectMapper::createShared();
+        auto connectionProvider = ConnectionProvider::createShared(
             { accountsSvcHost, (v_uint16)accountsSvcPort });
-        auto requestExecutor = oatpp::web::client::HttpRequestExecutor::createShared (connectionProvider);
+        auto requestExecutor = HttpRequestExecutor::createShared(
+            connectionProvider);
 
-        m_accountsSvcClient = AccountsSvcClient::createShared (requestExecutor, objectMapper);
-        LOGGER->info ("Created client for Account Svc api");
+        accounts_service_client_ = AccountsSvcClient::createShared(
+            requestExecutor, objectMapper);
+        LOGGER->info("Created client for Account Svc api");
     }
 
-} }   // namespace items::gatewaySvc
+}   // namespace gatewaySvc
+}   // namespace items
