@@ -53,7 +53,7 @@ namespace items { namespace gatewaySvc {
     StartupModule::StartupModule (std::string name)
         : ServiceModule (name)
     {
-        m_sessionsManager = std::shared_ptr<SessionsManager>(new SessionsManager ());
+        sessions_manager_ = std::shared_ptr<SessionsManager>(new SessionsManager ());
     }
 
     bool StartupModule::Initialise ()
@@ -145,7 +145,7 @@ namespace items { namespace gatewaySvc {
         {
             auto controller = std::make_shared<
                 controllers::HandshakeApiController> (
-                    m_accountsSvcClient, m_sessionsManager,
+                    accounts_service_client_, sessions_manager_,
                     m_context->GetConfigManager ());
             m_context->AddApiController(SERVICE_PROVIDER_API_NAME,
                                         controller);
@@ -216,7 +216,8 @@ namespace items { namespace gatewaySvc {
             { accountsSvcHost, (v_uint16)accountsSvcPort });
         auto requestExecutor = oatpp::web::client::HttpRequestExecutor::createShared (connectionProvider);
 
-        m_accountsSvcClient = AccountsSvcClient::createShared (requestExecutor, objectMapper);
+        accounts_service_client_ = AccountsSvcClient::createShared(
+            requestExecutor, objectMapper);
         LOGGER->info ("Created client for Account Svc api");
     }
 

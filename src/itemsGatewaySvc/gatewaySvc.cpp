@@ -26,8 +26,8 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 #include "ServiceContext.h"
 #include "serviceModules/StartupModule.h"
 
-using namespace items::gatewaySvc;
-using namespace items::serviceFramework;
+//using items::gatewaySvc;
+//using items::serviceFramework;
 
 const std::string SERVICE_CONTEXT_NAME = "Items Gateway Svc";
 
@@ -46,13 +46,15 @@ int main ()
         return EXIT_FAILURE;
     }
 
-    StartupModule startupModule = StartupModule ("Startup Module");
+    auto startupModule = items::gatewaySvc::StartupModule ("Startup Module");
 
-    auto context = new ServiceContext (SERVICE_CONTEXT_NAME);
+    auto context = new items::serviceFramework::ServiceContext (SERVICE_CONTEXT_NAME);
 
     context->AddServiceModule (&startupModule);
 
-    if (!context->Initialise ((SectionsMap *) & CONFIGURATION_LAYOUT_MAP, configFile))
+    if (!context->Initialise (
+        (items::serviceFramework::SectionsMap *) &items::gatewaySvc::CONFIGURATION_LAYOUT_MAP,
+        configFile))
     {
         return EXIT_FAILURE;
     }
