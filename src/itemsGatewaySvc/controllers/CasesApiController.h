@@ -20,39 +20,35 @@ Copyright 2014-2024 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
-#ifndef CASESAPICONTROLLER_H
-#define CASESAPICONTROLLER_H
+#ifndef CONTROLLERS_CASESAPICONTROLLER_H_
+#define CONTROLLERS_CASESAPICONTROLLER_H_
 #include "oatpp/core/macro/codegen.hpp"
 #include "oatpp/core/macro/component.hpp"
 
 namespace items { namespace gatewaySvc { namespace controllers {
 
-    using namespace serviceFramework;
-
 #include OATPP_CODEGEN_BEGIN(ApiController)
 
-    class CasesApiController : public serviceFramework::ApiEndpointController
-    {
-    public:
+class CasesApiController : public serviceFramework::ApiEndpointController {
+ public:
+    CasesApiController() : ApiEndpointController() { }
 
-        CasesApiController () : ApiEndpointController() { }
+    ENDPOINT("GET", "cases/get_cases", casesGetCases) {
+        return ApiResponseFactory::createResponse(
+            ApiResponseStatus::CODE_400, "NOT INPLEMENTED");
+    }
 
-        ENDPOINT("GET", "cases/get_cases", casesGetCases)
-        {
-            return ApiResponseFactory::createResponse (
-                ApiResponseStatus::CODE_400, "NOT INPLEMENTED");
-        }
-
-        ENDPOINT("GET", "cases/get_case/{case_id}", casesGetCase,
-            PATH(Int64, case_id))
-        {
-            return ApiResponseFactory::createResponse (
-                ApiResponseStatus::CODE_400, "NOT INPLEMENTED");
-        }
-    };
+    ENDPOINT("GET", "cases/get_case/{case_id}", casesGetCase,
+        PATH(Int64, case_id)) {
+        return ApiResponseFactory::createResponse(
+            ApiResponseStatus::CODE_400, "NOT INPLEMENTED");
+    }
+};
 
 #include OATPP_CODEGEN_END(ApiController)
 
-} } }   // namespace items::gatewaySvc::controllers
+}   // namespace controllers
+}   // namespace gatewaySvc
+}   // namespace items
 
-#endif // #ifndef CASESAPICONTROLLER_H
+#endif  // CONTROLLERS_CASESAPICONTROLLER_H_
