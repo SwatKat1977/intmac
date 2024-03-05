@@ -15,5 +15,13 @@ bin
 *.filters
 *.o
 X64
+*.a
 
 src/build
+
+# -------
+# outputs
+# -------
+*.log
+accountsSvc
+gatewaySvc

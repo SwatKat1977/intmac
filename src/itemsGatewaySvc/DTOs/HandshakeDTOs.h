@@ -27,11 +27,9 @@ The following is based on Ogre3D code:
 #define HANDSHAKEDTOS_H
 #include "oatpp/core/macro/codegen.hpp"
 #include "oatpp/network/tcp/server/ConnectionProvider.hpp"
+#include "DTOs/CommonDTOs.h"
 
 namespace items { namespace gatewaySvc {
-
-    const int BASIC_AUTH_RESPONSE_STATUS_BAD = 0;
-    const int BASIC_AUTH_RESPONSE_STATUS_OK = 1;
 
 #include OATPP_CODEGEN_BEGIN(DTO)
 
@@ -70,16 +68,6 @@ namespace items { namespace gatewaySvc {
         DTO_FIELD (Int8, status);
         DTO_FIELD (String, error);
     };
-
-    // Definition of the is valid user token request.
-    class IsValidUserTokenRequestDTO : public oatpp::DTO
-    {
-        DTO_INIT (IsValidUserTokenRequestDTO, DTO)
-
-        DTO_FIELD (String, email_address);
-        DTO_FIELD (String, token);
-    };
-
 
     // Definition of the is valid user token response.
     class IsValidUserTokenResponseDTO : public oatpp::DTO

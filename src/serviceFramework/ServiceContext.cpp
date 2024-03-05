@@ -60,9 +60,9 @@ namespace items
         ServiceContext::ServiceContext (std::string contextName) :
             m_contextName(contextName),
             m_initialised(false),
+            m_initLayout(nullptr),
             m_shutdownRequested(false),
-            m_usingIniConfig(false),
-            m_initLayout(nullptr)
+            m_usingIniConfig(false)
         {
             m_instance = this;
 
@@ -105,6 +105,10 @@ namespace items
                 m_initialised = false;
             }
 #endif
+
+            OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::data::mapping::ObjectMapper>, apiObjectMapper)([] {
+            return oatpp::parser::json::mapping::ObjectMapper::createShared();
+            }());
 
             if (m_modules.size() == 0)
             {
@@ -180,10 +184,8 @@ namespace items
             m_providers[name] = entry;
         }
 
-        void ServiceContext::AddRoute (std::string providerName,
-            HTTPRequestMethod method,
-            std::string endpoint,
-            ApiRoute* route)
+        void ServiceContext::AddApiController(std::string providerName,
+            std::shared_ptr<ApiEndpointController> controller)
         {
             ProvidersMap::iterator provider = m_providers.find (providerName);
             if (provider == m_providers.end ())
@@ -193,15 +195,7 @@ namespace items
                 throw std::runtime_error (errStr);
             }
 
-            auto routeEntry = std::make_shared<RouteHandler> (
-                route, m_objectMapper);
-            route->SetObjectMapper (m_objectMapper);
-            m_routes[route->Name ()] = routeEntry;
-
-            // Add route to the provider.
-            (*provider).second.router->route (HttpRequestMethodToStr(method),
-                                              endpoint,
-                                              routeEntry);
+            provider->second.router->addController(controller);
         }
 
         void ServiceContext::Execute ()

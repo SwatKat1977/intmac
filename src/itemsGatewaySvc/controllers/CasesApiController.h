@@ -20,30 +20,39 @@ Copyright 2014-2024 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
-#ifndef PROJECTSROUTES_H
-#define PROJECTSROUTES_H
-#include "ServiceContext.h"
+#ifndef CASESAPICONTROLLER_H
+#define CASESAPICONTROLLER_H
+#include "oatpp/core/macro/codegen.hpp"
+#include "oatpp/core/macro/component.hpp"
 
-namespace items { namespace gatewaySvc { namespace routes { namespace projects {
+namespace items { namespace gatewaySvc { namespace controllers {
 
     using namespace serviceFramework;
 
-    class GetProjects : public ApiRoute
+#include OATPP_CODEGEN_BEGIN(ApiController)
+
+    class CasesApiController : public serviceFramework::ApiEndpointController
     {
     public:
-        GetProjects (std::string name);
 
-        ApiOutResponsePtr Route (const ApiIncomingReqPtr& request);
+        CasesApiController () : ApiEndpointController() { }
+
+        ENDPOINT("GET", "cases/get_cases", casesGetCases)
+        {
+            return ApiResponseFactory::createResponse (
+                ApiResponseStatus::CODE_400, "NOT INPLEMENTED");
+        }
+
+        ENDPOINT("GET", "cases/get_case/{case_id}", casesGetCase,
+            PATH(Int64, case_id))
+        {
+            return ApiResponseFactory::createResponse (
+                ApiResponseStatus::CODE_400, "NOT INPLEMENTED");
+        }
     };
 
-    class GetProject : public ApiRoute
-    {
-    public:
-        GetProject (std::string name);
+#include OATPP_CODEGEN_END(ApiController)
 
-        ApiOutResponsePtr Route (const ApiIncomingReqPtr& request);
-    };
+} } }   // namespace items::gatewaySvc::controllers
 
-} } } }   // namespace items::gatewaySvc::routes::projects
-
-#endif // #ifndef PROJECTSROUTES_H
+#endif // #ifndef CASESAPICONTROLLER_H

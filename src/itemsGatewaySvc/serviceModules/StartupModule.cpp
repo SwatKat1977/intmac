@@ -21,40 +21,21 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 -----------------------------------------------------------------------------
 */
 #include <filesystem>
+#include "oatpp/network/tcp/client/ConnectionProvider.hpp"
 #include "spdlog/spdlog.h"
 #include "ConfigurationLayout.h"
 #include "Definitions.h"
 #include "StartupModule.h"
 #include "Logger.h"
 #include "Version.h"
-#include "routes/CasesRoutes.h"
-#include "routes/HandshakeRoutes.h"
-#include "routes/ProjectsRoutes.h"
 #include "apis/accountsSvc/AccountsSvcClient.h"
-#include "oatpp/network/tcp/client/ConnectionProvider.hpp"
+#include "controllers/CasesApiController.h"
+#include "controllers/HandshakeApiController.h"
+#include "controllers/ProjectsApiController.h"
 
 namespace items { namespace gatewaySvc {
 
     using namespace serviceFramework;
-
-    // ++++++++++++++++++++++++++++++++++++++++++++++++
-    // +++++++++++++++ Handshake routes +++++++++++++++
-    // ++++++++++++++++++++++++++++++++++++++++++++++++
-    const std::string HANDSHAKE_BASE = "handshake/";
-
-    // Route : Basic authentication
-    const std::string BASIC_AUTH_BASE = "auth/basic/";
-    const std::string BASIC_AUTHENTICATE_ROUTE = HANDSHAKE_BASE +
-        BASIC_AUTH_BASE + "authenticate";
-    const std::string BASIC_AUTHENTICATE_ROUTE_NAME = "basicAuth_auth";
-
-    // Route : Logout user session
-    const std::string LOGOUT_ROUTE = HANDSHAKE_BASE + "logout";
-    const std::string LOGOUT_ROUTE_NAME = "logout";
-
-    // Route : Is Valid User Token
-    const std::string ISVALIDUSERTOKEN_ROUTE = HANDSHAKE_BASE + "is_valid_user_token";
-    const std::string ISVALIDUSERTOKEN_ROUTE_NAME = "isvalidusertoken";
 
     // +++++++++++++++++++++++++++++++++++++++++++++++
     // +++++++++++++++ Projects routes +++++++++++++++
@@ -68,19 +49,6 @@ namespace items { namespace gatewaySvc {
     // Route : Get Project
     const std::string GETPROJECT_ROUTE = PROJECTS_BASE + "get_project/{project_id}";
     const std::string GETPROJECT_ROUTE_NAME = "getprojects";
-
-    // ++++++++++++++++++++++++++++++++++++++++++++
-    // +++++++++++++++ Cases routes +++++++++++++++
-    // ++++++++++++++++++++++++++++++++++++++++++++
-    const std::string CASES_BASE = "cases/";
-
-    // Route : Get Cases
-    const std::string GETCASES_ROUTE = CASES_BASE + "get_cases";
-    const std::string GETCASES_ROUTE_NAME = "getcases";
-
-    // Route : Get Projects
-    const std::string GETCASE_ROUTE = CASES_BASE + "get_case/{case_id}";
-    const std::string GETCASE_ROUTE_NAME = "getcase";
 
     StartupModule::StartupModule (std::string name)
         : ServiceModule (name)
@@ -145,8 +113,8 @@ namespace items { namespace gatewaySvc {
         CreateAccountsSvcClient ();
 
         if (!AddHandshakeRoutes ()) return false;
-        if (!AddProjectsRoutes ()) return false;
         if (!AddCasesRoutes ()) return false;
+        if (!AddProjectsRoutes ()) return false;
 
         return true;
     }
@@ -173,149 +141,65 @@ namespace items { namespace gatewaySvc {
 
     bool StartupModule::AddHandshakeRoutes ()
     {
-        auto* basicAuthRoute = new routes::handshake::BasicAuthenticate (
-            BASIC_AUTHENTICATE_ROUTE_NAME, m_accountsSvcClient,
-            m_sessionsManager);
         try
         {
-            m_context->AddRoute (
-                SERVICE_PROVIDER_API_NAME,
-                HTTPRequestMethod_POST,
-                BASIC_AUTHENTICATE_ROUTE,
-                basicAuthRoute);
+            auto controller = std::make_shared<
+                controllers::HandshakeApiController> (
+                    m_accountsSvcClient, m_sessionsManager,
+                    m_context->GetConfigManager ());
+            m_context->AddApiController(SERVICE_PROVIDER_API_NAME,
+                                        controller);
         }
         catch (std::runtime_error& e)
         {
-            LOGGER->critical ("Unable to create route '{0}' : {1}",
-                BASIC_AUTHENTICATE_ROUTE_NAME, e.what ());
+            LOGGER->critical (
+                "Unable to create handshake api controller, reason {0}",
+                e.what ());
             return false;
         }
-        LOGGER->info ("Added basic auth route '{0}' to '{1}' provider",
-            BASIC_AUTHENTICATE_ROUTE, SERVICE_PROVIDER_API_NAME);
-
-        auto* logoutRoute = new routes::handshake::Logout (
-            LOGOUT_ROUTE_NAME,
-            m_sessionsManager,
-            m_context->GetConfigManager ());
-        try
-        {
-            m_context->AddRoute (
-                SERVICE_PROVIDER_API_NAME,
-                HTTPRequestMethod_POST,
-                LOGOUT_ROUTE,
-                logoutRoute);
-        }
-        catch (std::runtime_error& e)
-        {
-            LOGGER->critical ("Unable to create route '{0}' : {1}",
-                LOGOUT_ROUTE_NAME, e.what ());
-            return false;
-        }
-        LOGGER->info ("Added logout route '{0}' to '{1}' provider",
-            LOGOUT_ROUTE, SERVICE_PROVIDER_API_NAME);
-
-        auto* isValidUserTokenRoute = new routes::handshake::IsValidUserToken (
-            ISVALIDUSERTOKEN_ROUTE_NAME,
-            m_sessionsManager,
-            m_context->GetConfigManager ());
-        try
-        {
-            m_context->AddRoute (
-                SERVICE_PROVIDER_API_NAME,
-                HTTPRequestMethod_POST,
-                ISVALIDUSERTOKEN_ROUTE,
-                isValidUserTokenRoute);
-        }
-        catch (std::runtime_error& e)
-        {
-            LOGGER->critical ("Unable to create route '{0}' : {1}",
-                ISVALIDUSERTOKEN_ROUTE_NAME, e.what ());
-            return false;
-        }
-        LOGGER->info ("Added is valid user token route '{0}' to '{1}' provider",
-            ISVALIDUSERTOKEN_ROUTE, SERVICE_PROVIDER_API_NAME);
+        LOGGER->info ("Added handshake api controller");
 
         return true;
     }
 
     bool StartupModule::AddProjectsRoutes ()
     {
-        auto* getProjectsRoute = new routes::projects::GetProjects (GETPROJECTS_ROUTE_NAME);
         try
         {
-            m_context->AddRoute (
-                SERVICE_PROVIDER_API_NAME,
-                HTTPRequestMethod_GET,
-                GETPROJECTS_ROUTE,
-                getProjectsRoute);
+            auto controller = std::make_shared<
+                controllers::ProjectsApiController> ();
+            m_context->AddApiController(SERVICE_PROVIDER_API_NAME,
+                                        controller);
         }
         catch (std::runtime_error& e)
         {
-            LOGGER->critical ("Unable to create route '{0}' : {1}",
-                GETPROJECTS_ROUTE_NAME, e.what ());
+            LOGGER->critical (
+                "Unable to create projects api controller, reason {0}",
+                e.what ());
             return false;
         }
-        LOGGER->info ("Added get projects route '{0}' to '{1}' provider",
-            GETPROJECTS_ROUTE, SERVICE_PROVIDER_API_NAME);
-
-        auto* getProjectRoute = new routes::projects::GetProject (GETPROJECT_ROUTE_NAME);
-        try
-        {
-            m_context->AddRoute (
-                SERVICE_PROVIDER_API_NAME,
-                HTTPRequestMethod_GET,
-                GETPROJECT_ROUTE,
-                getProjectRoute);
-        }
-        catch (std::runtime_error& e)
-        {
-            LOGGER->critical ("Unable to create route '{0}' : {1}",
-                GETPROJECTS_ROUTE_NAME, e.what ());
-            return false;
-        }
-        LOGGER->info ("Added get project route '{0}' to '{1}' provider",
-            GETPROJECT_ROUTE, SERVICE_PROVIDER_API_NAME);
+        LOGGER->info ("Added projects api controller");
 
         return true;
     }
 
     bool StartupModule::AddCasesRoutes ()
     {
-        auto* getCasesRoute = new routes::cases::GetCases (GETCASES_ROUTE_NAME);
         try
         {
-            m_context->AddRoute (
-                SERVICE_PROVIDER_API_NAME,
-                HTTPRequestMethod_GET,
-                GETCASES_ROUTE,
-                getCasesRoute);
+            auto controller = std::make_shared<
+                controllers::CasesApiController> ();
+            m_context->AddApiController(SERVICE_PROVIDER_API_NAME,
+                                        controller);
         }
         catch (std::runtime_error& e)
         {
-            LOGGER->critical ("Unable to create route '{0}' : {1}",
-                GETCASES_ROUTE_NAME, e.what ());
+            LOGGER->critical (
+                "Unable to create cases api controller, reason {0}",
+                e.what ());
             return false;
         }
-        LOGGER->info ("Added get cases route '{0}' to '{1}' provider",
-            GETCASES_ROUTE, SERVICE_PROVIDER_API_NAME);
-
-        auto* getCaseRoute = new routes::cases::GetCase (GETCASE_ROUTE_NAME);
-        try
-        {
-            m_context->AddRoute (
-                SERVICE_PROVIDER_API_NAME,
-                HTTPRequestMethod_GET,
-                GETCASE_ROUTE,
-                getCaseRoute);
-        }
-        catch (std::runtime_error& e)
-        {
-            LOGGER->critical ("Unable to create route '{0}' : {1}",
-                GETCASE_ROUTE_NAME, e.what ());
-            return false;
-        }
-        LOGGER->info ("Added get case route '{0}' to '{1}' provider",
-            GETCASE_ROUTE, SERVICE_PROVIDER_API_NAME);
+        LOGGER->info ("Added cases api controller");
 
         return true;
     }

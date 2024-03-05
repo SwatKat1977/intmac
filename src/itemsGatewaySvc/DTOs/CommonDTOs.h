@@ -18,9 +18,6 @@ Copyright 2014-2024 Integrated Test Management Suite Development Team
 
     You should have received a copy of the GNU General Public License
     along with this program.If not, see < https://www.gnu.org/licenses/>.
-
-The following is based on Ogre3D code:
-* GetEnv from os-int.h
 -----------------------------------------------------------------------------
 */
 #ifndef COMMONDTOS_H
@@ -44,6 +41,9 @@ namespace items { namespace gatewaySvc {
         DTO_FIELD (Int16, limit);
         DTO_FIELD (Int8, size);
     };
+
+    class EmptyDTO : public oatpp::DTO
+    {};
 
 #include OATPP_CODEGEN_END(DTO)
 
