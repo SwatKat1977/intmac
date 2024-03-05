@@ -184,30 +184,6 @@ namespace items
             m_providers[name] = entry;
         }
 
-        void ServiceContext::AddRoute (std::string providerName,
-            HTTPRequestMethod method,
-            std::string endpoint,
-            ApiRoute* route)
-        {
-            ProvidersMap::iterator provider = m_providers.find (providerName);
-            if (provider == m_providers.end ())
-            {
-                std::string errStr = std::string ("Unknown provider '") +
-                                     providerName + "'";
-                throw std::runtime_error (errStr);
-            }
-
-            auto routeEntry = std::make_shared<RouteHandler> (
-                route, m_objectMapper);
-            route->SetObjectMapper (m_objectMapper);
-            m_routes[route->Name ()] = routeEntry;
-
-            // Add route to the provider.
-            (*provider).second.router->route (HttpRequestMethodToStr(method),
-                                              endpoint,
-                                              routeEntry);
-        }
-
         void ServiceContext::AddApiController(std::string providerName,
             std::shared_ptr<ApiEndpointController> controller)
         {
