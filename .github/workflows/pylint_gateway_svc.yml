@@ -6,7 +6,6 @@ on:
   pull_request:
     branches:
       - main
-      - project-restart
 jobs:
   build:
 
@@ -21,10 +20,7 @@ jobs:
     - name: Install Requirements
       run: |
         python -m pip install --upgrade pip
-        pip install pylint
-        pip install quart
-        pip install redis
-    - name: Run Pylint
+        pip install cpplint
+    - name: Execute Lint
       run: |
-        export PYTHONPATH=`pwd`/items/gateway_api:`pwd`/items/shared
-        pylint `pwd`/items/gateway_api --rcfile git_workflow/pylint-gateway_api.rc
+        cpplint --recursive --output=vs7 --root=src/itemsGatewaySvc src/itemsGatewaySvc
