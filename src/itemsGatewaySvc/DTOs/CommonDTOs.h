@@ -20,8 +20,8 @@ Copyright 2014-2024 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
-#ifndef COMMONDTOS_H
-#define COMMONDTOS_H
+#ifndef DTOS_COMMONDTOS_H_
+#define DTOS_COMMONDTOS_H_
 #include "oatpp/core/macro/codegen.hpp"
 #include "oatpp/network/tcp/server/ConnectionProvider.hpp"
 
@@ -32,21 +32,20 @@ namespace items { namespace gatewaySvc {
 
 #include OATPP_CODEGEN_BEGIN(DTO)
 
-    // Definition of SelectProject response.
-    class ResponseListHeaderDTO : public oatpp::DTO
-    {
-        DTO_INIT (ResponseListHeaderDTO, DTO)
+// Definition of SelectProject response.
+class ResponseListHeaderDTO : public oatpp::DTO {
+    DTO_INIT(ResponseListHeaderDTO, DTO)
 
-        DTO_FIELD (Int32, offset);
-        DTO_FIELD (Int16, limit);
-        DTO_FIELD (Int8, size);
-    };
+    DTO_FIELD(Int32, offset);
+    DTO_FIELD(Int16, limit);
+    DTO_FIELD(Int8, size);
+};
 
-    class EmptyDTO : public oatpp::DTO
-    {};
+class EmptyDTO : public oatpp::DTO {};
 
 #include OATPP_CODEGEN_END(DTO)
 
-} }   // namespace items::gatewaySvc
+}   // namespace gatewaySvc
+}   // namespace items
 
-#endif
+#endif  // DTOS_COMMONDTOS_H_
