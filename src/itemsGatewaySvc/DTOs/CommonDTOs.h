@@ -33,7 +33,8 @@ namespace items { namespace gatewaySvc {
 #include OATPP_CODEGEN_BEGIN(DTO)
 
 // Definition of SelectProject response.
-class ResponseListHeaderDTO : public oatpp::DTO {
+class ResponseListHeaderDTO : public oatpp::DTO
+{
     DTO_INIT(ResponseListHeaderDTO, DTO)
 
     DTO_FIELD(Int32, offset);
