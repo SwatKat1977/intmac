@@ -26,7 +26,7 @@ The following is based on Ogre3D code:
 #include <filesystem>
 #include "spdlog/spdlog.h"
 #include "Definitions.h"
-#include "routes/BasicAuthAuthenticate.h"
+#include "controllers/AuthenticationApiController.h"
 #include "StartupModule.h"
 #include "Logger.h"
 #include "Version.h"
@@ -37,14 +37,13 @@ const std::string BASIC_AUTH_BASE = "/basic_auth/";
 const std::string BASIC_AUTHENTICATE_ROUTE = BASIC_AUTH_BASE + "authenticate";
 const std::string BASIC_AUTHENTICATE_ROUTE_NAME = "basicAuth_auth";
 
-namespace items
-{
-    namespace accountsSvc
+namespace items { namespace accountsSvc
     {
         using namespace serviceFramework;
+        using serviceFramework::ApiResponseStatus;
 
         StartupModule::StartupModule (std::string name)
-            : ServiceModule (name), m_sqlite(nullptr)
+            : ServiceModule (name), sqlite_(nullptr)
         {
         }
 
@@ -106,28 +105,20 @@ namespace items
             return true;
         }
 
-        bool StartupModule::AddBasicAuthenticationRoutes ()
-        {
-            auto *basicAuth = new BasicAuthAuthenticate (
-                BASIC_AUTHENTICATE_ROUTE_NAME, m_sqlite);
-
-            try
-            {
-                m_context->AddRoute (
-                    SERVICE_PROVIDER_API_NAME,
-                    HTTPRequestMethod_POST,
-                    BASIC_AUTHENTICATE_ROUTE,
-                    basicAuth);
+        bool StartupModule::AddBasicAuthenticationRoutes () {
+            try {
+                auto controller = std::make_shared<
+                    controllers::AuthenticationApiController> (sqlite_);
+                m_context->AddApiController(SERVICE_PROVIDER_API_NAME,
+                                            controller);
             }
-            catch (std::runtime_error &e)
-            {
-                LOGGER->critical ("Unable to create route '{0}' : {1}",
-                    BASIC_AUTHENTICATE_ROUTE_NAME, e.what ());
+            catch (std::runtime_error& e) {
+                LOGGER->critical(
+                    "Unable to create authentication api controller, reason {0}",
+                    e.what());
                 return false;
             }
-
-            LOGGER->info ("Added basic auth route '{0}' to '{1}' provider",
-                BASIC_AUTHENTICATE_ROUTE, SERVICE_PROVIDER_API_NAME);
+            LOGGER->info("Added authentication api controller");
 
             return true;
         }
@@ -159,11 +150,11 @@ namespace items
             std::string filename = m_context->GetConfigManager ().GetStringEntry (
                 "backend", "internal_db_filename").c_str ();
 
-            m_sqlite = new SqliteInterface (filename);
+            sqlite_ = new SqliteInterface (filename);
 
             if (std::filesystem::is_regular_file (filename))
             {
-                if (!m_sqlite->IsValidDatabase ())
+                if (!sqlite_->IsValidDatabase ())
                 {
                     LOGGER->critical ("Database file '" + filename + "' is not valid!");
                     return false;
@@ -179,7 +170,7 @@ namespace items
                 {
                     try
                     {
-                        m_sqlite->BuildDatabase ();
+                        sqlite_->BuildDatabase ();
                     }
                     catch (SqliteInterfaceException& except)
                     {
@@ -198,7 +189,7 @@ namespace items
 
             try
             {
-                m_sqlite->Open ();
+                sqlite_->Open ();
             }
             catch (SqliteInterfaceException& ex)
             {

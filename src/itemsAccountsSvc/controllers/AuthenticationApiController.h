@@ -20,25 +20,84 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
-#include "ServiceContext.h"
+#ifndef CONTROLLERS_AUTHENTICATIONAPICONTROLLER_H_
+#define CONTROLLERS_AUTHENTICATIONAPICONTROLLER_H_
+#include "oatpp/web/server/api/ApiController.hpp"
+#include "oatpp/core/macro/codegen.hpp"
+#include "oatpp/core/macro/component.hpp"
+#include "DTOs/BasicAuthDTOs.h"
+#include "Logger.h"
 #include "SqliteInterface.h"
 
-namespace items
-{
-    namespace accountsSvc
-    {
-        using namespace serviceFramework;
+namespace items { namespace accountsSvc { namespace controllers {
 
-        class BasicAuthAuthenticate : public ApiRoute
+using serviceFramework::ApiResponseStatus;
+using serviceFramework::ApiResponseFactory;
+
+const int BASIC_AUTH_RESPONSE_STATUS_BAD = 0;
+const int BASIC_AUTH_RESPONSE_STATUS_OK = 1;
+
+#include OATPP_CODEGEN_BEGIN(ApiController)
+
+class AuthenticationApiController
+    : public serviceFramework::ApiEndpointController {
+ public:
+    AuthenticationApiController (SqliteInterface *sqlite)
+        : ApiEndpointController(), sqlite_(sqlite) {}
+
+    ENDPOINT("POST", "/basic_auth/authenticate",
+        authenticationBasicAuthenticate,
+       BODY_DTO(Object<BasicAuthenticateRequest>, body)) {
+        auto response = BasicAuthenticateResponse::createShared ();
+
+        if ((!body.get ()->email_address) ||
+            (!body.get ()->password))
         {
-        public:
-            BasicAuthAuthenticate (std::string name, SqliteInterface *sqlite);
+            response->status = BASIC_AUTH_RESPONSE_STATUS_BAD;
+            response->error = "Invalid request format";
+            return ApiResponseFactory::createResponse (
+                ApiResponseStatus::CODE_200, response,
+                m_objectMapper);
+        }
 
-            ApiOutResponsePtr Route (const ApiIncomingReqPtr& request);
+        std::string emailAddress = body.get()->email_address;
+        std::string password = body.get()->password;
 
-        private:
-            SqliteInterface* m_sqlite;
-        };
+        int userId = sqlite_->GetUserIdForUser(
+            emailAddress, LogonType_BASIC);
 
-    }   // namespace accountsSvc
+        if (userId == -1) {
+            response->status = BASIC_AUTH_RESPONSE_STATUS_BAD;
+            response->error = "Invalid username/password";
+            return ApiResponseFactory::createResponse(
+                ApiResponseStatus::CODE_200, response,
+                m_objectMapper);
+        }
+
+        bool authStatus = sqlite_->BasicAuthenticateUser(userId, password);
+
+        if (authStatus) {
+            response->status = BASIC_AUTH_RESPONSE_STATUS_OK;
+            response->error = "";
+        }
+        else {
+            response->status = BASIC_AUTH_RESPONSE_STATUS_BAD;
+            response->error = "Invalid username/password";
+        }
+
+        return ApiResponseFactory::createResponse(
+            ApiResponseStatus::CODE_200, response,
+            m_objectMapper);
+    }
+
+ private:
+    SqliteInterface* sqlite_;
+};
+
+#include OATPP_CODEGEN_END(ApiController)
+
+}   // namespace controllers
+}   // namespace accountsSvc
 }   // namespace items
+
+#endif  // CONTROLLERS_AUTHENTICATIONAPICONTROLLER_H_

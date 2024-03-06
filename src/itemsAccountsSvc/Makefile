@@ -14,7 +14,6 @@ OBJS = AccountsSvc.o \
        ../common/UUID.o \
        Sha256.o \
 	   SqliteInterface.o \
-       routes/BasicAuthAuthenticate.o \
        serviceModules/StartupModule.o
 
 ACCOUNTSSVC = ${ITEMS_BIN_DIR}/accountsSvc

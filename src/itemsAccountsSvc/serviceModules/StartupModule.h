@@ -38,7 +38,7 @@ class StartupModule : public serviceFramework::ServiceModule {
     bool Initialise();
 
  private:
-    SqliteInterface *m_sqlite;
+    SqliteInterface *sqlite_;
 
     bool AddBasicAuthenticationRoutes();
 
