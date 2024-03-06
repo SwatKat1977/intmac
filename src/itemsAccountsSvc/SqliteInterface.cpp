@@ -32,388 +32,351 @@ The following is based on Ogre3D code:
 #include "Sha256.h"
 #include "UUID.h"
 
-namespace items
-{
-    namespace accountsSvc
-    {
-        const char* SQLITE_HEADER = "SQLite format 3\x00";
+namespace items { namespace accountsSvc {
 
-        const std::string CREATE_USER_PROFILE_TABLE =
-            "CREATE TABLE IF NOT EXISTS user_profile ("
-            "id integer PRIMARY KEY,"
-            "email_address text NOT NULL,"
-            "full_name text NOT NULL,"
-            "display_name text NOT NULL,"
-            "insertion_date integer NOT NULL,"
-            "account_status integer DEFAULT 0,"
-            "logon_type integer DEFAULT 0 NOT NULL)";
+const char* SQLITE_HEADER = "SQLite format 3\x00";
 
-        const std::string CREATE_USER_AUTH_DETAILS_TABLE =
-            "CREATE TABLE IF NOT EXISTS user_auth_details ("
-            "id integer PRIMARY KEY,"
-            "password text NOT NULL,"
-            "password_salt text NOT NULL,"
-            "user_id integer NOT NULL,"
-            "FOREIGN KEY (user_id) REFERENCES user_profile (id)"
-            ")";
+const char CREATE_USER_PROFILE_TABLE[] =
+    "CREATE TABLE IF NOT EXISTS user_profile ("
+    "id integer PRIMARY KEY,"
+    "email_address text NOT NULL,"
+    "full_name text NOT NULL,"
+    "display_name text NOT NULL,"
+    "insertion_date integer NOT NULL,"
+    "account_status integer DEFAULT 0,"
+    "logon_type integer DEFAULT 0 NOT NULL)";
 
-        std::map<std::string, std::string> DEFAULT_ADMIN_USER = {
-            { "email_address", "admin@localhost" },
-            { "full_name", "Local Admin" },
-            { "display_name", "Local Admin" },
-            { "account_status", std::to_string (AccountStatus_ACTIVE) },
-            { "logon_type", std::to_string (LogonType_BASIC) }
-        };
+const char CREATE_USER_AUTH_DETAILS_TABLE[] =
+    "CREATE TABLE IF NOT EXISTS user_auth_details ("
+    "id integer PRIMARY KEY,"
+    "password text NOT NULL,"
+    "password_salt text NOT NULL,"
+    "user_id integer NOT NULL,"
+    "FOREIGN KEY (user_id) REFERENCES user_profile (id)"
+    ")";
 
-        const std::string QUERY_GET_USERID_FOR_LOGIN =
-            "SELECT id, account_status FROM user_profile "
-            "WHERE email_address = ? AND logon_type = ?";
+std::map<std::string, std::string> DEFAULT_ADMIN_USER = {
+    { "email_address", "admin@localhost" },
+    { "full_name", "Local Admin" },
+    { "display_name", "Local Admin" },
+    { "account_status", std::to_string(AccountStatus_ACTIVE) },
+    { "logon_type", std::to_string(LogonType_BASIC) }
+};
 
-        const std::string QUERY_BASIC_AUTHENTICATE_USER =
-            "SELECT password, password_salt FROM user_auth_details "
-            "WHERE user_id = ?";
+const char QUERY_GET_USERID_FOR_LOGIN[] =
+    "SELECT id, account_status FROM user_profile "
+    "WHERE email_address = ? AND logon_type = ?";
 
-        SqliteInterface::SqliteInterface (std::string dbFilename) : m_connection (nullptr),
-            m_dbFilename (dbFilename), m_isConnected (false)
-        {
+const char QUERY_BASIC_AUTHENTICATE_USER[] =
+    "SELECT password, password_salt FROM user_auth_details "
+    "WHERE user_id = ?";
+
+SqliteInterface::SqliteInterface(std::string dbFilename)
+    : m_connection(nullptr), m_dbFilename(dbFilename),
+      m_isConnected(false) {}
+
+SqliteInterface::~SqliteInterface() {
+    LOGGER->info("Cleaning up SQLite interface...");
+    Close();
+}
+
+bool SqliteInterface::IsValidDatabase() {
+    bool status = false;
+
+    std::string filepath = { m_dbFilename };
+
+    // Verify if the database file exists and is over 100 bytes as that
+    // is the size of the Sqlite database header.
+    if (std::filesystem::is_regular_file(filepath) &&
+        std::filesystem::file_size(filepath) > 100) {
+        char bufferBytes[100] = { 0 };
+
+        FILE* fp = fopen(m_dbFilename.c_str(), "rb");
+        if (!fp) return false;
+
+        fread(bufferBytes, 100, 1, fp);
+
+        if (strcmp(SQLITE_HEADER, bufferBytes) == 0) {
+            status = true;
         }
 
-        SqliteInterface::~SqliteInterface ()
-        {
-            LOGGER->info ("Cleaning up SQLite interface...");
-            Close ();
+        fclose(fp);
+    }
+
+    return status;
+}
+
+void SqliteInterface::BuildDatabase() {
+    std::string filepath = { m_dbFilename };
+    if (std::filesystem::is_regular_file(filepath)) {
+        throw SqliteInterfaceException(
+            "Database '" + m_dbFilename + "' already exists!");
+    }
+
+    LOGGER->info("Building database...");
+
+    try {
+        int openStatus = sqlite3_open(m_dbFilename.c_str(),
+                                      &m_connection);
+        if (openStatus) {
+            std::string except = "Error opening DB : " +
+                std::string(sqlite3_errmsg(m_connection));
+            throw SqliteInterfaceException(except);
         }
 
-        bool SqliteInterface::IsValidDatabase ()
-        {
-            bool status = false;
+        LOGGER->info("-> Creating user_profile table");
+        CreateTable(CREATE_USER_PROFILE_TABLE, "user_profile");
 
-            std::string filepath = { m_dbFilename };
+        LOGGER->info("-> Creating user_auth_details table");
+        CreateTable(CREATE_USER_AUTH_DETAILS_TABLE,
+            "user_auth_details");
 
-            // Verify if the database file exists and is over 100 bytes as that
-            // is the size of the Sqlite database header.
-            if (std::filesystem::is_regular_file (filepath) &&
-                std::filesystem::file_size (filepath) > 100)
-            {
-                char bufferBytes[100] = { 0 };
+        std::string adminPassword = common::UUID::New().ToString();
+        std::string adminPasswordSalt = common::UUID::New().ToString();
 
-                FILE* fp = fopen (m_dbFilename.c_str (), "rb");
-                if (!fp) return false;
+        LOGGER->info("-> Creating admin with password '{0}'",
+            adminPassword);
 
-                fread (bufferBytes, 100, 1, fp);
+        int userId = InsertUserProfile(
+            DEFAULT_ADMIN_USER["email_address"],
+            DEFAULT_ADMIN_USER["full_name"],
+            DEFAULT_ADMIN_USER["display_name"],
+            atoi(DEFAULT_ADMIN_USER["account_status"].c_str()),
+            atoi(DEFAULT_ADMIN_USER["logon_type"].c_str()));
 
-                if (strcmp (SQLITE_HEADER, bufferBytes) == 0)
-                {
-                    status = true;
-                }
+        InsertBasicAuthEntry(
+            userId,
+            adminPassword,
+            adminPasswordSalt);
 
-                fclose (fp);
-            }
+        LOGGER->info("Database built successfully...");
+    }
+    catch (SqliteInterfaceException &interface_except) {
+        throw;
+    }
 
-            return status;
+    Close();
+}
+
+void SqliteInterface::Open() {
+    if (m_connection) {
+        throw SqliteInterfaceException("Database is already open");
+    }
+
+    int openStatus = sqlite3_open(m_dbFilename.c_str(), &m_connection);
+    if (openStatus) {
+        std::string except = "Error opening DB : " +
+            std::string(sqlite3_errmsg(m_connection));
+        throw SqliteInterfaceException(except);
+    }
+}
+
+void SqliteInterface::Close() {
+    if (m_connection) {
+        sqlite3_close(m_connection);
+        m_connection = nullptr;
+    }
+}
+
+void SqliteInterface::CreateTable(
+    std::string tableSchema,
+    std::string tableName) {
+    char* errMsg = 0;
+
+    int result = sqlite3_exec(m_connection,
+        tableSchema.c_str(),
+        nullptr,
+        0,
+        &errMsg);
+    if (result != SQLITE_OK) {
+        std::string exceptStr = "Create table failure : " +
+            std::string(errMsg);
+        sqlite3_free(errMsg);
+        throw SqliteInterfaceException(exceptStr);
+    }
+}
+
+int SqliteInterface::InsertUserProfile(std::string emailAddress,
+    std::string fullName,
+    std::string displayName,
+    int accountStatus,
+    int logonType) {
+    std::stringstream query;
+    query << "INSERT INTO user_profile "
+        << "(email_address, full_name, display_name, insertion_date,"
+        << " account_status, logon_type) "
+        << "VALUES("
+        << "'" << emailAddress << "',"
+        << "'" << fullName << "',"
+        << "'" << displayName << "', "
+        << "0, "
+        << accountStatus << ", "
+        << logonType << ")";
+
+    char* errMsg = 0;
+
+    int result = sqlite3_exec(m_connection,
+        query.str().c_str(),
+        nullptr,
+        0,
+        &errMsg);
+    if (result != SQLITE_OK) {
+        std::string exceptStr = "Unable to add user profile : " +
+            std::string(errMsg);
+        sqlite3_free(errMsg);
+        throw SqliteInterfaceException(exceptStr);
+    }
+
+    return static_cast<int>(sqlite3_last_insert_rowid(m_connection));
+}
+
+void SqliteInterface::InsertBasicAuthEntry(int userId,
+    std::string password,
+    std::string passwordSalt) {
+    std::string toHash = password + passwordSalt;
+    std::string passwordHash = GenerateSha256(toHash);
+
+    std::stringstream query;
+    query << "INSERT INTO user_auth_details (password, password_salt, "
+        << "user_id) "
+        << "VALUES('"
+        << passwordHash << "', '"
+        << passwordSalt << "', "
+        << userId << ")";
+
+    char* errMsg = 0;
+
+    int result = sqlite3_exec(m_connection,
+        query.str().c_str(),
+        nullptr,
+        0,
+        &errMsg);
+    if (result != SQLITE_OK) {
+        std::string exceptStr = "Unable to add user auth details : " +
+            std::string(errMsg);
+        sqlite3_free(errMsg);
+        throw SqliteInterfaceException(exceptStr);
+    }
+}
+
+int SqliteInterface::GetUserIdForUser(std::string emailAddress,
+    int logonType) {
+    sqlite3_stmt* stmt = 0;
+
+    int prepareStatus = sqlite3_prepare_v2(
+        m_connection,
+        QUERY_GET_USERID_FOR_LOGIN,
+        strlen(QUERY_GET_USERID_FOR_LOGIN),
+        &stmt,
+        NULL);
+
+    if (prepareStatus != SQLITE_OK) {
+        LOGGER->critical("GetUserIdForUser SQL statement threw"
+            "error on prepare stage : {0}",
+            sqlite3_errmsg(m_connection));
+        return -1;
+    }
+
+    sqlite3_bind_text(
+        stmt,
+        1,
+        emailAddress.c_str(),
+        static_cast<int>(emailAddress.size()),
+        SQLITE_STATIC);
+
+    sqlite3_bind_int(stmt, 2, logonType);
+
+    int stepStatus = 0;
+    int queryCount = 0;
+    int userId = -1;
+
+    while ((stepStatus = sqlite3_step(stmt)) == SQLITE_ROW) {
+        queryCount++;
+
+        if (queryCount > 1) {
+            throw SqliteInterfaceException("Duplicate entries");
         }
 
-        void SqliteInterface::BuildDatabase ()
-        {
-            std::string filepath = { m_dbFilename };
-            if (std::filesystem::is_regular_file (filepath))
-            {
-                throw SqliteInterfaceException (
-                    "Database '" + m_dbFilename + "' already exists!");
-            }
+        userId = sqlite3_column_int(stmt, 0);
+        int accountStatus = sqlite3_column_int(stmt, 1);
 
-            LOGGER->info ("Building database...");
+        if (accountStatus != AccountStatus_ACTIVE) {
+            throw SqliteInterfaceException("Account not active");
+        }
+    }
 
-            try
-            {
-                int openStatus = sqlite3_open (m_dbFilename.c_str (), &m_connection);
-                if (openStatus)
-                {
-                    std::string except = "Error opening DB : " +
-                        std::string (sqlite3_errmsg (m_connection));
-                    throw SqliteInterfaceException (except);
-                }
+    if (stepStatus != SQLITE_DONE) {
+        throw SqliteInterfaceException(
+            std::string("SqliteInterface::GetUserIdForUser threw ") +
+            + "exception " + sqlite3_errmsg(m_connection));
+    }
 
-                LOGGER->info ("-> Creating user_profile table");
-                CreateTable (CREATE_USER_PROFILE_TABLE, "user_profile");
+    sqlite3_finalize(stmt);
 
-                LOGGER->info ("-> Creating user_auth_details table");
-                CreateTable (CREATE_USER_AUTH_DETAILS_TABLE,
-                    "user_auth_details");
+    return userId;
+}
 
-                std::string adminPassword = common::UUID::New ().ToString ();
-                std::string adminPasswordSalt = common::UUID::New ().ToString ();
+bool SqliteInterface::BasicAuthenticateUser(int userId,
+                                            std::string password) {
+    bool status = false;
+    sqlite3_stmt* stmt = 0;
 
-                LOGGER->info ("-> Creating admin with password '{0}'",
-                    adminPassword);
+    int prepareStatus = sqlite3_prepare_v2(
+        m_connection,
+        QUERY_BASIC_AUTHENTICATE_USER,
+        strlen(QUERY_BASIC_AUTHENTICATE_USER),
+        &stmt,
+        NULL);
 
-                int userId = InsertUserProfile (
-                    DEFAULT_ADMIN_USER["email_address"],
-                    DEFAULT_ADMIN_USER["full_name"],
-                    DEFAULT_ADMIN_USER["display_name"],
-                    atoi (DEFAULT_ADMIN_USER["account_status"].c_str ()),
-                    atoi (DEFAULT_ADMIN_USER["logon_type"].c_str ())
-                );
+    if (prepareStatus != SQLITE_OK) {
+        LOGGER->critical("BasicAuthenticateUser SQL statement threw"
+            "error on prepare stage : {0}",
+            sqlite3_errmsg(m_connection));
+        return false;
+    }
 
-                InsertBasicAuthEntry (
-                    userId,
-                    adminPassword,
-                    adminPasswordSalt
-                );
+    sqlite3_bind_int(stmt, 1, userId);
 
-                LOGGER->info ("Database built successfully...");
-            }
-            catch (SqliteInterfaceException &interface_except)
-            {
-                throw;
-            }
+    int stepStatus = 0;
+    int queryCount = 0;
 
-            Close ();
+    while ((stepStatus = sqlite3_step(stmt)) == SQLITE_ROW) {
+        queryCount++;
+
+        if (queryCount > 1) {
+            throw SqliteInterfaceException("Duplicate entries");
         }
 
-        void SqliteInterface::Open ()
-        {
-            if (m_connection)
-            {
-                throw SqliteInterfaceException ("Database is already open");
-            }
+        std::string recordPassword = (char *)sqlite3_column_text(   // NOLINT
+            stmt, 0);
+        std::string recordPasswordSalt = (char *)sqlite3_column_text( // NOLINT
+            stmt, 1);
 
-            int openStatus = sqlite3_open (m_dbFilename.c_str (), &m_connection);
-            if (openStatus)
-            {
-                std::string except = "Error opening DB : " +
-                    std::string (sqlite3_errmsg (m_connection));
-                throw SqliteInterfaceException (except);
-            }
+        // Neither should be null, but just in case...
+        if (recordPassword.empty() || recordPasswordSalt.empty()) {
+            break;
         }
 
-        void SqliteInterface::Close ()
-        {
-            if (m_connection)
-            {
-                sqlite3_close (m_connection);
-                m_connection = nullptr;
-            }
+        std::string hashStr = std::string(password) +
+            std::string(recordPasswordSalt);
+        std::string passwordHash = GenerateSha256(hashStr);
+
+        if (passwordHash == recordPassword) {
+            status = true;
         }
+    }
 
-        void SqliteInterface::CreateTable (
-            std::string tableSchema,
-            std::string tableName)
-        {
-            char* errMsg = 0;
+    if (stepStatus != SQLITE_DONE) {
+        LOGGER->critical(
+            "SqliteInterface::BasicAuthenticateUser threw {0}",
+            sqlite3_errmsg(m_connection));
+        status = false;
+    }
 
-            int result = sqlite3_exec (m_connection,
-                tableSchema.c_str (),
-                nullptr,
-                0,
-                &errMsg);
-            if (result != SQLITE_OK)
-            {
-                std::string exceptStr = "Create table failure : " +
-                    std::string (errMsg);
-                sqlite3_free (errMsg);
-                throw SqliteInterfaceException (exceptStr);
-            }
-        }
+    sqlite3_finalize(stmt);
 
-        int SqliteInterface::InsertUserProfile (std::string emailAddress,
-            std::string fullName,
-            std::string displayName,
-            int accountStatus,
-            int logonType)
-        {
-            std::stringstream query;
-            query << "INSERT INTO user_profile "
-                << "(email_address, full_name, display_name, insertion_date,"
-                << " account_status, logon_type) "
-                << "VALUES("
-                << "'" << emailAddress << "',"
-                << "'" << fullName << "',"
-                << "'" << displayName << "', "
-                << "0, "
-                << accountStatus << ", "
-                << logonType << ")";
-
-            char* errMsg = 0;
-
-            int result = sqlite3_exec (m_connection,
-                query.str ().c_str (),
-                nullptr,
-                0,
-                &errMsg);
-            if (result != SQLITE_OK)
-            {
-                std::string exceptStr = "Unable to add user profile : " +
-                    std::string (errMsg);
-                sqlite3_free (errMsg);
-                throw SqliteInterfaceException (exceptStr);
-            }
-
-            return (int)sqlite3_last_insert_rowid (m_connection);
-        }
-
-        void SqliteInterface::InsertBasicAuthEntry (int userId,
-            std::string password,
-            std::string passwordSalt)
-        {
-            std::string toHash = password + passwordSalt;
-            std::string passwordHash = GenerateSha256 (toHash);
-
-            std::stringstream query;
-            query << "INSERT INTO user_auth_details (password, password_salt, "
-                << "user_id) "
-                << "VALUES('"
-                << passwordHash << "', '"
-                << passwordSalt << "', "
-                << userId << ")";
-
-            char* errMsg = 0;
-
-            int result = sqlite3_exec (m_connection,
-                query.str ().c_str (),
-                nullptr,
-                0,
-                &errMsg);
-            if (result != SQLITE_OK)
-            {
-                std::string exceptStr = "Unable to add user auth details : " +
-                    std::string (errMsg);
-                sqlite3_free (errMsg);
-                throw SqliteInterfaceException (exceptStr);
-            }
-        }
-
-        int SqliteInterface::GetUserIdForUser (std::string emailAddress,
-            int logonType)
-        {
-            sqlite3_stmt* stmt = 0;
-
-            int prepareStatus = sqlite3_prepare_v2 (
-                m_connection,
-                QUERY_GET_USERID_FOR_LOGIN.c_str (),
-                (int)QUERY_GET_USERID_FOR_LOGIN.size (),
-                &stmt,
-                NULL);
-
-            if (prepareStatus != SQLITE_OK)
-            {
-                LOGGER->critical ("GetUserIdForUser SQL statement threw"
-                    "error on prepare stage : {0}",
-                    sqlite3_errmsg (m_connection));
-                return -1;
-            }
-
-            sqlite3_bind_text (
-                stmt,
-                1,
-                emailAddress.c_str (),
-                (int)emailAddress.size (),
-                SQLITE_STATIC);
-
-            sqlite3_bind_int (stmt, 2, logonType);
-
-            int stepStatus = 0;
-            int queryCount = 0;
-            int userId = -1;
-
-            while ((stepStatus = sqlite3_step (stmt)) == SQLITE_ROW)
-            {
-                queryCount++;
-
-                if (queryCount > 1)
-                {
-                    throw SqliteInterfaceException ("Duplicate entries");
-                }
-
-                userId = sqlite3_column_int (stmt, 0);
-                int accountStatus = sqlite3_column_int (stmt, 1);
-
-                if (accountStatus != AccountStatus_ACTIVE)
-                {
-                    throw SqliteInterfaceException ("Account not active");
-
-                }
-            }
-
-            if (stepStatus != SQLITE_DONE)
-            {
-                throw SqliteInterfaceException(
-                    std::string("SqliteInterface::GetUserIdForUser threw ") +
-                    + "exception " + sqlite3_errmsg (m_connection));
-            }
-
-            sqlite3_finalize (stmt);
-
-            return userId;
-        }
-
-        bool SqliteInterface::BasicAuthenticateUser (
-            int userId,
-            std::string password)
-        {
-            bool status = false;
-            sqlite3_stmt* stmt = 0;
-
-            int prepareStatus = sqlite3_prepare_v2 (
-                m_connection,
-                QUERY_BASIC_AUTHENTICATE_USER.c_str (),
-                (int)QUERY_BASIC_AUTHENTICATE_USER.size (),
-                &stmt,
-                NULL);
-
-            if (prepareStatus != SQLITE_OK)
-            {
-                LOGGER->critical ("BasicAuthenticateUser SQL statement threw"
-                    "error on prepare stage : {0}",
-                    sqlite3_errmsg (m_connection));
-                return false;
-            }
-
-            sqlite3_bind_int (stmt, 1, userId);
-
-            int stepStatus = 0;
-            int queryCount = 0;
-
-            while ((stepStatus = sqlite3_step (stmt)) == SQLITE_ROW)
-            {
-                queryCount++;
-
-                if (queryCount > 1)
-                {
-                    throw SqliteInterfaceException ("Duplicate entries");
-                }
-
-                std::string recordPassword = (char *)sqlite3_column_text (stmt, 0);
-                std::string recordPasswordSalt = (char *)sqlite3_column_text (stmt, 1);
-
-                // Neither should be null, but just in case...
-                if (recordPassword.empty () || recordPasswordSalt.empty ())
-                {
-                    break;
-                }
-
-                std::string hashStr = std::string (password) +
-                    std::string (recordPasswordSalt);
-                std::string passwordHash = GenerateSha256 (hashStr);
-
-                if (passwordHash == recordPassword)
-                {
-                    status = true;
-                }
-            }
-
-            if (stepStatus != SQLITE_DONE)
-            {
-                LOGGER->critical(
-                    "SqliteInterface::BasicAuthenticateUser threw exception {0}",
-                    sqlite3_errmsg (m_connection));
-                status = false;
-            }
-
-            sqlite3_finalize (stmt);
-
-            return status;
-        }
+    return status;
+}
 
     }   // namespace accountsSvc
 }   // namespace items

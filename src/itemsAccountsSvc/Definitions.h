@@ -20,15 +20,17 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
+#ifndef DEFINITIONS_H_
+#define DEFINITIONS_H_
+#include <string>
 #include "ServiceContext.h"
 
-namespace items
-{
-    namespace accountsSvc
-    {
+namespace items { namespace accountsSvc {
 
-        const std::string SERVICE_PROVIDER_API_NAME = "api";
-        const int SERVICE_PROVIDER_API_PORT = 8000;
+const char SERVICE_PROVIDER_API_NAME[] = "api";
+const int SERVICE_PROVIDER_API_PORT = 8000;
 
-    }   // namespace accountsSvc
+}   // namespace accountsSvc
 }   // namespace items
+
+#endif  // DEFINITIONS_H_

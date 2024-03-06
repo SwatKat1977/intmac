@@ -23,36 +23,31 @@ The following is based on Ogre3D code:
 * GetEnv from os-int.h
 -----------------------------------------------------------------------------
 */
-#ifndef STARTUPMODULE_H
-#define STARTUPMODULE_H
+#ifndef SERVICEMODULES_STARTUPMODULE_H_
+#define SERVICEMODULES_STARTUPMODULE_H_
+#include <string>
 #include "ServiceContext.h"
 #include "SqliteInterface.h"
 
-namespace items
-{
-    namespace accountsSvc
-    {
-        using namespace serviceFramework;
+namespace items { namespace accountsSvc {
 
-        class StartupModule : public ServiceModule
-        {
-        public:
+class StartupModule : public serviceFramework::ServiceModule {
+ public:
+    explicit StartupModule(std::string name);
 
-            StartupModule (std::string name);
+    bool Initialise();
 
-            bool Initialise ();
+ private:
+    SqliteInterface *sqlite_;
 
-        private:
-            SqliteInterface *m_sqlite;
+    bool AddBasicAuthenticationRoutes();
 
-            bool AddBasicAuthenticationRoutes ();
+    bool AddServiceProviders();
 
-            bool AddServiceProviders ();
+    bool OpenInternalDatabase();
+};
 
-            bool OpenInternalDatabase ();
-        };
-
-    }   // namespace accountsSvc
+}   // namespace accountsSvc
 }   // namespace items
 
-#endif
+#endif  // SERVICEMODULES_STARTUPMODULE_H_
