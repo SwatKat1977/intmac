@@ -25,34 +25,35 @@ Copyright 2014-2024 Integrated Test Management Suite Development Team
 #include "ConfigurationLayout.h"
 #include "ServiceContext.h"
 
-using namespace items::cmsSvc;
-using namespace items::serviceFramework;
+// using namespace items::cmsSvc;
+// using namespace items::serviceFramework;
 
-const std::string SERVICE_CONTEXT_NAME = "Items CMA Svc";
+using items::serviceFramework::ServiceContext;
+using items::serviceFramework::SectionsMap;
 
-int main ()
-{
-    auto configFile = GetEnv ("ITEMS_CMS_SVC_CONFIG_FILE");
-    auto configFileRequired = GetEnv ("ITEMS_CMS_SVC_CONFIG_FILE_REQUIRED");
+const char SERVICE_CONTEXT_NAME[] = "Items CMA Svc";
 
-    bool fileIsRequired = true ? (!configFileRequired.empty () &&
+int main() {
+    auto configFile = GetEnv("ITEMS_CMS_SVC_CONFIG_FILE");
+    auto configFileRequired = GetEnv("ITEMS_CMS_SVC_CONFIG_FILE_REQUIRED");
+
+    bool fileIsRequired = true ? (!configFileRequired.empty() &&
         configFileRequired == "YES")
         : false;
 
-    if (configFile.empty () && fileIsRequired)
-    {
+    if (configFile.empty() && fileIsRequired) {
         std::cout << "[FATAL ERROR] Configuration file missing!" << std::endl;
         return EXIT_FAILURE;
     }
 
-    auto context = new ServiceContext (SERVICE_CONTEXT_NAME);
+    auto context = new ServiceContext(SERVICE_CONTEXT_NAME);
 
-    if (!context->Initialise ((SectionsMap *) & CONFIGURATION_LAYOUT_MAP, configFile))
-    {
+    if (!context->Initialise((
+        SectionsMap *) &items::cmsSvc::CONFIGURATION_LAYOUT_MAP, configFile)) {
         return EXIT_FAILURE;
     }
 
-    context->Execute ();
+    context->Execute();
 
     return EXIT_SUCCESS;
 }

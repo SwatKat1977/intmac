@@ -20,20 +20,18 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
-#ifndef CONFIGURATIONLAYOUT_H
-#define CONFIGURATIONLAYOUT_H
+#ifndef CONFIGURATIONLAYOUT_H_
+#define CONFIGURATIONLAYOUT_H_
 #include "ConfigSetup.h"
 #include "LoggerSettings.h"
 
 namespace items { namespace cmsSvc {
 
-        using namespace serviceFramework;
+serviceFramework::SectionsMap CONFIGURATION_LAYOUT_MAP = {
+    { serviceFramework::LOGGING_SECTION, serviceFramework::LoggerSettings }
+};
 
-        SectionsMap CONFIGURATION_LAYOUT_MAP =
-        {
-            { LOGGING_SECTION, LoggerSettings }
-        };
+}   // namespace cmsSvc
+}   // namespace items
 
-} }   // namespace items::cmsSvc
-
-#endif
+#endif  // CONFIGURATIONLAYOUT_H_
