@@ -20,8 +20,8 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
-#ifndef CONFIGURATIONLAYOUT_H
-#define CONFIGURATIONLAYOUT_H
+#ifndef CONFIGURATIONLAYOUT_H_
+#define CONFIGURATIONLAYOUT_H_
 #include "ConfigSetup.h"
 #include "LoggerSettings.h"
 
@@ -34,6 +34,7 @@ namespace items { namespace cmsSvc {
             { LOGGING_SECTION, LoggerSettings }
         };
 
-} }   // namespace items::cmsSvc
+}   // namespace cmsSvc
+}   // namespace items
 
-#endif
+#endif  // CONFIGURATIONLAYOUT_H_
