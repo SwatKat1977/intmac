@@ -347,9 +347,9 @@ bool SqliteInterface::BasicAuthenticateUser(int userId,
             throw SqliteInterfaceException("Duplicate entries");
         }
 
-        std::string recordPassword = (char *)sqlite3_column_text(
+        std::string recordPassword = (char *)sqlite3_column_text(   // NOLINT
             stmt, 0);
-        std::string recordPasswordSalt = (char *)sqlite3_column_text(
+        std::string recordPasswordSalt = (char *)sqlite3_column_text( // NOLINT
             stmt, 1);
 
         // Neither should be null, but just in case...

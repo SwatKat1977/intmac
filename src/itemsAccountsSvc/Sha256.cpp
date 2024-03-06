@@ -28,8 +28,8 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 #define SHA2_SHFR(x, n)    (x >> n)
 #define SHA2_ROTR(x, n)   ((x >> n) | (x << ((sizeof(x) << 3) - n)))
 #define SHA2_ROTL(x, n)   ((x << n) | (x >> ((sizeof(x) << 3) - n)))
-#define SHA2_CH(x, y, z)  ((x & y) ^ (~x & z))
-#define SHA2_MAJ(x, y, z) ((x & y) ^ (x & z) ^ (y & z))
+#define SHA2_CH(x, y, z)  ((x & y) ^ (~x & z))  // NOLINT
+#define SHA2_MAJ(x, y, z) ((x & y) ^ (x & z) ^ (y & z)) // NOLINT
 #define SHA256_F1(x) (SHA2_ROTR(x,  2) ^ SHA2_ROTR(x, 13) ^ SHA2_ROTR(x, 22))
 #define SHA256_F2(x) (SHA2_ROTR(x,  6) ^ SHA2_ROTR(x, 11) ^ SHA2_ROTR(x, 25))
 #define SHA256_F3(x) (SHA2_ROTR(x,  7) ^ SHA2_ROTR(x, 18) ^ SHA2_SHFR(x,  3))
@@ -43,10 +43,10 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 }
 #define SHA2_PACK32(str, x)                   \
 {                                             \
-    *(x) =   ((uint32) *((str) + 3))          \
-           | ((uint32) *((str) + 2) <<  8)    \
-           | ((uint32) *((str) + 1) << 16)    \
-           | ((uint32) *((str) + 0) << 24);   \
+    *(x) =   (static_cast<uint32>(*((str) + 3)))        \
+           | (static_cast<uint32>(*((str) + 2)) <<  8)  \
+           | (static_cast<uint32>(*((str) + 1)) << 16)  \
+           | (static_cast<uint32>(*((str) + 0)) << 24); \
 }
 
 namespace items { namespace accountsSvc {
@@ -77,7 +77,7 @@ void SHA256::transform(const unsigned char* message, unsigned int block_nb) {
     int i;
     int j;
 
-    for (i = 0; i < (int)block_nb; i++) {
+    for (i = 0; i < static_cast<int>(block_nb); i++) {
         sub_block = message + (i << 6);
         for (j = 0; j < 16; j++) {
             SHA2_PACK32(&sub_block[j << 2], &w[j]);

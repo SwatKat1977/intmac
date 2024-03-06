@@ -22,10 +22,10 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 */
 #ifndef SQLITEINTERFACE_H_
 #define SQLITEINTERFACE_H_
+#include <sqlite3.h>
 #include <exception>
 #include <map>
 #include <string>
-#include <sqlite3.h>
 
 namespace items { namespace accountsSvc {
 
