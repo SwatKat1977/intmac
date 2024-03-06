@@ -27,12 +27,9 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 
 namespace items { namespace cmsSvc {
 
-        using namespace serviceFramework;
-
-        SectionsMap CONFIGURATION_LAYOUT_MAP =
-        {
-            { LOGGING_SECTION, LoggerSettings }
-        };
+serviceFramework::SectionsMap CONFIGURATION_LAYOUT_MAP = {
+    { serviceFramework::LOGGING_SECTION, serviceFramework::LoggerSettings }
+};
 
 }   // namespace cmsSvc
 }   // namespace items
