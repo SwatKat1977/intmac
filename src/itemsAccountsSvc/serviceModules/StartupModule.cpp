@@ -24,6 +24,7 @@ The following is based on Ogre3D code:
 -----------------------------------------------------------------------------
 */
 #include <filesystem>
+#include <memory>
 #include "spdlog/spdlog.h"
 #include "Definitions.h"
 #include "controllers/AuthenticationApiController.h"
@@ -31,81 +32,68 @@ The following is based on Ogre3D code:
 #include "Logger.h"
 #include "Version.h"
 
-const std::string BASIC_AUTH_BASE = "/basic_auth/";
+namespace items { namespace accountsSvc {
 
-// Route : Basic authentication
-const std::string BASIC_AUTHENTICATE_ROUTE = BASIC_AUTH_BASE + "authenticate";
-const std::string BASIC_AUTHENTICATE_ROUTE_NAME = "basicAuth_auth";
+using serviceFramework::ApiResponseStatus;
 
-namespace items { namespace accountsSvc
-    {
-        using namespace serviceFramework;
-        using serviceFramework::ApiResponseStatus;
+        StartupModule::StartupModule(std::string name)
+            : ServiceModule(name), sqlite_(nullptr) { }
 
-        StartupModule::StartupModule (std::string name)
-            : ServiceModule (name), sqlite_(nullptr)
-        {
-        }
-
-        bool StartupModule::Initialise ()
-        {
-            LOGGER->info ("ITEMS Accounts Microservice V{0}.{1}.{2}-{3}",
+        bool StartupModule::Initialise() {
+            LOGGER->info("ITEMS Accounts Microservice V{0}.{1}.{2}-{3}",
                 common::VERSION_MAJOR, common::VERSION_MINOR,
                 common::VERSION_PATCH, common::VERSION_TAG);
-            LOGGER->info (common::COPYRIGHT_TEXT);
-            LOGGER->info (common::LICENSE_TEXT);
+            LOGGER->info(common::COPYRIGHT_TEXT);
+            LOGGER->info(common::LICENSE_TEXT);
 
-            LOGGER->info ("|=====================|");
-            LOGGER->info ("|=== Configuration ===|");
-            LOGGER->info ("|=====================|");
+            LOGGER->info("|=====================|");
+            LOGGER->info("|=== Configuration ===|");
+            LOGGER->info("|=====================|");
 
-            LOGGER->info ("[LOGGING]");
-            LOGGER->info ("-> Log Level            : {0}",
-                m_context->GetConfigManager ().GetStringEntry (
-                    "logging", "log_level").c_str ());
-            LOGGER->info ("-> Log To Console       : {0}",
-                m_context->GetConfigManager ().GetStringEntry (
-                    "logging", "log_to_console").c_str ());
-            LOGGER->info ("-> Log Filename         : {0}",
-                m_context->GetConfigManager ().GetStringEntry (
-                    "logging", "log_filename").c_str ());
-            LOGGER->info ("-> Max File Size        : {0:d}",
-                m_context->GetConfigManager ().GetIntEntry (
+            LOGGER->info("[LOGGING]");
+            LOGGER->info("-> Log Level            : {0}",
+                m_context->GetConfigManager().GetStringEntry(
+                    "logging", "log_level").c_str());
+            LOGGER->info("-> Log To Console       : {0}",
+                m_context->GetConfigManager().GetStringEntry(
+                    "logging", "log_to_console").c_str());
+            LOGGER->info("-> Log Filename         : {0}",
+                m_context->GetConfigManager().GetStringEntry(
+                    "logging", "log_filename").c_str());
+            LOGGER->info("-> Max File Size        : {0:d}",
+                m_context->GetConfigManager().GetIntEntry(
                     "logging", "max_file_size"));
-            LOGGER->info ("-> Max File Count       : {0:d}",
-                m_context->GetConfigManager ().GetIntEntry (
+            LOGGER->info("-> Max File Count       : {0:d}",
+                m_context->GetConfigManager().GetIntEntry(
                     "logging", "max_file_count"));
-            LOGGER->info ("-> Log Format           : {0}",
-                m_context->GetConfigManager ().GetStringEntry (
-                    "logging", "log_format").c_str ());
+            LOGGER->info("-> Log Format           : {0}",
+                m_context->GetConfigManager().GetStringEntry(
+                    "logging", "log_format").c_str());
 
-            LOGGER->info ("[BACKEND]");
-            LOGGER->info ("-> DB filename          : {0}",
-                m_context->GetConfigManager ().GetStringEntry (
-                    "backend", "internal_db_filename").c_str ());
-            LOGGER->info ("-> Create DB if missing : {0}",
-                m_context->GetConfigManager ().GetStringEntry (
-                    "backend", "create_db_if_missing").c_str ());
+            LOGGER->info("[BACKEND]");
+            LOGGER->info("-> DB filename          : {0}",
+                m_context->GetConfigManager().GetStringEntry(
+                    "backend", "internal_db_filename").c_str());
+            LOGGER->info("-> Create DB if missing : {0}",
+                m_context->GetConfigManager().GetStringEntry(
+                    "backend", "create_db_if_missing").c_str());
 
-            if (!OpenInternalDatabase ())
-            {
+            if (!OpenInternalDatabase()) {
                 return false;
             }
 
-            if (!AddServiceProviders ())
-            {
+            if (!AddServiceProviders()) {
                 return false;
             }
 
-            if (!AddBasicAuthenticationRoutes ())
-            {
+            if (!AddBasicAuthenticationRoutes()) {
                 return false;
             }
 
             return true;
         }
 
-        bool StartupModule::AddBasicAuthenticationRoutes () {
+        bool StartupModule::AddBasicAuthenticationRoutes() {
             try {
                 auto controller = std::make_shared<
                     controllers::AuthenticationApiController> (sqlite_);
@@ -114,7 +102,7 @@ namespace items { namespace accountsSvc
             }
             catch (std::runtime_error& e) {
                 LOGGER->critical(
-                    "Unable to create authentication api controller, reason {0}",
+                    "Authentication api controller create failed, reason {0}",
                     e.what());
                 return false;
             }
@@ -123,77 +111,65 @@ namespace items { namespace accountsSvc
             return true;
         }
 
-        bool StartupModule::AddServiceProviders ()
-        {
-            try
-            {
-                m_context->AddServiceProvider (
+        bool StartupModule::AddServiceProviders() {
+            try {
+                m_context->AddServiceProvider(
                     SERVICE_PROVIDER_API_NAME,
                     "0.0.0.0",
                     SERVICE_PROVIDER_API_PORT,
-                    SERVICENETWORKTYPE_IPV4);
+                    serviceFramework::SERVICENETWORKTYPE_IPV4);
             }
-            catch (std::runtime_error &e)
-            {
-                LOGGER->critical ("Unable to create service provider '{0}' : {1}",
-                    SERVICE_PROVIDER_API_NAME, e.what ());
+            catch (std::runtime_error &e) {
+                LOGGER->critical(
+                    "Unable to create service provider '{0}' : {1}",
+                    SERVICE_PROVIDER_API_NAME, e.what());
                 return false;
             }
 
             return true;
         }
 
-        bool StartupModule::OpenInternalDatabase ()
-        {
-            LOGGER->info ("Opening internal database...");
+        bool StartupModule::OpenInternalDatabase() {
+            LOGGER->info("Opening internal database...");
 
-            std::string filename = m_context->GetConfigManager ().GetStringEntry (
-                "backend", "internal_db_filename").c_str ();
+            std::string filename = m_context->GetConfigManager()
+                .GetStringEntry("backend", "internal_db_filename").c_str();
 
-            sqlite_ = new SqliteInterface (filename);
+            sqlite_ = new SqliteInterface(filename);
 
-            if (std::filesystem::is_regular_file (filename))
-            {
-                if (!sqlite_->IsValidDatabase ())
-                {
-                    LOGGER->critical ("Database file '" + filename + "' is not valid!");
+            if (std::filesystem::is_regular_file(filename)) {
+                if (!sqlite_->IsValidDatabase()) {
+                    LOGGER->critical(
+                        "Database file '" + filename + "' is not valid!");
                     return false;
                 }
-            }
-            else
-            {
-                std::string createIfMissingStr = m_context->GetConfigManager ().GetStringEntry (
-                    "backend", "create_db_if_missing").c_str ();
-                bool createIfMissing = strcmp (createIfMissingStr.c_str (), "YES") == 0 ? true : false;
+            } else {
+                std::string createIfMissingStr = m_context->GetConfigManager()
+                    .GetStringEntry("backend", "create_db_if_missing").c_str();
+                bool createIfMissing = strcmp(
+                    createIfMissingStr.c_str(), "YES") == 0 ? true : false;
 
-                if (createIfMissing)
-                {
-                    try
-                    {
-                        sqlite_->BuildDatabase ();
+                if (createIfMissing) {
+                    try {
+                        sqlite_->BuildDatabase();
                     }
-                    catch (SqliteInterfaceException& except)
-                    {
-                        LOGGER->critical (except.what ());
+                    catch (SqliteInterfaceException& except) {
+                        LOGGER->critical(except.what());
                         return false;
                     }
-                }
-                else
-                {
-                    LOGGER->critical (
+                } else {
+                    LOGGER->critical(
                         "Database '{0}' doesn't exist and won't get created!",
                         filename);
                     return false;
                 }
             }
 
-            try
-            {
-                sqlite_->Open ();
+            try {
+                sqlite_->Open();
             }
-            catch (SqliteInterfaceException& ex)
-            {
-                LOGGER->critical (ex.what ());
+            catch (SqliteInterfaceException& ex) {
+                LOGGER->critical(ex.what());
                 return false;
             }
 

@@ -22,6 +22,7 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 */
 #ifndef CONTROLLERS_AUTHENTICATIONAPICONTROLLER_H_
 #define CONTROLLERS_AUTHENTICATIONAPICONTROLLER_H_
+#include <string>
 #include "oatpp/web/server/api/ApiController.hpp"
 #include "oatpp/core/macro/codegen.hpp"
 #include "oatpp/core/macro/component.hpp"
@@ -42,17 +43,16 @@ const int BASIC_AUTH_RESPONSE_STATUS_OK = 1;
 class AuthenticationApiController
     : public serviceFramework::ApiEndpointController {
  public:
-    AuthenticationApiController (SqliteInterface *sqlite)
+    explicit AuthenticationApiController(SqliteInterface *sqlite)
         : ApiEndpointController(), sqlite_(sqlite) {}
 
     ENDPOINT("POST", "/basic_auth/authenticate",
         authenticationBasicAuthenticate,
        BODY_DTO(Object<BasicAuthenticateRequest>, body)) {
-        auto response = BasicAuthenticateResponse::createShared ();
+        auto response = BasicAuthenticateResponse::createShared();
 
-        if ((!body.get ()->email_address) ||
-            (!body.get ()->password))
-        {
+        if ((!body.get()->email_address) ||
+            (!body.get()->password)) {
             response->status = BASIC_AUTH_RESPONSE_STATUS_BAD;
             response->error = "Invalid request format";
             return ApiResponseFactory::createResponse (
@@ -79,8 +79,7 @@ class AuthenticationApiController
         if (authStatus) {
             response->status = BASIC_AUTH_RESPONSE_STATUS_OK;
             response->error = "";
-        }
-        else {
+        } else {
             response->status = BASIC_AUTH_RESPONSE_STATUS_BAD;
             response->error = "Invalid username/password";
         }
