@@ -23,11 +23,11 @@ The following is based on Ogre3D code:
 * GetEnv from os-int.h
 -----------------------------------------------------------------------------
 */
-#ifndef PROJECTSDTOS_H
-#define PROJECTSDTOS_H
+#ifndef DTOS_PROJECTSDTOS_H_
+#define DTOS_PROJECTSDTOS_H_
 #include "oatpp/core/macro/codegen.hpp"
 #include "oatpp/network/tcp/server/ConnectionProvider.hpp"
-#include <DTOs/CommonDTOs.h>
+#include "DTOs/CommonDTOs.h"
 
 namespace items { namespace gatewaySvc {
 
@@ -36,27 +36,26 @@ namespace items { namespace gatewaySvc {
 
 #include OATPP_CODEGEN_BEGIN(DTO)
 
-    // Definition of a project DTO for GetProjects response.
-    class ProjectDTO : public oatpp::DTO
-    {
-        DTO_INIT (ProjectDTO, DTO)
+// Definition of a project DTO for GetProjects response.
+class ProjectDTO : public oatpp::DTO {
+    DTO_INIT(ProjectDTO, DTO)
 
-        DTO_FIELD (Int64, id);
-        DTO_FIELD (String, name);
-        DTO_FIELD (String, description);
-    };
+    DTO_FIELD(Int64, id);
+    DTO_FIELD(String, name);
+    DTO_FIELD(String, description);
+};
 
-    // Definition of GetProjects response.
-    class GetProjectsResponseDTO : public oatpp::DTO
-    {
-        DTO_INIT (GetProjectsResponseDTO, DTO)
+// Definition of GetProjects response.
+class GetProjectsResponseDTO : public oatpp::DTO {
+    DTO_INIT(GetProjectsResponseDTO, DTO)
 
-        DTO_FIELD (Object<ResponseListHeaderDTO>, header);
-        DTO_FIELD (List<Object<ProjectDTO>>, projects);
-    };
+    DTO_FIELD(Object<ResponseListHeaderDTO>, header);
+    DTO_FIELD(List<Object<ProjectDTO>>, projects);
+};
 
 #include OATPP_CODEGEN_END(DTO)
 
-} }   // namespace items::gatewaySvc
+}   // namespace gatewaySvc
+}   // namespace items
 
-#endif
+#endif  // DTOS_PROJECTSDTOS_H_

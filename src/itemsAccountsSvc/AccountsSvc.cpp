@@ -28,38 +28,36 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 #include "Platform.h"
 #include "serviceModules/StartupModule.h"
 
-using namespace items::accountsSvc;
-using namespace items::serviceFramework;
+using items::serviceFramework::ServiceContext;
+using items::accountsSvc::CONFIGURATION_LAYOUT_MAP;
+using items::accountsSvc::StartupModule;
 
-const std::string SERVICE_CONTEXT_NAME = "Items Accounts Svc";
+const char SERVICE_CONTEXT_NAME[] = "Items Accounts Svc";
 
-int main ()
-{
-    auto configFile = GetEnv ("ITEMS_ACCOUNTS_SVC_CONFIG_FILE");
-    auto configFileRequired = GetEnv ("ITEMS_ACCOUNTS_SVC_CONFIG_FILE_REQUIRED");
+int main() {
+    auto configFile = GetEnv("ITEMS_ACCOUNTS_SVC_CONFIG_FILE");
+    auto configFileRequired = GetEnv("ITEMS_ACCOUNTS_SVC_CONFIG_FILE_REQUIRED");
 
-    bool fileIsRequired = true ? (!configFileRequired.empty () &&
+    bool fileIsRequired = true ? (!configFileRequired.empty() &&
                                   configFileRequired == "YES")
                                : false;
 
-    if (configFile.empty () && fileIsRequired)
-    {
+    if (configFile.empty() && fileIsRequired) {
         std::cout << "[FATAL ERROR] Configuration file missing!" << std::endl;
         return EXIT_FAILURE;
     }
 
-    StartupModule startupModule = StartupModule ("Startup Module");
+    StartupModule startupModule = StartupModule("Startup Module");
 
-    auto context = new ServiceContext (SERVICE_CONTEXT_NAME);
+    auto context = new ServiceContext(SERVICE_CONTEXT_NAME);
 
-    context->AddServiceModule (&startupModule);
+    context->AddServiceModule(&startupModule);
 
-    if (!context->Initialise (&CONFIGURATION_LAYOUT_MAP, configFile))
-    {
+    if (!context->Initialise(&CONFIGURATION_LAYOUT_MAP, configFile)) {
         return EXIT_FAILURE;
     }
 
-    context->Execute ();
+    context->Execute();
 
     return EXIT_SUCCESS;
 }

@@ -20,51 +20,49 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
-#ifndef CONFIGURATIONLAYOUT_H
-#define CONFIGURATIONLAYOUT_H
+#ifndef CONFIGURATIONLAYOUT_H_
+#define CONFIGURATIONLAYOUT_H_
+#include <string>
 #include "ConfigSetup.h"
 #include "LoggerSettings.h"
 
-namespace items
-{
-    namespace accountsSvc
+namespace items { namespace accountsSvc {
+
+using serviceFramework::CONFIG_ITEM_TYPE_STRING;
+using serviceFramework::ConfigSetupItem;
+
+const char BOOL_YES[] = "YES";
+const char BOOL_NO[] = "NO";
+
+const char SECTION_BACKEND[] = "backend";
+
+const char BACKEND_INTERNAL_DB_FILENAME[] = "internal_db_filename";
+const char BACKEND_CREATE_DB_IF_MISSING[] = "create_db_if_missing";
+
+const char BACKEND_INTERNAL_DB_FILENAME_DEFAULT[] = "accounts_svc.db";
+const char *BACKEND_CREATE_DB_IF_MISSING_DEFAULT = BOOL_NO;
+
+const serviceFramework::SectionList BackendSettings = {
     {
-        using namespace serviceFramework;
+        BACKEND_INTERNAL_DB_FILENAME,
+        ConfigSetupItem(BACKEND_INTERNAL_DB_FILENAME, CONFIG_ITEM_TYPE_STRING)
+                .DefaultValue(BACKEND_INTERNAL_DB_FILENAME_DEFAULT)
+    },
+    {
+        BACKEND_CREATE_DB_IF_MISSING,
+        ConfigSetupItem(BACKEND_CREATE_DB_IF_MISSING, CONFIG_ITEM_TYPE_STRING)
+                .DefaultValue(BOOL_NO)
+                .ValidValues(serviceFramework::StringList{ BOOL_YES, BOOL_NO })
+    }
+};
 
-        const std::string BOOL_YES = "YES";
-        const std::string BOOL_NO = "NO";
+serviceFramework::SectionsMap CONFIGURATION_LAYOUT_MAP = {
+    {serviceFramework::LOGGING_SECTION, serviceFramework::LoggerSettings},
+    {SECTION_BACKEND, BackendSettings }
+};
 
-        const std::string SECTION_BACKEND = "backend";
-
-        const std::string BACKEND_INTERNAL_DB_FILENAME = "internal_db_filename";
-        const std::string BACKEND_CREATE_DB_IF_MISSING = "create_db_if_missing";
-
-        const std::string BACKEND_INTERNAL_DB_FILENAME_DEFAULT = "accounts_svc.db";
-        const std::string BACKEND_CREATE_DB_IF_MISSING_DEFAULT = BOOL_NO;
-
-        const SectionList BackendSettings =
-        {
-            {
-                BACKEND_INTERNAL_DB_FILENAME,
-                ConfigSetupItem (BACKEND_INTERNAL_DB_FILENAME, CONFIG_ITEM_TYPE_STRING)
-                        .DefaultValue (BACKEND_INTERNAL_DB_FILENAME_DEFAULT)
-            },
-            {
-                BACKEND_CREATE_DB_IF_MISSING,
-                ConfigSetupItem (BACKEND_CREATE_DB_IF_MISSING, CONFIG_ITEM_TYPE_STRING)
-                        .DefaultValue (BOOL_NO)
-                        .ValidValues (StringList{ BOOL_YES, BOOL_NO })
-            }
-        };
-
-        SectionsMap CONFIGURATION_LAYOUT_MAP =
-        {
-            {LOGGING_SECTION, LoggerSettings },
-            {SECTION_BACKEND, BackendSettings }
-        };
-
-    }   // namespace accountsSvc
+}   // namespace accountsSvc
 }   // namespace items
 
 
-#endif
+#endif  // CONFIGURATIONLAYOUT_H_

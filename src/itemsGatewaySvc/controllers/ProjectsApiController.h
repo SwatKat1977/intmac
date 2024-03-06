@@ -20,73 +20,71 @@ Copyright 2014-2024 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
+#ifndef CONTROLLERS_PROJECTSAPICONTROLLER_H_
+#define CONTROLLERS_PROJECTSAPICONTROLLER_H_
+#include "oatpp/web/server/api/ApiController.hpp"
+#include "oatpp/core/macro/codegen.hpp"
+#include "oatpp/core/macro/component.hpp"
 #include "Logger.h"
 #include "DTOs/ProjectsDTOs.h"
-#include "routes/ProjectsRoutes.h"
 
-namespace items { namespace gatewaySvc { namespace routes { namespace projects {
+namespace items { namespace gatewaySvc { namespace controllers {
 
-    GetProjects::GetProjects (std::string name) : ApiRoute (name)
-    {
-    }
+#include OATPP_CODEGEN_BEGIN(ApiController)
 
-    ApiOutResponsePtr GetProjects::Route (const ApiIncomingReqPtr& request)
-    {
-        LOGGER->critical ("GetProjects route currently returns a hard-coded list");
-        LOGGER->critical ("GetProjects does not check user, usertoken or auth key - NOT CURRENTLY IMPLEMENTED!!!!");
+class ProjectsApiController : public serviceFramework::ApiEndpointController {
+ public:
+    ProjectsApiController() : ApiEndpointController() { }
 
-        auto name = request->getQueryParameter("name");
-        if (name)
-        {
-            printf("[UNUSED] Project name : %s\n", name->c_str());
-        }
+    ENDPOINT("GET", "projects/get_projects", projectsGetProjects) {
+        LOGGER->critical("get_projects returns a hard-coded list");
+        LOGGER->critical("=> doesn't check user, usertoken or auth key");
+        LOGGER->critical("=> NOT CURRENTLY IMPLEMENTED!!!!");
 
-        auto response = GetProjectsResponseDTO::createShared ();
+        auto response = GetProjectsResponseDTO::createShared();
 
-        response->header = ResponseListHeaderDTO::createShared ();
+        response->header = ResponseListHeaderDTO::createShared();
         // HARD-CODED HEADER FOR NOW!
         response->header->offset = 0;
         response->header->limit = 250;
         response->header->size = 2;
 
-        oatpp::List<oatpp::Object<ProjectDTO>> projectsList ({});
+        oatpp::List<oatpp::Object<ProjectDTO>> projectsList({});
 
-        auto projectEntry1 = ProjectDTO::createShared ();
+        auto projectEntry1 = ProjectDTO::createShared();
         projectEntry1->id = 1;
         projectEntry1->name = "test project #1";
         projectEntry1->description = "This is test project #1";
-        projectsList->emplace (projectsList->end (), projectEntry1);
+        projectsList->emplace(projectsList->end(), projectEntry1);
 
-        auto projectEntry2 = ProjectDTO::createShared ();
+        auto projectEntry2 = ProjectDTO::createShared();
         projectEntry2->id = 2;
         projectEntry2->name = "test project #2";
         projectEntry2->description = "This is test project #2";
-        projectsList->emplace (projectsList->end (), projectEntry2);
+        projectsList->emplace(projectsList->end(), projectEntry2);
 
         response->projects = projectsList;
 
-        return ApiResponseFactory::createResponse (
-            ApiResponseStatus::CODE_200, response,
-            m_objectMapper);
+        return createDtoResponse(Status::CODE_200, response);
     }
 
-    GetProject::GetProject (std::string name) : ApiRoute (name)
-    {
-    }
-
-    ApiOutResponsePtr GetProject::Route (const ApiIncomingReqPtr& request)
-    {
-        auto projectId = request->getPathVariables().getVariable("project_id");
-        printf("Project ID : %s\n", projectId->c_str());
+    ENDPOINT("GET", "projects/get_project/{project_id}", projectsGetProject,
+        PATH(Int64, project_id)) {
+        printf("Project ID : %lld\n", *project_id);
 
         auto projectEntry = ProjectDTO::createShared();
         projectEntry->id = 2;
         projectEntry->name = "test project #2";
         projectEntry->description = "This is test project #2";
 
-        return ApiResponseFactory::createResponse (
-            ApiResponseStatus::CODE_200, projectEntry,
-            m_objectMapper);
+        return createDtoResponse(Status::CODE_200, projectEntry);
     }
+};
 
-} } } }   // namespace items::gatewaySvc::routes::projects
+#include OATPP_CODEGEN_END(ApiController)
+
+}   // namespace controllers
+}   // namespace gatewaySvc
+}   // namespace items
+
+#endif  // CONTROLLERS_PROJECTSAPICONTROLLER_H_

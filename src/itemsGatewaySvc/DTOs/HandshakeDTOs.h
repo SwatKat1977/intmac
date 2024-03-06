@@ -23,76 +23,60 @@ The following is based on Ogre3D code:
 * GetEnv from os-int.h
 -----------------------------------------------------------------------------
 */
-#ifndef HANDSHAKEDTOS_H
-#define HANDSHAKEDTOS_H
+#ifndef DTOS_HANDSHAKEDTOS_H_
+#define DTOS_HANDSHAKEDTOS_H_
 #include "oatpp/core/macro/codegen.hpp"
 #include "oatpp/network/tcp/server/ConnectionProvider.hpp"
+#include "DTOs/CommonDTOs.h"
 
 namespace items { namespace gatewaySvc {
 
-    const int BASIC_AUTH_RESPONSE_STATUS_BAD = 0;
-    const int BASIC_AUTH_RESPONSE_STATUS_OK = 1;
-
 #include OATPP_CODEGEN_BEGIN(DTO)
 
-    // Definition of the basic authenticate request.
-    class BasicAuthenticateRequestDTO : public oatpp::DTO
-    {
-        DTO_INIT (BasicAuthenticateRequestDTO, DTO)
+// Definition of the basic authenticate request.
+class BasicAuthenticateRequestDTO : public oatpp::DTO {
+    DTO_INIT(BasicAuthenticateRequestDTO, DTO)
 
-        DTO_FIELD (String, email_address);
-        DTO_FIELD (String, password);
-    };
+    DTO_FIELD(String, email_address);
+    DTO_FIELD(String, password);
+};
 
-    // Definition of the basic authenticate response.
-    class BasicAuthenticateResponseDTO : public oatpp::DTO
-    {
-        DTO_INIT (BasicAuthenticateResponseDTO, DTO)
+// Definition of the basic authenticate response.
+class BasicAuthenticateResponseDTO : public oatpp::DTO {
+    DTO_INIT(BasicAuthenticateResponseDTO, DTO)
 
-        DTO_FIELD (Int8, status);
-        DTO_FIELD (String, error);
-        DTO_FIELD (String, userToken);
-    };
+    DTO_FIELD(Int8, status);
+    DTO_FIELD(String, error);
+    DTO_FIELD(String, userToken);
+};
 
-    // Definition of the logout request.
-    class LogoutRequestDTO : public oatpp::DTO
-    {
-        DTO_INIT (LogoutRequestDTO, DTO)
+// Definition of the logout request.
+class LogoutRequestDTO : public oatpp::DTO {
+    DTO_INIT(LogoutRequestDTO, DTO)
 
-        DTO_FIELD (String, email_address);
-        DTO_FIELD (String, token);
-    };
+    DTO_FIELD(String, email_address);
+    DTO_FIELD(String, token);
+};
 
-    class LogoutResponseDTO : public oatpp::DTO
-    {
-        DTO_INIT (LogoutResponseDTO, DTO)
+class LogoutResponseDTO : public oatpp::DTO {
+    DTO_INIT(LogoutResponseDTO, DTO)
 
-        DTO_FIELD (Int8, status);
-        DTO_FIELD (String, error);
-    };
+    DTO_FIELD(Int8, status);
+    DTO_FIELD(String, error);
+};
 
-    // Definition of the is valid user token request.
-    class IsValidUserTokenRequestDTO : public oatpp::DTO
-    {
-        DTO_INIT (IsValidUserTokenRequestDTO, DTO)
+// Definition of the is valid user token response.
+class IsValidUserTokenResponseDTO : public oatpp::DTO {
+    DTO_INIT(IsValidUserTokenResponseDTO, DTO)
 
-        DTO_FIELD (String, email_address);
-        DTO_FIELD (String, token);
-    };
-
-
-    // Definition of the is valid user token response.
-    class IsValidUserTokenResponseDTO : public oatpp::DTO
-    {
-        DTO_INIT (IsValidUserTokenResponseDTO, DTO)
-
-        DTO_FIELD (Int8, status);
-        DTO_FIELD (String, error);
-        DTO_FIELD (Int8, is_valid);
-    };
+    DTO_FIELD(Int8, status);
+    DTO_FIELD(String, error);
+    DTO_FIELD(Int8, is_valid);
+};
 
 #include OATPP_CODEGEN_END(DTO)
 
-} }   // namespace items::gatewaySvc
+}   // namespace gatewaySvc
+}   // namespace items
 
-#endif
+#endif  // DTOS_HANDSHAKEDTOS_H_

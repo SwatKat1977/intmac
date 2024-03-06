@@ -20,35 +20,33 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
+#ifndef DTOS_BASICAUTHDTOS_H_
+#define DTOS_BASICAUTHDTOS_H_
 #include "oatpp/network/tcp/server/ConnectionProvider.hpp"
 
-namespace items
-{
-    namespace accountsSvc
-    {
+namespace items { namespace accountsSvc {
 
 #include OATPP_CODEGEN_BEGIN(DTO)
 
-        // Definition of the basic_auth authenticate request.
-        class BasicAuthenticateRequest : public oatpp::DTO
-        {
-            DTO_INIT (BasicAuthenticateRequest, DTO)
+// Definition of the basic_auth authenticate request.
+class BasicAuthenticateRequest : public oatpp::DTO {
+    DTO_INIT(BasicAuthenticateRequest, DTO)
 
-            DTO_FIELD (String, email_address);
-            DTO_FIELD (String, password);
-        };
+    DTO_FIELD(String, email_address);
+    DTO_FIELD(String, password);
+};
 
-        // Definition of the basic_auth authenticate response.
-        class BasicAuthenticateResponse : public oatpp::DTO
-        {
-            DTO_INIT (BasicAuthenticateResponse, DTO)
+// Definition of the basic_auth authenticate response.
+class BasicAuthenticateResponse : public oatpp::DTO {
+    DTO_INIT(BasicAuthenticateResponse, DTO)
 
-            DTO_FIELD (Int32, status);
-            DTO_FIELD (String, error);
-        };
+    DTO_FIELD(Int32, status);
+    DTO_FIELD(String, error);
+};
 
 #include OATPP_CODEGEN_END(DTO)
 
-    }   // namespace accountsSvc
+}   // namespace accountsSvc
 }   // namespace items
 
+#endif  // DTOS_BASICAUTHDTOS_H_

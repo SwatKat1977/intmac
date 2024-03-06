@@ -20,89 +20,82 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
-#ifndef SQLITEINTERFACE_H
-#define SQLITEINTERFACE_H
+#ifndef SQLITEINTERFACE_H_
+#define SQLITEINTERFACE_H_
+#include <sqlite3.h>
 #include <exception>
 #include <map>
 #include <string>
-#include <sqlite3.h>
 
-namespace items
-{
-    namespace accountsSvc
-    {
-        // Status of the account.
-        enum AccountStatus
-        {
-            AccountStatus_DISABLED = 0,
-            AccountStatus_ACTIVE = 1
-        };
+namespace items { namespace accountsSvc {
 
-        // Type of logon, e.g. basic.
-        enum LogonType
-        {
-            LogonType_BASIC = 0
-        };
+// Status of the account.
+enum AccountStatus {
+    AccountStatus_DISABLED = 0,
+    AccountStatus_ACTIVE = 1
+};
 
-        // Sqlite interface class base exception.
-        class SqliteInterfaceException : public std::exception
-        {
-        public:
-            explicit SqliteInterfaceException (const char* message)
-                : m_msg (message) {}
+// Type of logon, e.g. basic.
+enum LogonType {
+    LogonType_BASIC = 0
+};
 
-            explicit SqliteInterfaceException (const std::string& message)
-                : m_msg (message) {}
+// Sqlite interface class base exception.
+class SqliteInterfaceException : public std::exception {
+ public:
+    explicit SqliteInterfaceException(const char* message)
+        : m_msg(message) {}
 
-            virtual const char* what () const noexcept { return m_msg.c_str (); }
+    explicit SqliteInterfaceException(const std::string& message)
+        : m_msg(message) {}
 
-        protected:
-            std::string m_msg;
-        };
+    virtual const char* what() const noexcept { return m_msg.c_str (); }
 
-        // Sqlite database wrapper class.
-        class SqliteInterface
-        {
-        public:
+ protected:
+    std::string m_msg;
+};
 
-            SqliteInterface (std::string dbFilename);
+// Sqlite database wrapper class.
+class SqliteInterface {
+ public:
+    explicit SqliteInterface(std::string dbFilename);
 
-            ~SqliteInterface ();
+    ~SqliteInterface();
 
-            bool IsConnected () { return (m_isConnected && m_connection); }
+    bool IsConnected() { return (m_isConnected && m_connection); }
 
-            bool IsValidDatabase ();
+    bool IsValidDatabase();
 
-            void BuildDatabase ();
+    void BuildDatabase();
 
-            void Open ();
+    void Open();
 
-            void Close ();
+    void Close();
 
-            int GetUserIdForUser (std::string emailAddress,
-                int logonType);
+    int GetUserIdForUser(std::string emailAddress,
+        int logonType);
 
-            bool BasicAuthenticateUser (int userId, std::string password);
+    bool BasicAuthenticateUser(int userId, std::string password);
 
-        private:
-            sqlite3* m_connection;
-            std::string m_dbFilename;
-            bool m_isConnected;
+ private:
+    sqlite3* m_connection;
+    std::string m_dbFilename;
+    bool m_isConnected;
 
-            void CreateTable (std::string tableSchema, std::string table_name);
+    void CreateTable(std::string tableSchema, std::string table_name);
 
-            int InsertUserProfile (std::string emailAddress,
-                                   std::string fullName,
-                                   std::string displayName,
-                                   int accountStatus,
-                                   int logonType);
+    int InsertUserProfile(std::string emailAddress,
+                          std::string fullName,
+                          std::string displayName,
+                          int accountStatus,
+                          int logonType);
 
-            void InsertBasicAuthEntry (int userId,
-                                       std::string password,
-                                       std::string passwordSalt);
-        };
+    void InsertBasicAuthEntry(int userId,
+                              std::string password,
+                              std::string passwordSalt);
+};
 
     }   // namespace accountsSvc
 }   // namespace items
 
-#endif
+#endif  // SQLITEINTERFACE_H_

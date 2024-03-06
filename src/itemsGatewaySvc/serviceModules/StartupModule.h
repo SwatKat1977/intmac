@@ -20,37 +20,36 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
-#ifndef STARTUPMODULE_H
-#define STARTUPMODULE_H
+#ifndef SERVICEMODULES_STARTUPMODULE_H_
+#define SERVICEMODULES_STARTUPMODULE_H_
+#include <memory>
+#include <string>
 #include "ServiceContext.h"
 #include "ItemTypes.h"
 #include "SessionsManager.h"
 
 namespace items { namespace gatewaySvc {
 
-    using namespace serviceFramework;
+class StartupModule : public serviceFramework::ServiceModule {
+ public:
+    explicit StartupModule(std::string name);
 
-    class StartupModule : public ServiceModule
-    {
-    public:
+    bool Initialise();
 
-        StartupModule (std::string name);
+ private:
+    AccountsSvcClientptr accounts_service_client_;
+    std::shared_ptr<SessionsManager> sessions_manager_;
 
-        bool Initialise ();
+    bool AddServiceProviders();
 
-    private:
-        AccountsSvcClientptr m_accountsSvcClient;
-        std::shared_ptr<SessionsManager> m_sessionsManager;
+    bool AddHandshakeRoutes();
+    bool AddProjectsRoutes();
+    bool AddCasesRoutes();
 
-        bool AddServiceProviders ();
+    void CreateAccountsSvcClient();
+};
 
-        bool AddHandshakeRoutes ();
-        bool AddProjectsRoutes ();
-        bool AddCasesRoutes ();
+}   // namespace gatewaySvc
+}   // namespace items
 
-        void CreateAccountsSvcClient ();
-    };
-
-} }  // namespace items::gatewaySvc
-
-#endif
+#endif  // SERVICEMODULES_STARTUPMODULE_H_

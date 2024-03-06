@@ -4,7 +4,7 @@ This source file is part of ITEMS
 (Integrated Test Management Suite)
 For the latest info, see https://github.com/SwatKat1977/intmac/
 
-Copyright 2014-2024 Integrated Test Management Suite Development Team
+Copyright 2014-2023 Integrated Test Management Suite Development Team
 
     This program is free software : you can redistribute it and /or modify
     it under the terms of the GNU General Public License as published by
@@ -20,30 +20,32 @@ Copyright 2014-2024 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
-#ifndef PROJECTSROUTES_H
-#define PROJECTSROUTES_H
-#include "ServiceContext.h"
+#ifndef APICONTROLLER_H
+#define APICONTROLLER_H
+#include "oatpp/web/server/api/ApiController.hpp"
+#include "oatpp/core/macro/codegen.hpp"
+#include "oatpp/core/macro/component.hpp"
 
-namespace items { namespace gatewaySvc { namespace routes { namespace projects {
+namespace items { namespace serviceFramework {
 
-    using namespace serviceFramework;
+#include OATPP_CODEGEN_BEGIN(ApiController)
 
-    class GetProjects : public ApiRoute
+    class ApiEndpointController : public oatpp::web::server::api::ApiController
     {
     public:
-        GetProjects (std::string name);
+        ApiEndpointController(
+            OATPP_COMPONENT(std::shared_ptr<ObjectMapper>, objectMapper))
+                : oatpp::web::server::api::ApiController(objectMapper)
+                {
+                    m_objectMapper = oatpp::parser::json::mapping::ObjectMapper::createShared ();
+                }
 
-        ApiOutResponsePtr Route (const ApiIncomingReqPtr& request);
+    protected:
+        std::shared_ptr<ObjectMapper> m_objectMapper;
     };
 
-    class GetProject : public ApiRoute
-    {
-    public:
-        GetProject (std::string name);
+#include OATPP_CODEGEN_END(ApiController)
 
-        ApiOutResponsePtr Route (const ApiIncomingReqPtr& request);
-    };
+} } // namespace items::serviceFramework
 
-} } } }   // namespace items::gatewaySvc::routes::projects
-
-#endif // #ifndef PROJECTSROUTES_H
+#endif

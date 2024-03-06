@@ -12,12 +12,9 @@ LIBRARIES = -lServiceFramework -loatpp
 OBJS = SessionsManager.o \
        gatewaySvc.o \
 	   serviceModules/StartupModule.o \
-	   routes/HandshakeRoutes.o \
-	   routes/CasesRoutes.o \
-	   routes/ProjectsRoutes.o \
 	   ../common/UUID.o
 
-GATEWAYSVC = ${ITEMS_BIN_DIR}/itemsGatewaySvc
+GATEWAYSVC = ${ITEMS_BIN_DIR}/gatewaySvc
 
 $(GATEWAYSVC): $(OBJS)
 	g++ -o $(GATEWAYSVC) $(OBJS) $(LIB_DIRS) $(LIBRARIES)

@@ -11,7 +11,7 @@ LIBRARIES = -lServiceFramework -loatpp
 
 OBJS = ItemsCMSSvc.o
 
-CMSSVC = ${ITEMS_BIN_DIR}/itemsCMSSvc
+CMSSVC = ${ITEMS_BIN_DIR}/cmsSvc
 
 $(CMSSVC): $(OBJS)
 	g++ -o $(CMSSVC) $(OBJS) $(LIB_DIRS) $(LIBRARIES)
