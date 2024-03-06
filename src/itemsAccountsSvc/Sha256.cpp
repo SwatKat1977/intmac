@@ -20,6 +20,7 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
+#include <algorithm>
 #include <cstring>
 #include <fstream>
 #include "Sha256.h"
@@ -42,7 +43,7 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 }
 #define SHA2_PACK32(str, x)                   \
 {                                             \
-    *(x) =   ((uint32) *((str) + 3)      )    \
+    *(x) =   ((uint32) *((str) + 3))          \
            | ((uint32) *((str) + 2) <<  8)    \
            | ((uint32) *((str) + 1) << 16)    \
            | ((uint32) *((str) + 0) << 24);   \
@@ -68,7 +69,7 @@ const unsigned int SHA256::sha256_k[64] =
  0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,
  0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2 };
 
-void SHA256::transform (const unsigned char* message, unsigned int block_nb) {
+void SHA256::transform(const unsigned char* message, unsigned int block_nb) {
     uint32 w[64];
     uint32 wv[8];
     uint32 t1, t2;
@@ -79,11 +80,12 @@ void SHA256::transform (const unsigned char* message, unsigned int block_nb) {
     for (i = 0; i < (int)block_nb; i++) {
         sub_block = message + (i << 6);
         for (j = 0; j < 16; j++) {
-            SHA2_PACK32 (&sub_block[j << 2], &w[j]);
+            SHA2_PACK32(&sub_block[j << 2], &w[j]);
         }
 
         for (j = 16; j < 64; j++) {
-            w[j] = SHA256_F4 (w[j - 2]) + w[j - 7] + SHA256_F3 (w[j - 15]) + w[j - 16];
+            w[j] = SHA256_F4(w[j - 2]) + w[j - 7] + SHA256_F3(w[j - 15])
+                   + w[j - 16];
         }
 
         for (j = 0; j < 8; j++) {
@@ -91,9 +93,9 @@ void SHA256::transform (const unsigned char* message, unsigned int block_nb) {
         }
 
         for (j = 0; j < 64; j++) {
-            t1 = wv[7] + SHA256_F2 (wv[4]) + SHA2_CH (wv[4], wv[5], wv[6])
+            t1 = wv[7] + SHA256_F2(wv[4]) + SHA2_CH(wv[4], wv[5], wv[6])
                 + sha256_k[j] + w[j];
-            t2 = SHA256_F1 (wv[0]) + SHA2_MAJ (wv[0], wv[1], wv[2]);
+            t2 = SHA256_F1(wv[0]) + SHA2_MAJ(wv[0], wv[1], wv[2]);
             wv[7] = wv[6];
             wv[6] = wv[5];
             wv[5] = wv[4];
@@ -159,7 +161,7 @@ void SHA256::final(unsigned char* digest) {
     SHA2_UNPACK32(len_b, m_block + pm_len - 4);
     transform(m_block, block_nb);
     for (i = 0; i < 8; i++) {
-        SHA2_UNPACK32 (m_h[i], &digest[i << 2]);
+        SHA2_UNPACK32(m_h[i], &digest[i << 2]);
     }
 }
 
@@ -168,15 +170,15 @@ std::string GenerateSha256(std::string input) {
     memset(digest, 0, SHA256::DIGEST_SIZE);
 
     SHA256 ctx = SHA256();
-    ctx.init ();
-    ctx.update ((unsigned char*)input.c_str (), (unsigned int)input.length ());
-    ctx.final (digest);
+    ctx.init();
+    ctx.update((unsigned char*)input.c_str(), (unsigned int)input.length());
+    ctx.final(digest);
 
     char buf[2 * SHA256::DIGEST_SIZE + 1];
     buf[2 * SHA256::DIGEST_SIZE] = 0;
 
     for (unsigned int i = 0; i < SHA256::DIGEST_SIZE; i++)
-        sprintf (buf + i * 2, "%02x", digest[i]);
+        sprintf(buf + i * 2, "%02x", digest[i]);
     return std::string (buf);
 }
 
