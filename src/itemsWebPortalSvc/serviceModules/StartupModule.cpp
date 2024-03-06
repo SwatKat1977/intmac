@@ -33,44 +33,42 @@ namespace items { namespace webPortalSvc {
 
     using namespace serviceFramework;
 
-    StartupModule::StartupModule (std::string name)
-        : ServiceModule (name)
-    {
-    }
+StartupModule::StartupModule(std::string name)
+    : ServiceModule(name) { }
 
-    bool StartupModule::Initialise ()
-    {
-        LOGGER->info ("ITEMS Web Portal Microservice V{0}.{1}.{2}-{3}",
-            common::VERSION_MAJOR, common::VERSION_MINOR,
-            common::VERSION_PATCH, common::VERSION_TAG);
-        LOGGER->info (common::COPYRIGHT_TEXT);
-        LOGGER->info (common::LICENSE_TEXT);
+bool StartupModule::Initialise() {
+    LOGGER->info("ITEMS Web Portal Microservice V{0}.{1}.{2}-{3}",
+        common::VERSION_MAJOR, common::VERSION_MINOR,
+        common::VERSION_PATCH, common::VERSION_TAG);
+    LOGGER->info(common::COPYRIGHT_TEXT);
+    LOGGER->info(common::LICENSE_TEXT);
 
-        LOGGER->info ("|=====================|");
-        LOGGER->info ("|=== Configuration ===|");
-        LOGGER->info ("|=====================|");
+    LOGGER->info("|=====================|");
+    LOGGER->info("|=== Configuration ===|");
+    LOGGER->info("|=====================|");
 
-        LOGGER->info ("[LOGGING]");
-        LOGGER->info ("-> Log Level      : {0}",
-            m_context->GetConfigManager ().GetStringEntry (
-                "logging", "log_level").c_str ());
-        LOGGER->info ("-> Log To Console : {0}",
-            m_context->GetConfigManager ().GetStringEntry (
-                "logging", "log_to_console").c_str ());
-        LOGGER->info ("-> Log Filename   : {0}",
-            m_context->GetConfigManager ().GetStringEntry (
-                "logging", "log_filename").c_str ());
-        LOGGER->info ("-> Max File Size  : {0:d}",
-            m_context->GetConfigManager ().GetIntEntry (
-                "logging", "max_file_size"));
-        LOGGER->info ("-> Max File Count : {0:d}",
-            m_context->GetConfigManager ().GetIntEntry (
-                "logging", "max_file_count"));
-        LOGGER->info ("-> Log Format     : {0}",
-            m_context->GetConfigManager ().GetStringEntry (
-                "logging", "log_format").c_str ());
+    LOGGER->info("[LOGGING]");
+    LOGGER->info("-> Log Level      : {0}",
+        m_context->GetConfigManager().GetStringEntry(
+            "logging", "log_level").c_str());
+    LOGGER->info("-> Log To Console : {0}",
+        m_context->GetConfigManager().GetStringEntry(
+            "logging", "log_to_console").c_str());
+    LOGGER->info("-> Log Filename   : {0}",
+        m_context->GetConfigManager().GetStringEntry(
+            "logging", "log_filename").c_str());
+    LOGGER->info("-> Max File Size  : {0:d}",
+        m_context->GetConfigManager().GetIntEntry(
+            "logging", "max_file_size"));
+    LOGGER->info("-> Max File Count : {0:d}",
+        m_context->GetConfigManager().GetIntEntry(
+            "logging", "max_file_count"));
+    LOGGER->info("-> Log Format     : {0}",
+        m_context->GetConfigManager().GetStringEntry(
+            "logging", "log_format").c_str());
 
-        return true;
-    }
+    return true;
+}
 
-} }   // namespace items::webPortalSvc
+}   // namespace webPortalSvc
+}   // namespace items
