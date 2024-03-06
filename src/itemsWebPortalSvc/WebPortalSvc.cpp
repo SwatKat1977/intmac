@@ -26,8 +26,10 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 #include "ServiceContext.h"
 #include "serviceModules/StartupModule.h"
 
-using namespace items::webPortalSvc;
-using namespace items::serviceFramework;
+using items::serviceFramework::SectionsMap;
+using items::serviceFramework::ServiceContext;
+using items::webPortalSvc::StartupModule;
+using items::webPortalSvc::CONFIGURATION_LAYOUT_MAP;
 
 const char SERVICE_CONTEXT_NAME[] = "Items Web Portal Svc";
 
