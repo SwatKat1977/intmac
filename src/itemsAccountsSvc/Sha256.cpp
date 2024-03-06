@@ -51,6 +51,8 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 
 namespace items { namespace accountsSvc {
 
+const int SHA256_BUFFER_SIZE = 2 * SHA256::DIGEST_SIZE + 1;
+
 const unsigned int SHA256::sha256_k[64] =
 { 0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
  0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
@@ -174,11 +176,17 @@ std::string GenerateSha256(std::string input) {
     ctx.update((unsigned char*)input.c_str(), (unsigned int)input.length());
     ctx.final(digest);
 
-    char buf[2 * SHA256::DIGEST_SIZE + 1];
+    char buf[SHA256_BUFFER_SIZE];
     buf[2 * SHA256::DIGEST_SIZE] = 0;
 
-    for (unsigned int i = 0; i < SHA256::DIGEST_SIZE; i++)
-        sprintf(buf + i * 2, "%02x", digest[i]);
+    for (unsigned int i = 0; i < SHA256::DIGEST_SIZE; i++) {
+        auto size = snprintf(buf + i * 2, SHA256_BUFFER_SIZE, "%02x",
+                             digest[i]);
+        if (size <= 0 || size > SHA256_BUFFER_SIZE) {
+            throw std::runtime_error("SHA256 buffer overflow");
+        }
+    }
+
     return std::string (buf);
 }
 
