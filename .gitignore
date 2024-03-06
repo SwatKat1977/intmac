@@ -24,4 +24,5 @@ src/build
 # -------
 *.log
 accountsSvc
+itemsCMSSvc
 gatewaySvc
