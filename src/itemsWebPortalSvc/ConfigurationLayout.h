@@ -30,7 +30,7 @@ namespace items { namespace webPortalSvc {
 const char BOOL_YES[] = "YES";
 const char BOOL_NO[] = "NO";
 
-const serviceFramework::SectionsMap CONFIGURATION_LAYOUT_MAP = {
+serviceFramework::SectionsMap CONFIGURATION_LAYOUT_MAP = {
     {serviceFramework::LOGGING_SECTION, serviceFramework::LoggerSettings }
 };
 

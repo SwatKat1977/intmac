@@ -23,7 +23,6 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 #include <filesystem>
 #include "oatpp/network/tcp/client/ConnectionProvider.hpp"
 #include "spdlog/spdlog.h"
-#include "ConfigurationLayout.h"
 #include "Definitions.h"
 #include "StartupModule.h"
 #include "Logger.h"
