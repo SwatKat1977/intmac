@@ -75,7 +75,7 @@ bool StartupModule::AddServiceProviders() {
             SERVICE_PROVIDER_API_NAME,
             "0.0.0.0",
             SERVICE_PROVIDER_API_PORT,
-            SERVICENETWORKTYPE_IPV4);
+            serviceFramework::SERVICENETWORKTYPE_IPV4);
     }
     catch(std::runtime_error& e) {
         LOGGER->critical("Unable to create service provider '{0}' : {1}",

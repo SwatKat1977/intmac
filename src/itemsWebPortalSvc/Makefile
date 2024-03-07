@@ -10,6 +10,7 @@ LIB_DIRS = -L ../lib/ -L /usr/local/lib/oatpp-1.3.0
 LIBRARIES = -lServiceFramework -loatpp
 
 OBJS = WebPortalSvc.o \
+	WebRoute.o \
 	serviceModules/StartupModule.o
 
 WEBPORTALSVC = ${ITEMS_BIN_DIR}/webPortalSvc
@@ -20,4 +21,4 @@ $(WEBPORTALSVC): $(OBJS)
 all: $(CMSSVC)
 
 clean:
-	$(RM) $(CMSSVC) $(OBJS)
+	$(RM) $(WEBPORTALSVC) $(OBJS)

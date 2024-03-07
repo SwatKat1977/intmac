@@ -20,53 +20,71 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
-#ifndef WEBROUTE_H
-#define WEBROUTE_H
+#ifndef WEBROUTE_H_
+#define WEBROUTE_H_
 #include <string>
 #include <vector>
 #include "ServiceContext.h"
 
 namespace items { namespace webPortalSvc {
 
-    // Base class for route that serve a web page.
-    class WebRoute : public serviceFramework::ApiRoute
-    {
-    public:
-        WebRoute (std::string name);
+class CookieKeyPair
+{
+ public:
+    CookieKeyPair(std::string key, std::string value)
+        : key_(key), value_(value) {}
 
-        ~WebRoute () = default;
+    inline std::string Key() { return key_; }
+    inline std::string Value() { return value_; }
 
-        bool HasAuthCookies (std::vector<std::string> cookies);
+ private:
+    std::string key_;
+    std::string value_;
+};
 
-        bool ValidAuthCookies (std::string tokenValue, std::string userValue);
+struct AuthCookies
+{
+ public:
+    AuthCookies(std::string token, std::string user)
+        : token_(token), user_(user) {}
 
-    protected:
-        std::string GenerateRedirect (std::string redirectURLRoot,
-            std::string redirectURL);
+    inline std::string Token() { return token_; }
+    inline std::string User() { return user_; }
 
-        inline void LeftTrim (std::string& inStr)
-        {
-            inStr.erase (inStr.begin (), 
-                         std::find_if (inStr.begin (),
-                         inStr.end (), [](unsigned char ch)
-            {
-                return !std::isspace (ch);
-            }));
-        }
+ private:
+    std::string token_;
+    std::string user_;
+};
 
-        std::vector<std::string> ParseCookieHeader (const std::string& cookieHeader);
+// Base class for route that serve a web page.
+class WebRoute {
+ public:
+    WebRoute();
 
-        void GetAuthCookies (
-            std::vector<std::string> cookies,
-            std::string& tokenValue,
-            std::string& userValue);
+    ~WebRoute() = default;
 
-        bool GetCookieValue (
-            const std::string& cookieValue,
-            std::string& name,
-            std::string& value);
-    };
+    bool HasAuthCookies(std::vector<std::string> cookies);
 
-} }   // namespace items::webPortalSvc
+ protected:
+    std::string GenerateRedirect(std::string redirectURLRoot,
+        std::string redirectURL);
 
-#endif  // #ifndef 
+    inline void LeftTrim(std::string& inStr) {  // NOLINT
+        inStr.erase(inStr.begin(),
+                    std::find_if(inStr.begin(),
+                    inStr.end(), [](unsigned char ch) {
+            return !std::isspace (ch);
+        }));
+    }
+
+    std::vector<std::string> ParseCookieHeader(const std::string& cookieHeader);
+
+    AuthCookies *GetAuthCookies(std::vector<std::string> cookies);
+
+    CookieKeyPair *GetCookieValue(const std::string& cookieValue);
+};
+
+}   // namespace webPortalSvc
+}   // namespace items
+
+#endif  // WEBROUTE_H_

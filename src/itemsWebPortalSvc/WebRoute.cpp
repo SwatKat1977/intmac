@@ -33,135 +33,84 @@ namespace items { namespace webPortalSvc {
 
     const std::string REDIRECT_URL = "<meta http-equiv=\"Refresh\" content=\"0; url='{0}\"/>";
 
-    WebRoute::WebRoute (std::string name) : ApiRoute(name)
-    {
+    WebRoute::WebRoute() {
     }
 
-    std::string WebRoute::GenerateRedirect (std::string redirectURLRoot,
-        std::string redirectURL)
-    {
+    std::string WebRoute::GenerateRedirect(std::string redirectURLRoot,
+        std::string redirectURL) {
         std::stringstream url;
         url << "<meta http-equiv=\"Refresh\" content=\"0; url='"
             << redirectURLRoot << redirectURL << "'\"/>";
-        return url.str ();
+        return url.str();
     }
 
-    void WebRoute::GetAuthCookies (
-        std::vector<std::string> cookies,
-        std::string& tokenValue,
-        std::string& userValue)
-    {
-        for (const auto& cookieEntry : cookies)
+AuthCookies *WebRoute::GetAuthCookies(std::vector<std::string> cookies) {
+    bool tokenCookieFound = false;
+    bool userCookieFound = false;
+    std::string tokenValue;
+    std::string userValue;
+
+    // Iterate cook entries looking for correct one.
+    for (const auto& cookieEntry : cookies) {
+        CookieKeyPair *pair = GetCookieValue (cookieEntry);
+        if (!pair) continue;
+
+        if (pair->Key() == COOKIE_TOKEN)
         {
-            std::string cookieKey;
-            std::string cookieValue;
+            tokenCookieFound = true;
+            tokenValue = pair->Value();
+        }
 
-            if (!GetCookieValue (cookieEntry, cookieKey, cookieValue))
-            {
-                continue;
-            }
-
-            if (cookieKey == COOKIE_TOKEN) tokenValue = cookieValue;
-            if (cookieKey == COOKIE_USER) userValue = cookieValue;
+        if (pair->Key() == COOKIE_USER)
+        {
+            tokenCookieFound = true;
+            userValue = pair->Value();
         }
     }
 
-    bool WebRoute::HasAuthCookies (std::vector<std::string> cookies)
+    if (tokenCookieFound && userCookieFound)
     {
-        std::string cookieTokenValue;
-        std::string cookieUserValue;
-
-        GetAuthCookies (cookies, cookieTokenValue, cookieUserValue);
-
-        if (cookieTokenValue.empty () || cookieUserValue.empty ())
-        {
-            return false;
-        }
-
-        printf ("COOKIE token : %s\n", cookieTokenValue.c_str ());
-        printf ("COOKIE user  : %s\n", cookieUserValue.c_str ());
-
-        return true;
+        return new AuthCookies(tokenValue, userValue);
     }
 
-    bool WebRoute::ValidAuthCookies (
-        std::string tokenValue, std::string userValue)
-    {
-        bool returnStatus = false;
+    return nullptr;
+}
 
-        try
-        {
-            authResponse = m_accountsSvcClient
-                ->basicAuthenticateDTO (requestBody)
-                ->readBodyToDto<oatpp::Object<common::apis::accountsSvc::AccountsSvcBasicAuthResponseDto>> (m_objectMapper.get ());
-        }
-        catch (std::runtime_error& ex)
-        {
-            LOGGER->error ("Cannot connect to accounts service API, reason: {0}",
-                ex.what ());
-            response->status = BASIC_AUTH_RESPONSE_STATUS_BAD;
-            response->error = "Internal error";
-            return ApiResponseFactory::createResponse (
-                ApiResponseStatus::CODE_200, response,
-                m_objectMapper);
-        }
-
-        url = f"{Configuration().internal_api_gateway}/handshake/valid_token"
-
-        request_body = {
-            "email_address": username,
-            "token" : token
-        }
-
-        try
-        {
-            response = requests.get (url, json = request_body, timeout = 1)
-        {
-        except (requests.exceptions.ConnectionError as ex)
-        {
-            raise ItemsException ('Connection to gateway api timed out') from ex
-        }
-
-        data = json.loads (response.content,
-            object_hook = lambda d : SimpleNamespace (**d))
-
-        if response.status_code == HTTPStatus.NOT_ACCEPTABLE:
-    except_str = ("Internal error communicating with gateway: "
-        f"{data.status}")
-        raise ItemsException (except_str)
-
-        if data.status == "VALID" :
-            return_status = True
-
-        return return_status
-    }
-
-    std::vector<std::string> WebRoute::ParseCookieHeader (const std::string& cookieHeader)
-    {
-        std::vector<std::string> cookieValues;
-        std::istringstream iss (cookieHeader);
-        std::string cookieValue;
-
-        while (std::getline (iss, cookieValue, ';'))
-        {
-            LeftTrim (cookieValue);
-            cookieValues.push_back (cookieValue);
-        }
-        return cookieValues;
-    }
-
-    bool WebRoute::GetCookieValue (const std::string& cookieValue,
-                                   std::string& name,
-                                   std::string& value)
-    {
-        size_t delimiterPos = cookieValue.find ('=');
-        if (delimiterPos != std::string::npos)
-        {
-            name = cookieValue.substr (0, delimiterPos);
-            value = cookieValue.substr (delimiterPos + 1);
-            return true;
-        }
+bool WebRoute::HasAuthCookies (std::vector<std::string> cookies) {
+    auto authCookies = GetAuthCookies(cookies);
+    if (authCookies->Token().empty() || authCookies->User().empty()) {
         return false;
     }
+
+    printf ("COOKIE token : %s\n", authCookies->Token().c_str());
+    printf ("COOKIE user  : %s\n", authCookies->User().c_str());
+
+    return true;
+}
+
+std::vector<std::string> WebRoute::ParseCookieHeader(const std::string& cookieHeader) {
+    std::vector<std::string> cookieValues;
+    std::istringstream iss (cookieHeader);
+    std::string cookieValue;
+
+    while (std::getline(iss, cookieValue, ';')) {
+        LeftTrim (cookieValue);
+        cookieValues.push_back (cookieValue);
+    }
+
+    return cookieValues;
+}
+
+CookieKeyPair *WebRoute::GetCookieValue(const std::string& cookieValue) {
+
+    size_t delimiterPos = cookieValue.find('=');
+    if (delimiterPos != std::string::npos)
+    {
+        return new CookieKeyPair(cookieValue.substr(0, delimiterPos),
+                                 cookieValue.substr(delimiterPos + 1));
+    }
+
+    return nullptr;
+}
 
 } }   // namespace items::webPortalSvc
