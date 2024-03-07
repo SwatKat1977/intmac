@@ -30,8 +30,6 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 
 namespace items { namespace webPortalSvc {
 
-    using namespace serviceFramework;
-
 StartupModule::StartupModule(std::string name)
     : ServiceModule(name) { }
 
