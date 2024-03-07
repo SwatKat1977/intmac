@@ -66,6 +66,25 @@ bool StartupModule::Initialise() {
         m_context->GetConfigManager().GetStringEntry(
             "logging", "log_format").c_str());
 
+    if (!AddServiceProviders()) return false;
+
+    return true;
+}
+
+bool StartupModule::AddServiceProviders() {
+    try {
+        m_context->AddServiceProvider(
+            SERVICE_PROVIDER_API_NAME,
+            "0.0.0.0",
+            SERVICE_PROVIDER_API_PORT,
+            SERVICENETWORKTYPE_IPV4);
+    }
+    catch(std::runtime_error& e) {
+        LOGGER->critical("Unable to create service provider '{0}' : {1}",
+            "SERVICE_PROVIDER_API_NAME", e.what());
+        return false;
+    }
+
     return true;
 }
 
