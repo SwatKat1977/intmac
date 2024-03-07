@@ -32,6 +32,9 @@ class StartupModule : public serviceFramework::ServiceModule {
  public:
     explicit StartupModule(std::string name);
 
+ private:
+    bool AddServiceProviders();
+
     bool Initialise();
 };
 

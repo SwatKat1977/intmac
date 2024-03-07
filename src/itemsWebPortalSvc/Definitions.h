@@ -23,4 +23,12 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 #ifndef DEFINITIONS_H_
 #define DEFINITIONS_H_
 
+namespace items { namespace webPortalSvc {
+
+const char SERVICE_PROVIDER_API_NAME[] = "api";
+const int SERVICE_PROVIDER_API_PORT = 4000;
+
+}   // namespace webPortalSvc
+}   // namespace items
+
 #endif  // DEFINITIONS_H_
