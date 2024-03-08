@@ -63,7 +63,7 @@ AuthCookies *WebRoute::GetAuthCookies(std::vector<std::string> cookies) {
 
         if (pair->Key() == COOKIE_USER)
         {
-            tokenCookieFound = true;
+            userCookieFound = true;
             userValue = pair->Value();
         }
     }
@@ -78,12 +78,11 @@ AuthCookies *WebRoute::GetAuthCookies(std::vector<std::string> cookies) {
 
 bool WebRoute::HasAuthCookies (std::vector<std::string> cookies) {
     auto authCookies = GetAuthCookies(cookies);
-    if (authCookies->Token().empty() || authCookies->User().empty()) {
+
+    if (!authCookies || authCookies->Token().empty() ||
+        authCookies->User().empty()) {
         return false;
     }
-
-    printf ("COOKIE token : %s\n", authCookies->Token().c_str());
-    printf ("COOKIE user  : %s\n", authCookies->User().c_str());
 
     return true;
 }
