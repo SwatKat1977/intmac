@@ -28,8 +28,7 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 
 namespace items { namespace webPortalSvc {
 
-class CookieKeyPair
-{
+class CookieKeyPair {
  public:
     CookieKeyPair(std::string key, std::string value)
         : key_(key), value_(value) {}
@@ -42,8 +41,7 @@ class CookieKeyPair
     std::string value_;
 };
 
-struct AuthCookies
-{
+struct AuthCookies {
  public:
     AuthCookies(std::string token, std::string user)
         : token_(token), user_(user) {}

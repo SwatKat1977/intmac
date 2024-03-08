@@ -22,6 +22,9 @@ Copyright 2014-2024 Integrated Test Management Suite Development Team
 */
 #ifndef CONTROLLERS_ROOTCONTROLLER_H_
 #define CONTROLLERS_ROOTCONTROLLER_H_
+#include <memory>
+#include <string>
+#include <vector>
 #include "oatpp/web/server/api/ApiController.hpp"
 #include "oatpp/core/macro/codegen.hpp"
 #include "oatpp/core/macro/component.hpp"
@@ -40,26 +43,24 @@ class RootController : public WebRoute {
 
     ENDPOINT("GET", "/", root,
              REQUEST(std::shared_ptr<IncomingRequest>, request)) {
-        printf ("Homepage entry\n");
+        printf("Homepage entry\n");
 
         // get cookie header from request
-        auto cookieHeader = request->getHeader ("Cookie");
+        auto cookieHeader = request->getHeader("Cookie");
 
         printf("Homepage getCookie\n");
 
-        if (!cookieHeader)
-        {
+        if (!cookieHeader) {
             printf("Does NOT have cookies\n");
-        }
-        else
-        {
-            printf("Cookie header : %s\n", cookieHeader.get ()->c_str ());
-            std::vector<std::string> cookieValues = ParseCookieHeader (cookieHeader);
+        } else {
+            printf("Cookie header : %s\n", cookieHeader.get()->c_str());
+            std::vector<std::string> cookieValues = ParseCookieHeader(
+                cookieHeader);
 
             printf("HasAuthCookies : %d\n", HasAuthCookies(cookieValues));
         }
 
-        return ApiResponseFactory::createResponse (
+        return ApiResponseFactory::createResponse(
             ApiResponseStatus::CODE_200, "response");
     }
 };
@@ -70,4 +71,4 @@ class RootController : public WebRoute {
 }   // namespace webPortalSvc
 }   // namespace items
 
-#endif // #ifndef CONTROLLERS_ROOTCONTROLLER_H_
+#endif  // CONTROLLERS_ROOTCONTROLLER_H_

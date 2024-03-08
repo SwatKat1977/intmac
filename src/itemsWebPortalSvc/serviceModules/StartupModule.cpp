@@ -21,6 +21,7 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 -----------------------------------------------------------------------------
 */
 #include <filesystem>
+#include <memory>
 #include "oatpp/network/tcp/client/ConnectionProvider.hpp"
 #include "spdlog/spdlog.h"
 #include "controllers/RootController.h"
