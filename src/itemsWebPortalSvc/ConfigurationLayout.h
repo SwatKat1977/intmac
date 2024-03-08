@@ -20,23 +20,21 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
-#ifndef CONFIGURATIONLAYOUT_H
-#define CONFIGURATIONLAYOUT_H
+#ifndef CONFIGURATIONLAYOUT_H_
+#define CONFIGURATIONLAYOUT_H_
 #include "ConfigSetup.h"
 #include "LoggerSettings.h"
 
 namespace items { namespace webPortalSvc {
-    using namespace serviceFramework;
 
-    const std::string BOOL_YES = "YES";
-    const std::string BOOL_NO = "NO";
+const char BOOL_YES[] = "YES";
+const char BOOL_NO[] = "NO";
 
-    const SectionsMap CONFIGURATION_LAYOUT_MAP =
-    {
-        {LOGGING_SECTION, LoggerSettings }
-    };
+serviceFramework::SectionsMap CONFIGURATION_LAYOUT_MAP = {
+    {serviceFramework::LOGGING_SECTION, serviceFramework::LoggerSettings }
+};
 
+}   // namespace webPortalSvc
+}   // namespace items
 
-} } // namespace items::webPortalSvc
-
-#endif
+#endif  // CONFIGURATIONLAYOUT_H_

@@ -20,25 +20,27 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
-#ifndef STARTUPMODULE_H
-#define STARTUPMODULE_H
+#ifndef SERVICEMODULES_STARTUPMODULE_H_
+#define SERVICEMODULES_STARTUPMODULE_H_
+#include <string>
 #include "ServiceContext.h"
 #include "ItemTypes.h"
 
 namespace items { namespace webPortalSvc {
 
-    using namespace serviceFramework;
+class StartupModule : public serviceFramework::ServiceModule {
+ public:
+    explicit StartupModule(std::string name);
 
-    class StartupModule : public ServiceModule
-    {
-    public:
+ private:
+    bool AddServiceProviders();
 
-        StartupModule (std::string name);
+    bool AddRootController();
 
-        bool Initialise ();
-    };
+    bool Initialise();
+};
 
-    }
-}  // namespace items::webPortalSvc
+}  // namespace webPortalSvc
+}  // namespace items
 
-#endif
+#endif  // SERVICEMODULES_STARTUPMODULE_H_

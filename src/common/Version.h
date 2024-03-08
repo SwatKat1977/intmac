@@ -31,7 +31,7 @@ namespace items
 {
     namespace common
     {
-        const std::string COPYRIGHT_TEXT = "Copyright 2014 - 2023 Integrated Test Management Suite";
+        const std::string COPYRIGHT_TEXT = "Copyright 2014 - 2024 Integrated Test Management Suite";
         const std::string LICENSE_TEXT = "Licensed under the Apache License, Version 2.0";
 
         const std::string VERSION_MAJOR = "0";

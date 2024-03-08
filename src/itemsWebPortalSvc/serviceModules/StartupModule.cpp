@@ -21,9 +21,10 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 -----------------------------------------------------------------------------
 */
 #include <filesystem>
+#include <memory>
 #include "oatpp/network/tcp/client/ConnectionProvider.hpp"
 #include "spdlog/spdlog.h"
-#include "ConfigurationLayout.h"
+#include "controllers/RootController.h"
 #include "Definitions.h"
 #include "StartupModule.h"
 #include "Logger.h"
@@ -31,46 +32,81 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 
 namespace items { namespace webPortalSvc {
 
-    using namespace serviceFramework;
+StartupModule::StartupModule(std::string name)
+    : ServiceModule(name) { }
 
-    StartupModule::StartupModule (std::string name)
-        : ServiceModule (name)
-    {
+bool StartupModule::Initialise() {
+    LOGGER->info("ITEMS Web Portal Microservice V{0}.{1}.{2}-{3}",
+        common::VERSION_MAJOR, common::VERSION_MINOR,
+        common::VERSION_PATCH, common::VERSION_TAG);
+    LOGGER->info(common::COPYRIGHT_TEXT);
+    LOGGER->info(common::LICENSE_TEXT);
+
+    LOGGER->info("|=====================|");
+    LOGGER->info("|=== Configuration ===|");
+    LOGGER->info("|=====================|");
+
+    LOGGER->info("[LOGGING]");
+    LOGGER->info("-> Log Level      : {0}",
+        m_context->GetConfigManager().GetStringEntry(
+            "logging", "log_level").c_str());
+    LOGGER->info("-> Log To Console : {0}",
+        m_context->GetConfigManager().GetStringEntry(
+            "logging", "log_to_console").c_str());
+    LOGGER->info("-> Log Filename   : {0}",
+        m_context->GetConfigManager().GetStringEntry(
+            "logging", "log_filename").c_str());
+    LOGGER->info("-> Max File Size  : {0:d}",
+        m_context->GetConfigManager().GetIntEntry(
+            "logging", "max_file_size"));
+    LOGGER->info("-> Max File Count : {0:d}",
+        m_context->GetConfigManager().GetIntEntry(
+            "logging", "max_file_count"));
+    LOGGER->info("-> Log Format     : {0}",
+        m_context->GetConfigManager().GetStringEntry(
+            "logging", "log_format").c_str());
+
+    if (!AddServiceProviders()) return false;
+
+    if (!AddRootController()) return false;
+
+    return true;
+}
+
+bool StartupModule::AddServiceProviders() {
+    try {
+        m_context->AddServiceProvider(
+            SERVICE_PROVIDER_API_NAME,
+            "0.0.0.0",
+            SERVICE_PROVIDER_API_PORT,
+            serviceFramework::SERVICENETWORKTYPE_IPV4);
+    }
+    catch(std::runtime_error& e) {
+        LOGGER->critical("Unable to create service provider '{0}' : {1}",
+            "SERVICE_PROVIDER_API_NAME", e.what());
+        return false;
     }
 
-    bool StartupModule::Initialise ()
-    {
-        LOGGER->info ("ITEMS Web Portal Microservice V{0}.{1}.{2}-{3}",
-            common::VERSION_MAJOR, common::VERSION_MINOR,
-            common::VERSION_PATCH, common::VERSION_TAG);
-        LOGGER->info (common::COPYRIGHT_TEXT);
-        LOGGER->info (common::LICENSE_TEXT);
+    return true;
+}
 
-        LOGGER->info ("|=====================|");
-        LOGGER->info ("|=== Configuration ===|");
-        LOGGER->info ("|=====================|");
-
-        LOGGER->info ("[LOGGING]");
-        LOGGER->info ("-> Log Level      : {0}",
-            m_context->GetConfigManager ().GetStringEntry (
-                "logging", "log_level").c_str ());
-        LOGGER->info ("-> Log To Console : {0}",
-            m_context->GetConfigManager ().GetStringEntry (
-                "logging", "log_to_console").c_str ());
-        LOGGER->info ("-> Log Filename   : {0}",
-            m_context->GetConfigManager ().GetStringEntry (
-                "logging", "log_filename").c_str ());
-        LOGGER->info ("-> Max File Size  : {0:d}",
-            m_context->GetConfigManager ().GetIntEntry (
-                "logging", "max_file_size"));
-        LOGGER->info ("-> Max File Count : {0:d}",
-            m_context->GetConfigManager ().GetIntEntry (
-                "logging", "max_file_count"));
-        LOGGER->info ("-> Log Format     : {0}",
-            m_context->GetConfigManager ().GetStringEntry (
-                "logging", "log_format").c_str ());
-
-        return true;
+bool StartupModule::AddRootController() {
+    try {
+        auto controller = std::make_shared<
+            controllers::RootController>();
+        m_context->AddApiController(SERVICE_PROVIDER_API_NAME,
+                                    controller);
     }
+    catch (std::runtime_error& e) {
+        LOGGER->critical(
+            "Unable to create root controller, reason {0}",
+            e.what());
+        return false;
+    }
+    LOGGER->info("Added root controller");
 
-} }   // namespace items::webPortalSvc
+    return true;
+}
+
+}   // namespace webPortalSvc
+}   // namespace items
