@@ -23,7 +23,6 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 #include <sstream>
 #include "WebRoute.h"
 #include "Logger.h"
-//#include "apis/gatewaySvc/GatewaySvcClient.h"
 
 namespace items { namespace webPortalSvc {
 
@@ -31,7 +30,8 @@ namespace items { namespace webPortalSvc {
     const std::string COOKIE_TOKEN = "items_token";
     const std::string COOKIE_USER = "items_user";
 
-    const std::string REDIRECT_URL = "<meta http-equiv=\"Refresh\" content=\"0; url='{0}\"/>";
+    const std::string REDIRECT_URL =
+        "<meta http-equiv=\"Refresh\" content=\"0; url='{0}\"/>";
 
     WebRoute::WebRoute() : serviceFramework::ApiEndpointController() {
     }
@@ -52,31 +52,28 @@ AuthCookies *WebRoute::GetAuthCookies(std::vector<std::string> cookies) {
 
     // Iterate cook entries looking for correct one.
     for (const auto& cookieEntry : cookies) {
-        CookieKeyPair *pair = GetCookieValue (cookieEntry);
+        CookieKeyPair *pair = GetCookieValue(cookieEntry);
         if (!pair) continue;
 
-        if (pair->Key() == COOKIE_TOKEN)
-        {
+        if (pair->Key() == COOKIE_TOKEN) {
             tokenCookieFound = true;
             tokenValue = pair->Value();
         }
 
-        if (pair->Key() == COOKIE_USER)
-        {
+        if (pair->Key() == COOKIE_USER) {
             userCookieFound = true;
             userValue = pair->Value();
         }
     }
 
-    if (tokenCookieFound && userCookieFound)
-    {
+    if (tokenCookieFound && userCookieFound) {
         return new AuthCookies(tokenValue, userValue);
     }
 
     return nullptr;
 }
 
-bool WebRoute::HasAuthCookies (std::vector<std::string> cookies) {
+bool WebRoute::HasAuthCookies(std::vector<std::string> cookies) {
     auto authCookies = GetAuthCookies(cookies);
 
     if (!authCookies || authCookies->Token().empty() ||
@@ -87,24 +84,23 @@ bool WebRoute::HasAuthCookies (std::vector<std::string> cookies) {
     return true;
 }
 
-std::vector<std::string> WebRoute::ParseCookieHeader(const std::string& cookieHeader) {
+std::vector<std::string> WebRoute::ParseCookieHeader(
+    const std::string& cookieHeader) {
     std::vector<std::string> cookieValues;
-    std::istringstream iss (cookieHeader);
+    std::istringstream iss(cookieHeader);
     std::string cookieValue;
 
     while (std::getline(iss, cookieValue, ';')) {
-        LeftTrim (cookieValue);
-        cookieValues.push_back (cookieValue);
+        LeftTrim(cookieValue);
+        cookieValues.push_back(cookieValue);
     }
 
     return cookieValues;
 }
 
 CookieKeyPair *WebRoute::GetCookieValue(const std::string& cookieValue) {
-
     size_t delimiterPos = cookieValue.find('=');
-    if (delimiterPos != std::string::npos)
-    {
+    if (delimiterPos != std::string::npos) {
         return new CookieKeyPair(cookieValue.substr(0, delimiterPos),
                                  cookieValue.substr(delimiterPos + 1));
     }
@@ -112,4 +108,5 @@ CookieKeyPair *WebRoute::GetCookieValue(const std::string& cookieValue) {
     return nullptr;
 }
 
-} }   // namespace items::webPortalSvc
+}   // namespace webPortalSvc
+}   // namespace items
