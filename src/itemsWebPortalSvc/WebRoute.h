@@ -57,7 +57,7 @@ struct AuthCookies
 };
 
 // Base class for route that serve a web page.
-class WebRoute {
+class WebRoute  : public serviceFramework::ApiEndpointController {
  public:
     WebRoute();
 

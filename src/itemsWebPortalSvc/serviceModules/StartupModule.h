@@ -35,6 +35,8 @@ class StartupModule : public serviceFramework::ServiceModule {
  private:
     bool AddServiceProviders();
 
+    bool AddRootController();
+
     bool Initialise();
 };
 

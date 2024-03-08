@@ -23,7 +23,7 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 #include <sstream>
 #include "WebRoute.h"
 #include "Logger.h"
-#include "apis/gatewaySvc/GatewaySvcClient.h"
+//#include "apis/gatewaySvc/GatewaySvcClient.h"
 
 namespace items { namespace webPortalSvc {
 
@@ -33,7 +33,7 @@ namespace items { namespace webPortalSvc {
 
     const std::string REDIRECT_URL = "<meta http-equiv=\"Refresh\" content=\"0; url='{0}\"/>";
 
-    WebRoute::WebRoute() {
+    WebRoute::WebRoute() : serviceFramework::ApiEndpointController() {
     }
 
     std::string WebRoute::GenerateRedirect(std::string redirectURLRoot,

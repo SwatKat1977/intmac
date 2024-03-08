@@ -23,6 +23,7 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 #include <filesystem>
 #include "oatpp/network/tcp/client/ConnectionProvider.hpp"
 #include "spdlog/spdlog.h"
+#include "controllers/RootController.h"
 #include "Definitions.h"
 #include "StartupModule.h"
 #include "Logger.h"
@@ -66,6 +67,8 @@ bool StartupModule::Initialise() {
 
     if (!AddServiceProviders()) return false;
 
+    if (!AddRootController()) return false;
+
     return true;
 }
 
@@ -82,6 +85,24 @@ bool StartupModule::AddServiceProviders() {
             "SERVICE_PROVIDER_API_NAME", e.what());
         return false;
     }
+
+    return true;
+}
+
+bool StartupModule::AddRootController() {
+    try {
+        auto controller = std::make_shared<
+            controllers::RootController>();
+        m_context->AddApiController(SERVICE_PROVIDER_API_NAME,
+                                    controller);
+    }
+    catch (std::runtime_error& e) {
+        LOGGER->critical(
+            "Unable to create root controller, reason {0}",
+            e.what());
+        return false;
+    }
+    LOGGER->info("Added root controller");
 
     return true;
 }
