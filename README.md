@@ -11,7 +11,12 @@ This section is for developers who wish to run, modify or test ITEMS.
 # Dependencies
 
 To build INTMAC you need the following dependencies:
-* Inja (https://github.com/pantor/inja)
+
+Common:
+* [OatPP] (https://oatpp.io/)
+
+Web Portal Service:
+* [Inja] (https://github.com/pantor/inja) 
 
 ### Prerequisites
 
