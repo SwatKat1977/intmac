@@ -12,11 +12,21 @@ This section is for developers who wish to run, modify or test ITEMS.
 
 To build INTMAC you need the following dependencies:
 
+Key:
+* CO = Common
+* AC = Accounts Service
+* CM = CMS Service
+* GW = Gateway Service
+
+Dependency | Version | Applicable To
+------------ | ------------- | -------------
+auth | items_auth | --file Dockerfile.auth . -t items_accounts_svc | -d -p 3030:3030 <Tag>
+
 Common:
-* [OatPP](https://oatpp.io/)
+* [OatPP Framework](https://oatpp.io/)
 
 Web Portal Service:
-* [Inja](https://github.com/pantor/inja) 
+* [Inja HTML Template Engine](https://github.com/pantor/inja) 
 
 ### Prerequisites
 
