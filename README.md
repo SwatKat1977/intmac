@@ -20,8 +20,8 @@ Key:
 
 Dependency | Version | Applicable To | Environment Variable
 ------------ | ------------- | ------------- | -------------
-[OatPP Framework](https://oatpp.io/) | LATEST | ALL | ITEMS_OATPP_INCLUDE_DIR
-[Inja HTML Template Engine](https://github.com/pantor/inja) | LATEST | GW | ITEMS_INJA_ROOT
+[OatPP Framework](https://oatpp.io/) | V1.3.0 | ALL | ITEMS_OATPP_INCLUDE_DIR
+[Inja HTML Template Engine](https://github.com/pantor/inja) | V3.4 | GW | ITEMS_INJA_INCLUDE_DIR
 
 ### Prerequisites
 
