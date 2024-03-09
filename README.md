@@ -8,6 +8,11 @@ Integrated management suite for managing test cases.
 
 This section is for developers who wish to run, modify or test ITEMS.
 
+# Dependencies
+
+To build INTMAC you need the following dependencies:
+* Inja (https://github.com/pantor/inja)
+
 ### Prerequisites
 
 For Docker:
