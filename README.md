@@ -19,7 +19,7 @@ Key:
 * GW = Gateway Service
 
 Dependency | Version | Applicable To | Environment Variable
------------- | ------------- | -------------
+------------ | ------------- | ------------- | -------------
 [OatPP Framework](https://oatpp.io/) | LATEST | ALL | ITEMS_OATPP_INCLUDE_DIR
 [Inja HTML Template Engine](https://github.com/pantor/inja) | LATEST | GW | ITEMS_INJA_ROOT
 
