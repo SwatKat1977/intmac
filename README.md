@@ -13,7 +13,7 @@ This section is for developers who wish to run, modify or test ITEMS.
 To build INTMAC you need the following dependencies:
 
 Key:
-* CO = Common
+* * = All
 * AC = Accounts Service
 * CM = CMS Service
 * GW = Gateway Service
