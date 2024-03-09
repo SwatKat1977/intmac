@@ -37,7 +37,7 @@ class StartupModule : public serviceFramework::ServiceModule {
     bool Initialise();
 
  private:
-    AccountsSvcClientptr accounts_service_client_;
+    serviceFramework::AccountsSvcClientptr accounts_service_client_;
     std::shared_ptr<SessionsManager> sessions_manager_;
 
     bool AddServiceProviders();
