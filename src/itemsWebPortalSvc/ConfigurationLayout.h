@@ -38,7 +38,7 @@ const char HTMl_TEMPLATE_DIR_DEFAULT[] = "../html";
 const char SECTION_INTERNAL_APIS[] = "internal_apis";
 const char INTERNAL_APIS_GATEWAY_SVC_HOST[] = "gateway_svc_host";
 const char INTERNAL_APIS_GATEWAY_SVC_PORT[] = "gateway_svc_port";
-const char INTERNAL_APIS_GATEWAY_SVC_HOST_DEFAULT[] = "localhost";
+const char INTERNAL_APIS_GATEWAY_SVC_HOST_DEFAULT[] = "http://localhost";
 const int INTERNAL_APIS_GATEWAY_SVC_PORT_DEFAULT = 2222;
 
 const serviceFramework::SectionList HtmlSettings = {
