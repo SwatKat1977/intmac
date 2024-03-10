@@ -22,6 +22,7 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 */
 #ifndef WEBROUTE_H_
 #define WEBROUTE_H_
+#include <memory>
 #include <string>
 #include <vector>
 #include "apis/gatewaySvc/GatewaySvcClient.h"

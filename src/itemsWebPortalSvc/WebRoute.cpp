@@ -33,9 +33,10 @@ namespace items { namespace webPortalSvc {
     const std::string REDIRECT_URL =
         "<meta http-equiv=\"Refresh\" content=\"0; url='{0}\"/>";
 
-    WebRoute::WebRoute(std::shared_ptr<GatewaySvcClient> gatewaySvcClient)
+    WebRoute::WebRoute(std::shared_ptr<GatewaySvcClient> gatewaySvcClient,
+                       serviceFramework::ConfigManager configManager)
         : serviceFramework::ApiEndpointController(),
-          gatewaySvcClient_(gatewaySvcClient) {
+          gatewaySvcClient_(gatewaySvcClient), configManager_(configManager) {
     }
 
     std::string WebRoute::GenerateRedirect(std::string redirectURLRoot,
@@ -84,6 +85,37 @@ bool WebRoute::HasAuthCookies(std::vector<std::string> cookies) {
     }
 
     return true;
+}
+
+bool WebRoute::AuthCookiesValidate(std::string user, std::string token) {
+    bool returnStatus = false;
+
+/*
+    url = f"{Configuration().internal_api_gateway}/handshake/valid_token"
+
+    request_body = {
+        "email_address": username,
+        "token": token
+    }
+
+    try:
+        response = requests.get(url, json = request_body, timeout=1)
+
+    except requests.exceptions.ConnectionError as ex:
+        raise ItemsException('Connection to gateway api timed out') from ex
+
+    data = json.loads(response.content,
+                      object_hook=lambda d: SimpleNamespace(**d))
+
+    if response.status_code == HTTPStatus.NOT_ACCEPTABLE:
+        except_str = ("Internal error communicating with gateway: "
+                      f"{data.status}")
+        raise ItemsException(except_str)
+
+    if data.status == "VALID":
+        return_status = True
+*/
+    return returnStatus;
 }
 
 std::vector<std::string> WebRoute::ParseCookieHeader(
