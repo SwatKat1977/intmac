@@ -31,12 +31,24 @@ namespace items { namespace webPortalSvc {
 const char BOOL_YES[] = "YES";
 const char BOOL_NO[] = "NO";
 
-const char SECTION_INTERNAL_APIS[] = "internal_apis";
+const char SECTION_HTML[] = "html";
+const char HTMl_TEMPLATE_DIR[] = "html_template_dir";
+const char HTMl_TEMPLATE_DIR_DEFAULT[] = "../html";
 
+const char SECTION_INTERNAL_APIS[] = "internal_apis";
 const char INTERNAL_APIS_GATEWAY_SVC_HOST[] = "gateway_svc_host";
 const char INTERNAL_APIS_GATEWAY_SVC_PORT[] = "gateway_svc_port";
 const char INTERNAL_APIS_GATEWAY_SVC_HOST_DEFAULT[] = "localhost";
 const int INTERNAL_APIS_GATEWAY_SVC_PORT_DEFAULT = 2222;
+
+const serviceFramework::SectionList HtmlSettings = {
+    {
+        HTMl_TEMPLATE_DIR,
+        serviceFramework::ConfigSetupItem(HTMl_TEMPLATE_DIR,
+                        serviceFramework::CONFIG_ITEM_TYPE_STRING)
+                .DefaultValue(HTMl_TEMPLATE_DIR_DEFAULT)
+    }
+};
 
 const serviceFramework::SectionList InternalApisSettings = {
     {
@@ -55,6 +67,7 @@ const serviceFramework::SectionList InternalApisSettings = {
 
 serviceFramework::SectionsMap CONFIGURATION_LAYOUT_MAP = {
     {serviceFramework::LOGGING_SECTION, serviceFramework::LoggerSettings},
+    {SECTION_HTML, HtmlSettings},
     {SECTION_INTERNAL_APIS, InternalApisSettings}
 };
 
