@@ -60,14 +60,18 @@ struct AuthCookies {
 // Base class for route that serve a web page.
 class WebRoute  : public serviceFramework::ApiEndpointController {
  public:
-    WebRoute(std::shared_ptr<GatewaySvcClient> gatewaySvcClient);
+    WebRoute(std::shared_ptr<GatewaySvcClient> gatewaySvcClient,
+             serviceFramework::ConfigManager configManager);
 
     ~WebRoute() = default;
 
     bool HasAuthCookies(std::vector<std::string> cookies);
 
+    bool AuthCookiesValidate(std::string user, std::string token);
+
  protected:
     std::shared_ptr<GatewaySvcClient> gatewaySvcClient_;
+    serviceFramework::ConfigManager configManager_;
 
     std::string GenerateRedirect(std::string redirectURLRoot,
         std::string redirectURL);
