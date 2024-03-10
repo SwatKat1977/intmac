@@ -189,7 +189,8 @@ const char TEMPLATE_INTERNAL_ERROR_PAGE[] = "internal_server_error.html";
 
 class RootController : public WebRoute {
  public:
-    RootController() : WebRoute() {}
+    RootController(std::shared_ptr<GatewaySvcClient> gatewaySvcClient)
+        : WebRoute(gatewaySvcClient) {}
 
     ENDPOINT("GET", "/", root,
              REQUEST(std::shared_ptr<IncomingRequest>, request)) {
