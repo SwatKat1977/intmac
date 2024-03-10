@@ -24,9 +24,12 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 #define WEBROUTE_H_
 #include <string>
 #include <vector>
+#include "apis/gatewaySvc/GatewaySvcClient.h"
 #include "ServiceContext.h"
 
 namespace items { namespace webPortalSvc {
+
+using common::apis::gatewaySvc::GatewaySvcClient;
 
 class CookieKeyPair {
  public:
@@ -57,13 +60,15 @@ struct AuthCookies {
 // Base class for route that serve a web page.
 class WebRoute  : public serviceFramework::ApiEndpointController {
  public:
-    WebRoute();
+    WebRoute(std::shared_ptr<GatewaySvcClient> gatewaySvcClient);
 
     ~WebRoute() = default;
 
     bool HasAuthCookies(std::vector<std::string> cookies);
 
  protected:
+    std::shared_ptr<GatewaySvcClient> gatewaySvcClient_;
+
     std::string GenerateRedirect(std::string redirectURLRoot,
         std::string redirectURL);
 

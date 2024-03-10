@@ -33,7 +33,9 @@ namespace items { namespace webPortalSvc {
     const std::string REDIRECT_URL =
         "<meta http-equiv=\"Refresh\" content=\"0; url='{0}\"/>";
 
-    WebRoute::WebRoute() : serviceFramework::ApiEndpointController() {
+    WebRoute::WebRoute(std::shared_ptr<GatewaySvcClient> gatewaySvcClient)
+        : serviceFramework::ApiEndpointController(),
+          gatewaySvcClient_(gatewaySvcClient) {
     }
 
     std::string WebRoute::GenerateRedirect(std::string redirectURLRoot,
