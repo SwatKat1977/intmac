@@ -93,7 +93,7 @@ bool StartupModule::AddServiceProviders() {
 bool StartupModule::AddRootController() {
     try {
         auto controller = std::make_shared<
-            controllers::RootController>();
+            controllers::RootController>(gateway_service_client_);
         m_context->AddApiController(SERVICE_PROVIDER_API_NAME,
                                     controller);
     }
