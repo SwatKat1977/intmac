@@ -229,6 +229,15 @@ class RootController : public WebRoute {
             return response;
         }
 
+        auto authCookies = GetAuthCookies(cookieValues);
+
+        if (!AuthCookiesValid(authCookies->User(), authCookies->Token())) {
+            auto response = ApiResponseFactory::createResponse(
+                ApiResponseStatus::CODE_200, "revert to login placeholder C");
+            response->putHeader("Content-Type", "text/html");
+            return response;
+        }
+
 json data;
 data["neighbour"] = "Peter";
 data["guests"] = {"Jeff", "Tom", "Patrick"};
