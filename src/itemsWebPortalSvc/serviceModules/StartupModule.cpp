@@ -66,6 +66,18 @@ bool StartupModule::Initialise() {
         m_context->GetConfigManager().GetStringEntry(
             "logging", "log_format").c_str());
 
+    LOGGER->info("[HTML]");
+    LOGGER->info("-> HTML Template Dir : {0}",
+        m_context->GetConfigManager().GetStringEntry(
+            "html", "html_template_dir").c_str());
+
+    LOGGER->info("[Internal APIs]");
+    LOGGER->info("-> Gateway Service API : {0}:{1}",
+        m_context->GetConfigManager().GetStringEntry(
+            "internal_apis", "gateway_svc_host").c_str(),
+        m_context->GetConfigManager().GetIntEntry(
+            "internal_apis", "gateway_svc_port"));
+
     if (!AddServiceProviders()) return false;
 
     if (!AddRootController()) return false;
@@ -93,7 +105,8 @@ bool StartupModule::AddServiceProviders() {
 bool StartupModule::AddRootController() {
     try {
         auto controller = std::make_shared<
-            controllers::RootController>(gateway_service_client_);
+            controllers::RootController>(gateway_service_client_,
+                                         m_context->GetConfigManager());
         m_context->AddApiController(SERVICE_PROVIDER_API_NAME,
                                     controller);
     }
