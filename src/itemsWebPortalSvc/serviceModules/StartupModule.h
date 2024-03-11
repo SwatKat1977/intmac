@@ -40,6 +40,8 @@ class StartupModule : public serviceFramework::ServiceModule {
 
     bool AddRootController();
 
+    void CreateGatewaySvcClient();
+
     bool Initialise();
 };
 
