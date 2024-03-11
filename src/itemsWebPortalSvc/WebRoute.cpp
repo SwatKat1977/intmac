@@ -20,11 +20,18 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
+#include <iostream> //temp temp temp temp temp temp temp temp temp temp temp temp temp temp temp temp
 #include <sstream>
+#include <string>
 #include "WebRoute.h"
 #include "Logger.h"
+#include "apis/gatewaySvc/GatewaySvcClient.h"
+#include "apis/gatewaySvc/GatewaySvcDTOs.h"
 
 namespace items { namespace webPortalSvc {
+
+    using common::apis::gatewaySvc::IsValidUserTokenResponseDTO;
+    using common::apis::gatewaySvc::GATEWAYSVC_RESPONSE_STATUS_OK;
 
     // Name of cookies.
     const std::string COOKIE_TOKEN = "items_token";
@@ -87,35 +94,20 @@ bool WebRoute::HasAuthCookies(std::vector<std::string> cookies) {
     return true;
 }
 
-bool WebRoute::AuthCookiesValidate(std::string user, std::string token) {
-    bool returnStatus = false;
-
-/*
-    url = f"{Configuration().internal_api_gateway}/handshake/valid_token"
-
-    request_body = {
-        "email_address": username,
-        "token": token
+bool WebRoute::AuthCookiesValid(std::string user, std::string token) {
+    oatpp::Object<IsValidUserTokenResponseDTO> callResponse;
+    try {
+        callResponse = gatewaySvcClient_->isValidSession(user, token)
+            ->readBodyToDto<oatpp::Object<IsValidUserTokenResponseDTO>>(
+                m_objectMapper.get());
+    }
+    catch (std::runtime_error& ex) {
+        LOGGER->error("Cannot connect to accounts service API, reason: {0}",
+            ex.what());
+        throw std::runtime_error("Cannot connect to accounts service API");
     }
 
-    try:
-        response = requests.get(url, json = request_body, timeout=1)
-
-    except requests.exceptions.ConnectionError as ex:
-        raise ItemsException('Connection to gateway api timed out') from ex
-
-    data = json.loads(response.content,
-                      object_hook=lambda d: SimpleNamespace(**d))
-
-    if response.status_code == HTTPStatus.NOT_ACCEPTABLE:
-        except_str = ("Internal error communicating with gateway: "
-                      f"{data.status}")
-        raise ItemsException(except_str)
-
-    if data.status == "VALID":
-        return_status = True
-*/
-    return returnStatus;
+    return (callResponse->status == GATEWAYSVC_RESPONSE_STATUS_OK);
 }
 
 std::vector<std::string> WebRoute::ParseCookieHeader(
