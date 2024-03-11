@@ -41,7 +41,9 @@ class ResponseListHeaderDTO : public oatpp::DTO {
     DTO_FIELD(Int8, size);
 };
 
-class EmptyDTO : public oatpp::DTO {};
+class EmptyDTO : public oatpp::DTO {
+    DTO_INIT(EmptyDTO, DTO)
+};
 
 #include OATPP_CODEGEN_END(DTO)
 
