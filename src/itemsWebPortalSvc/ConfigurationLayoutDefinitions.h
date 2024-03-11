@@ -20,16 +20,11 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
-#ifndef CONFIGURATIONLAYOUT_H_
-#define CONFIGURATIONLAYOUT_H_
-#include <string>
-#include "ConfigSetup.h"
-#include "LoggerSettings.h"
-#include "ConfigurationLayoutDefinitions.h"
+#ifndef CONFIGURATIONLAYOUTDEFINITIONS_H_
+#define CONFIGURATIONLAYOUTDEFINITIONS_H_
 
 namespace items { namespace webPortalSvc {
 
-/*
 const char BOOL_YES[] = "YES";
 const char BOOL_NO[] = "NO";
 
@@ -42,39 +37,8 @@ const char INTERNAL_APIS_GATEWAY_SVC_HOST[] = "gateway_svc_host";
 const char INTERNAL_APIS_GATEWAY_SVC_PORT[] = "gateway_svc_port";
 const char INTERNAL_APIS_GATEWAY_SVC_HOST_DEFAULT[] = "http://localhost";
 const int INTERNAL_APIS_GATEWAY_SVC_PORT_DEFAULT = 2222;
-*/
-
-const serviceFramework::SectionList HtmlSettings = {
-    {
-        HTMl_TEMPLATE_DIR,
-        serviceFramework::ConfigSetupItem(HTMl_TEMPLATE_DIR,
-                        serviceFramework::CONFIG_ITEM_TYPE_STRING)
-                .DefaultValue(HTMl_TEMPLATE_DIR_DEFAULT)
-    }
-};
-
-const serviceFramework::SectionList InternalApisSettings = {
-    {
-        INTERNAL_APIS_GATEWAY_SVC_HOST,
-        serviceFramework::ConfigSetupItem(INTERNAL_APIS_GATEWAY_SVC_HOST,
-                        serviceFramework::CONFIG_ITEM_TYPE_STRING)
-                .DefaultValue(INTERNAL_APIS_GATEWAY_SVC_HOST_DEFAULT)
-    },
-    {
-        INTERNAL_APIS_GATEWAY_SVC_PORT,
-        serviceFramework::ConfigSetupItem(INTERNAL_APIS_GATEWAY_SVC_PORT,
-                    serviceFramework::CONFIG_ITEM_TYPE_INTEGER)
-                .DefaultValue(INTERNAL_APIS_GATEWAY_SVC_PORT_DEFAULT)
-    }
-};
-
-serviceFramework::SectionsMap CONFIGURATION_LAYOUT_MAP = {
-    {serviceFramework::LOGGING_SECTION, serviceFramework::LoggerSettings},
-    {SECTION_HTML, HtmlSettings},
-    {SECTION_INTERNAL_APIS, InternalApisSettings}
-};
 
 }   // namespace webPortalSvc
 }   // namespace items
 
-#endif  // CONFIGURATIONLAYOUT_H_
+#endif  // CONFIGURATIONLAYOUTDEFINITIONS_H_
