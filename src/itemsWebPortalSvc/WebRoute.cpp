@@ -27,6 +27,7 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 #include "Logger.h"
 #include "apis/gatewaySvc/GatewaySvcClient.h"
 #include "apis/gatewaySvc/GatewaySvcDTOs.h"
+#include "apis/CommonDTOs.h"
 
 namespace items { namespace webPortalSvc {
 
@@ -95,19 +96,30 @@ bool WebRoute::HasAuthCookies(std::vector<std::string> cookies) {
 }
 
 bool WebRoute::AuthCookiesValid(std::string user, std::string token) {
-    oatpp::Object<IsValidUserTokenResponseDTO> callResponse;
+
+   std::string tokenValue =  configManager_.GetStringEntry("authentication",
+                                                           "token");
+
+    auto requestBody = common::apis::EmptyDTO::createShared();
+    oatpp::Object<IsValidUserTokenResponseDTO> callBody;
     try {
-        callResponse = gatewaySvcClient_->isValidSession(user, token)
-            ->readBodyToDto<oatpp::Object<IsValidUserTokenResponseDTO>>(
-                m_objectMapper.get());
+        auto response = gatewaySvcClient_->isValidSession(user, token,
+            requestBody, tokenValue);
+
+        if (response->getStatusCode() != 200) {
+            throw std::runtime_error("Call to check valid session Failed!");
+        }
+
+        callBody = response->readBodyToDto<
+            oatpp::Object<IsValidUserTokenResponseDTO>>(m_objectMapper.get());
     }
     catch (std::runtime_error& ex) {
-        LOGGER->error("Cannot connect to accounts service API, reason: {0}",
+        LOGGER->error("Cannot connect to gateway service API, reason: {0}",
             ex.what());
-        throw std::runtime_error("Cannot connect to accounts service API");
+        throw std::runtime_error("Cannot connect to gateway service API");
     }
 
-    return (callResponse->status == GATEWAYSVC_RESPONSE_STATUS_OK);
+    return (callBody->status == GATEWAYSVC_RESPONSE_STATUS_OK);
 }
 
 std::vector<std::string> WebRoute::ParseCookieHeader(
