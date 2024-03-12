@@ -167,22 +167,8 @@ class RootController : public WebRoute {
             return response;
         }
 
-        std::vector<std::string> cookieValues = ParseCookieHeader(
-            cookieHeader);
-
-        if (!HasAuthCookies(cookieValues)) {
-            printf("revert to login placeholder B\n");
-            auto response = ApiResponseFactory::createResponse(
-                ApiResponseStatus::CODE_200, redirectToLogin);
-            response->putHeader("Content-Type", "text/html");
-            return response;
-        }
-
-        auto authCookies = GetAuthCookies(cookieValues);
-
         try {
-            if (!CallIsSessionValid(authCookies->User(),
-                authCookies->Token())) {
+            if (!IsValidSession(cookieHeader)) {
                 auto response = ApiResponseFactory::createResponse(
                     ApiResponseStatus::CODE_200, redirectToLogin);
                 response->putHeader("Content-Type", "text/html");
@@ -190,7 +176,6 @@ class RootController : public WebRoute {
             }
         }
         catch (std::runtime_error &e) {
-            std::cout << "exception : " << e.what() << std::endl;
             return ApiResponseFactory::createResponse(
                 ApiResponseStatus::CODE_200, "Internal error...");
         }

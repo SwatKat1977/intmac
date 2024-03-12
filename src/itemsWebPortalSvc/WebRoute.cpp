@@ -95,6 +95,17 @@ bool WebRoute::HasAuthCookies(std::vector<std::string> cookies) {
     return true;
 }
 
+bool WebRoute::IsValidSession(std::string cookieHeader) {
+    std::vector<std::string> cookieValues = ParseCookieHeader(
+        cookieHeader);
+
+    if (!HasAuthCookies(cookieValues)) return false;
+
+    auto authCookies = GetAuthCookies(cookieValues);
+
+    return CallIsSessionValid(authCookies->User(), authCookies->Token());
+}
+ 
 bool WebRoute::CallIsSessionValid(std::string user, std::string token) {
 
     std::string tokenValue =  configManager_.GetStringEntry("authentication",
