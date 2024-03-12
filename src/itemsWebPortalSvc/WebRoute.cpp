@@ -95,9 +95,9 @@ bool WebRoute::HasAuthCookies(std::vector<std::string> cookies) {
     return true;
 }
 
-bool WebRoute::AuthCookiesValid(std::string user, std::string token) {
+bool WebRoute::CallIsSessionValid(std::string user, std::string token) {
 
-   std::string tokenValue =  configManager_.GetStringEntry("authentication",
+    std::string tokenValue =  configManager_.GetStringEntry("authentication",
                                                            "token");
 
     auto requestBody = common::apis::EmptyDTO::createShared();
