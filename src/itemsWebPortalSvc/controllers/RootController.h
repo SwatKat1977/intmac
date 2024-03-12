@@ -29,6 +29,7 @@ Copyright 2014-2024 Integrated Test Management Suite Development Team
 #include "oatpp/core/macro/codegen.hpp"
 #include "oatpp/core/macro/component.hpp"
 #include "inja.hpp"
+#include "PathHelpers.h"
 #include "WebRoute.h"
 
 namespace items { namespace webPortalSvc { namespace controllers {
@@ -42,55 +43,7 @@ using serviceFramework::ApiResponseFactory;
 using serviceFramework::ApiResponseStatus;
 
 /*
-
-class View(WebBaseView):
-    ''' Home view container class. '''
-
-    TEMPLATE_LOGIN_PAGE = "login.html"
-    TEMPLATE_HOME_PAGE = "home.html"
-    TEMPLATE_PROJECT_SELECTION_PAGE = "project_select.html"
-    TEMPLATE_INTERNAL_ERROR_PAGE = "internal_server_error.html"
-
-    def __init__(self, logger : logging.Logger):
-        super().__init__()
-
-        self._logger = logger.getChild(__name__)
-
-        mimetypes.init()
-
-    async def home_handler(self, api_request) -> Response:
-        """
-        Handler method for home page (e.g. '/').
-
-        parameters:
-            api_request - REST API request object
-
-        returns:
-            Instance of Quart Response class.
-        """
-
-        try:
-            if not self._has_auth_cookies() or not self._validate_cookies():
-                redirect = self._generate_redirect('login')
-                return await make_response(redirect)
-
-        except ItemsException as ex:
-                self._logger.error('Internal Error: %s', ex)
-                return await render_template(self.TEMPLATE_INTERNAL_ERROR_PAGE)
-
-        return await render_template(self.TEMPLATE_HOME_PAGE)
-
     async def login_handler(self, api_request) -> Response:
-        """
-        Handler method for login page.
-
-        parameters:
-            api_request - REST API request object
-
-        returns:
-            Instance of Quart Response class.
-        """
-
         try:
             if self._has_auth_cookies() and self._validate_cookies():
                 redirect = self._generate_redirect('')
@@ -196,70 +149,61 @@ class RootController : public WebRoute {
     ENDPOINT("GET", "/", root,
              REQUEST(std::shared_ptr<IncomingRequest>, request)) {
 
-/*
-        try:
-            if not self._has_auth_cookies() or not self._validate_cookies():
-                redirect = self._generate_redirect('login')
-                return await make_response(redirect)
+        std::string templateDir = configManager_.GetStringEntry(
+            "html", "html_template_dir");
+        std::string loginPage = PathAppend(templateDir,
+            TEMPLATE_LOGIN_PAGE);
 
-        except ItemsException as ex:
-                self._logger.error('Internal Error: %s', ex)
-                return await render_template(self.TEMPLATE_INTERNAL_ERROR_PAGE)
+        Environment env;
+        auto redirectToLogin = GenerateRedirect("/", "login");
 
-        return await render_template(self.TEMPLATE_HOME_PAGE)
-
-*/
-
+        // If No cookies then render the login page.
+        // result = env.render_file("./templates/greeting.txt", data);
         auto cookieHeader = request->getHeader("Cookie");
         if (!cookieHeader) {
             auto response = ApiResponseFactory::createResponse(
-                ApiResponseStatus::CODE_200, "revert to login placeholder A");
+                ApiResponseStatus::CODE_200, redirectToLogin);
             response->putHeader("Content-Type", "text/html");
             return response;
         }
 
-        printf("Cookie header : %s\n", cookieHeader.get()->c_str());
         std::vector<std::string> cookieValues = ParseCookieHeader(
             cookieHeader);
 
         if (!HasAuthCookies(cookieValues)) {
+            printf("revert to login placeholder B\n");
             auto response = ApiResponseFactory::createResponse(
-                ApiResponseStatus::CODE_200, "revert to login placeholder B");
+                ApiResponseStatus::CODE_200, redirectToLogin);
             response->putHeader("Content-Type", "text/html");
             return response;
         }
 
         auto authCookies = GetAuthCookies(cookieValues);
 
-        if (!AuthCookiesValid(authCookies->User(), authCookies->Token())) {
-            auto response = ApiResponseFactory::createResponse(
-                ApiResponseStatus::CODE_200, "revert to login placeholder C");
-            response->putHeader("Content-Type", "text/html");
-            return response;
+        try {
+            if (!CallIsSessionValid(authCookies->User(),
+                authCookies->Token())) {
+                auto response = ApiResponseFactory::createResponse(
+                    ApiResponseStatus::CODE_200, redirectToLogin);
+                response->putHeader("Content-Type", "text/html");
+                return response;
+            }
+        }
+        catch (std::runtime_error &e) {
+            std::cout << "exception : " << e.what() << std::endl;
+            return ApiResponseFactory::createResponse(
+                ApiResponseStatus::CODE_200, "Internal error...");
         }
 
-json data;
-data["neighbour"] = "Peter";
-data["guests"] = {"Jeff", "Tom", "Patrick"};
-
-const char *test = "<table style=\"width:100%\">"
-                   "{% for i in guests %}"
-                   "<tr>"
-     "<td>{{i}}</td>"
-    "</tr>"
-    "{% endfor %}"
-    "</table>";
-
-Environment env;
-
-// Render a string with json data
-std::string result = env.render(test, data); // "Hello world!"
-
-std::cout << "RES : " << result << std::endl;
-
         return ApiResponseFactory::createResponse(
-            ApiResponseStatus::CODE_200, "response");
+            ApiResponseStatus::CODE_200, "self.TEMPLATE_HOME_PAG");
     }
+
+    ENDPOINT("GET", "/*", catchAll) {
+        return ApiResponseFactory::createResponse(
+            ApiResponseStatus::CODE_200, "Catch all...");
+    }
+
 };
 
 #include OATPP_CODEGEN_END(ApiController)
