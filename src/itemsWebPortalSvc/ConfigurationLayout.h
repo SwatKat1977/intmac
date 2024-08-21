@@ -31,10 +31,16 @@ namespace items { namespace webPortalSvc {
 
 const serviceFramework::SectionList HtmlSettings = {
     {
-        HTMl_DIRECTORY,
-        serviceFramework::ConfigSetupItem(HTMl_DIRECTORY,
+        HTML_DIRECTORY,
+        serviceFramework::ConfigSetupItem(HTML_DIRECTORY,
                         serviceFramework::CONFIG_ITEM_TYPE_STRING)
-                .DefaultValue(HTMl_DIRECTORY_DEFAULT)
+                .DefaultValue(HTML_DIRECTORY_DEFAULT)
+    },
+    {
+        HTML_CSS_DIRECTORY,
+        serviceFramework::ConfigSetupItem(HTML_CSS_DIRECTORY,
+                        serviceFramework::CONFIG_ITEM_TYPE_STRING)
+                .DefaultValue(HTML_CSS_DIRECTORY_DEFAULT)
     }
 };
 

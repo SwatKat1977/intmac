@@ -73,9 +73,12 @@ bool StartupModule::Initialise() {
             "logging", "log_format").c_str());
 
     LOGGER->info("[HTML]");
-    LOGGER->info("-> HTML Directory : {0}",
+    LOGGER->info("-> HTML Directory     : {0}",
         m_context->GetConfigManager().GetStringEntry(
-            "html", "html_directory").c_str());
+            SECTION_HTML, "html_directory").c_str());
+    LOGGER->info("-> HTML CSS Directory : {0}",
+        m_context->GetConfigManager().GetStringEntry(
+            SECTION_HTML, HTML_CSS_DIRECTORY).c_str());
 
     LOGGER->info("[Internal APIs]");
     LOGGER->info("-> Gateway Service API : {0}:{1}",
