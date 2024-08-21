@@ -33,7 +33,7 @@ using items::webPortalSvc::CONFIGURATION_LAYOUT_MAP;
 
 const char SERVICE_CONTEXT_NAME[] = "Items Web Portal Svc";
 
-int main() {
+int main(int argc, char **argv) {
     auto configFile = GetEnv("ITEMS_WEBPORTAL_SVC_CONFIG_FILE");
     auto configFileRequired = GetEnv(
         "ITEMS_WEBPORTAL_SVC_CONFIG_FILE_REQUIRED");
