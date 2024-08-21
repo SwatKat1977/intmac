@@ -184,10 +184,100 @@ class RootController : public WebRoute {
             ApiResponseStatus::CODE_200, "self.TEMPLATE_HOME_PAG");
     }
 
+    ENDPOINT("GET", "/login", loginGET,
+             REQUEST(std::shared_ptr<IncomingRequest>, request)) {
+
+        json data;
+
+        std::string templateDir = configManager_.GetStringEntry(
+            "html", "html_template_dir");
+            /*
+        std::string loginPage = PathAppend(templateDir,
+            TEMPLATE_LOGIN_PAGE);
+*/
+
+        Environment env(templateDir);
+
+        // Render a string with json data
+        //std::string result = env.render(test, data); // "Hello world!"
+
+        std::string renderedPage;
+        try {
+            renderedPage = env.render_file(TEMPLATE_LOGIN_PAGE, data);
+        }
+        catch(std::exception &ex) {
+            printf("EX : %s\n", ex.what());
+        }
+
+        return ApiResponseFactory::createResponse(
+            ApiResponseStatus::CODE_200, renderedPage);
+
+#ifdef PYCODE
+        try:
+            if self._has_auth_cookies() and self._validate_cookies():
+                redirect = self._generate_redirect('')
+                response = await make_response(redirect)
+                return response
+
+        except ItemsException as ex:
+                self._logger.error('Internal Error: %s', ex)
+                return await render_template(self.TEMPLATE_INTERNAL_ERROR_PAGE)
+
+        if api_request.method == "GET":
+            return await render_template(self.TEMPLATE_LOGIN_PAGE)
+#endif
+    }
+
+    ENDPOINT("GET", "/css/{stylesheet}", cssSheetGET,
+             PATH(String, stylesheet)) {
+
+/*
+        std::string templateDir = configManager_.GetStringEntry(
+            "html", "html_template_dir");
+
+        //std::string loginPage = PathAppend(templateDir,
+        //    TEMPLATE_LOGIN_PAGE);
+
+        Environment env(templateDir);
+
+*/
+        // You can do something with the 'page' parameter here
+        auto responseText = "Requested page: " + stylesheet;
+
+        // Return the response as text
+        return createResponse(Status::CODE_200, responseText);
+    }
+
+#ifdef USE_TEST_CODE_
+void handleStaticFileRequest(const Rest::Request& request, Http::ResponseWriter response) {
+    // Extract the file path from the request (e.g., "/static/style.css")
+    auto filePath = "." + request.resource();
+
+    // Open the file and read its content
+    std::ifstream file(filePath);
+    if (!file) {
+        response.send(Http::Code::Not_Found, "File not found");
+        return;
+    }
+
+    std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+
+    // Determine MIME type based on file extension
+    if (filePath.find(".css") != std::string::npos) {
+        response.send(Http::Code::Ok, content, MIME(Text, Css));
+    } else {
+        response.send(Http::Code::Ok, content);
+    }
+}
+#endif
+
+#ifdef PYCODE
+
     ENDPOINT("GET", "/*", catchAll) {
         return ApiResponseFactory::createResponse(
             ApiResponseStatus::CODE_200, "Catch all...");
     }
+    #endif
 
 };
 
