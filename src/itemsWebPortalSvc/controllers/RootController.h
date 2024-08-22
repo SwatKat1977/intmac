@@ -25,11 +25,12 @@ Copyright 2014-2024 Integrated Test Management Suite Development Team
 #include <memory>
 #include <string>
 #include <vector>
+#include "inja.hpp"
 #include "oatpp/web/server/api/ApiController.hpp"
 #include "oatpp/web/protocol/http/Http.hpp"
 #include "oatpp/core/macro/codegen.hpp"
 #include "oatpp/core/macro/component.hpp"
-#include "inja.hpp"
+#include "oatpp/web/protocol/http/outgoing/Response.hpp"
 #include "ConfigurationLayoutDefinitions.h"
 #include "PathHelpers.h"
 #include "WebRoute.h"
@@ -41,6 +42,7 @@ using namespace inja;
 
 #include OATPP_CODEGEN_BEGIN(ApiController)
 
+using oatpp::web::protocol::http::incoming::Response;
 using serviceFramework::ApiResponseFactory;
 using serviceFramework::ApiResponseStatus;
 
@@ -187,6 +189,10 @@ class RootController : public WebRoute {
 
     ENDPOINT("GET", "/login", loginGET,
              REQUEST(std::shared_ptr<IncomingRequest>, request)) {
+
+        // Get the HTTP method (GET, POST, etc.)
+        auto method = request->getStartingLine().method;
+
         json data;
 
         std::string serverHost = DetermineServerHost(request);
@@ -201,7 +207,7 @@ class RootController : public WebRoute {
             renderedPage = env.render_file(TEMPLATE_LOGIN_PAGE, data);
         }
         catch(std::exception &ex) {
-            printf("EX : %s\n", ex.what());
+            printf("[ERROR] : %s\n", ex.what());
         }
 
         return ApiResponseFactory::createResponse(
@@ -269,15 +275,18 @@ class RootController : public WebRoute {
         return serverUrl;
     }
 
-#ifdef PYCODE
-
     ENDPOINT("GET", "/*", catchAll) {
-        return ApiResponseFactory::createResponse(
-            ApiResponseStatus::CODE_200, "Catch all...");
+        auto redirectUrl = GenerateRedirect("/", "");
+        auto response = ApiResponseFactory::createResponse(
+            ApiResponseStatus::CODE_200, redirectUrl);
+        response->putHeader("Content-Type", "text/html");
+        return response;
     }
-    #endif
-
 };
+
+std::shared_ptr<Response> HandleLoginGet() {
+    return nullptr;
+}
 
 #include OATPP_CODEGEN_END(ApiController)
 
