@@ -26,9 +26,11 @@ Copyright 2014-2024 Integrated Test Management Suite Development Team
 #include <string>
 #include <vector>
 #include "oatpp/web/server/api/ApiController.hpp"
+#include "oatpp/web/protocol/http/Http.hpp"
 #include "oatpp/core/macro/codegen.hpp"
 #include "oatpp/core/macro/component.hpp"
 #include "inja.hpp"
+#include "ConfigurationLayoutDefinitions.h"
 #include "PathHelpers.h"
 #include "WebRoute.h"
 
@@ -149,10 +151,10 @@ class RootController : public WebRoute {
     ENDPOINT("GET", "/", root,
              REQUEST(std::shared_ptr<IncomingRequest>, request)) {
 
-        std::string templateDir = configManager_.GetStringEntry(
-            "html", "html_template_dir");
-        std::string loginPage = PathAppend(templateDir,
-            TEMPLATE_LOGIN_PAGE);
+        std::string htmlDirectory = configManager_.GetStringEntry(
+            SECTION_HTML, HTML_DIRECTORY);
+        std::string loginPage = PathAppend(htmlDirectory,
+                                           TEMPLATE_LOGIN_PAGE);
 
         Environment env;
         auto redirectToLogin = GenerateRedirect("/", "login");
@@ -189,13 +191,11 @@ class RootController : public WebRoute {
 
         json data;
 
-        std::string templateDir = configManager_.GetStringEntry(
-            "html", "html_template_dir");
-            /*
-        std::string loginPage = PathAppend(templateDir,
-            TEMPLATE_LOGIN_PAGE);
-*/
+        std::string serverHost = DetermineServerHost(request);
+        data["static_css_dir"] = serverHost + "/static/css/";
 
+        std::string templateDir = configManager_.GetStringEntry(
+            "html", "html_directory");
         Environment env(templateDir);
 
         // Render a string with json data
@@ -228,48 +228,51 @@ class RootController : public WebRoute {
 #endif
     }
 
-    ENDPOINT("GET", "/css/{stylesheet}", cssSheetGET,
+    ENDPOINT("GET", "/static/css/{stylesheet}", cssSheetGET,
              PATH(String, stylesheet)) {
 
-/*
-        std::string templateDir = configManager_.GetStringEntry(
-            "html", "html_template_dir");
+        std::string directory = configManager_.GetStringEntry(
+            SECTION_HTML, HTML_CSS_DIRECTORY);
+        std::string css_file = PathAppend(directory, stylesheet);
 
-        //std::string loginPage = PathAppend(templateDir,
-        //    TEMPLATE_LOGIN_PAGE);
+        // Open the file and read its content
+        std::ifstream file(css_file);
+        if (!file) {
+            file.close();
+            return ApiResponseFactory::createResponse(
+                ApiResponseStatus::CODE_404, "File not found");
+        }
 
-        Environment env(templateDir);
+        file.close();
 
-*/
-        // You can do something with the 'page' parameter here
-        auto responseText = "Requested page: " + stylesheet;
+        json data;
+        Environment env(directory);
 
-        // Return the response as text
-        return createResponse(Status::CODE_200, responseText);
+        auto rendered_css = env.render_file(stylesheet, data);
+        return ApiResponseFactory::createResponse(
+            ApiResponseStatus::CODE_200, rendered_css);
     }
 
-#ifdef USE_TEST_CODE_
-void handleStaticFileRequest(const Rest::Request& request, Http::ResponseWriter response) {
-    // Extract the file path from the request (e.g., "/static/style.css")
-    auto filePath = "." + request.resource();
+    std::string DetermineServerHost(std::shared_ptr<IncomingRequest> request) {
+        // Get the host and port
+        auto hostHeader = request->getHeader(Header::HOST);
 
-    // Open the file and read its content
-    std::ifstream file(filePath);
-    if (!file) {
-        response.send(Http::Code::Not_Found, "File not found");
-        return;
+        // Determine the scheme (http or https) based on the request's
+        // connection or headers. Assume http by default
+        std::string scheme = "http";
+
+        // If you're running behind a proxy or load balancer, you might need to
+        // check for "X-Forwarded-Proto" header
+        auto forwardedProto = request->getHeader("X-Forwarded-Proto");
+        if (forwardedProto && forwardedProto == "https") {
+            scheme = "https";
+        }
+
+        // Construct the full URL
+        std::string serverUrl = scheme + "://" + hostHeader->c_str();
+
+        return serverUrl;
     }
-
-    std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-
-    // Determine MIME type based on file extension
-    if (filePath.find(".css") != std::string::npos) {
-        response.send(Http::Code::Ok, content, MIME(Text, Css));
-    } else {
-        response.send(Http::Code::Ok, content);
-    }
-}
-#endif
 
 #ifdef PYCODE
 

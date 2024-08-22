@@ -30,9 +30,9 @@ const char BOOL_NO[] = "NO";
 
 const char SECTION_HTML[] = "html";
 const char HTML_DIRECTORY[] = "html_directory";
-const char HTML_DIRECTORY_DEFAULT[] = "../html";
+const char HTML_DIRECTORY_DEFAULT[] = "../html/";
 const char HTML_CSS_DIRECTORY[] = "html_css_directory";
-const char HTML_CSS_DIRECTORY_DEFAULT[] = "../static/css";
+const char HTML_CSS_DIRECTORY_DEFAULT[] = "../static/css/";
 
 const char SECTION_INTERNAL_APIS[] = "internal_apis";
 const char INTERNAL_APIS_GATEWAY_SVC_HOST[] = "gateway_svc_host";
