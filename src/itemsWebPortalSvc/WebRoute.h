@@ -69,7 +69,7 @@ class WebRoute  : public serviceFramework::ApiEndpointController {
     bool HasAuthCookies(std::vector<std::string> cookies);
 
     bool IsValidSession(std::string cookieHeader);
- 
+
  protected:
     std::shared_ptr<GatewaySvcClient> gatewaySvcClient_;
     serviceFramework::ConfigManager configManager_;

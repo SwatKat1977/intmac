@@ -20,7 +20,6 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
-#include <iostream> //temp temp temp temp temp temp temp temp temp temp temp temp temp temp temp temp
 #include <sstream>
 #include <string>
 #include "WebRoute.h"
@@ -105,9 +104,8 @@ bool WebRoute::IsValidSession(std::string cookieHeader) {
 
     return CallIsSessionValid(authCookies->User(), authCookies->Token());
 }
- 
-bool WebRoute::CallIsSessionValid(std::string user, std::string token) {
 
+bool WebRoute::CallIsSessionValid(std::string user, std::string token) {
     std::string tokenValue =  configManager_.GetStringEntry("authentication",
                                                            "token");
 
