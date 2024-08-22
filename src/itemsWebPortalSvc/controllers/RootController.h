@@ -42,9 +42,12 @@ using namespace inja;
 
 #include OATPP_CODEGEN_BEGIN(ApiController)
 
-using oatpp::web::protocol::http::incoming::Response;
+using oatpp::web::protocol::http::outgoing::Response;
 using serviceFramework::ApiResponseFactory;
 using serviceFramework::ApiResponseStatus;
+
+//using RequestSharedPtr = std::shared_ptr<IncomingRequest>;
+using ResponseSharedPtr = std::shared_ptr<Response>;
 
 /*
     async def login_handler(self, api_request) -> Response:
@@ -147,8 +150,7 @@ const char TEMPLATE_INTERNAL_ERROR_PAGE[] = "internal_server_error.html";
 class RootController : public WebRoute {
  public:
     RootController(std::shared_ptr<GatewaySvcClient> gatewaySvcClient,
-                   serviceFramework::ConfigManager configManager)
-        : WebRoute(gatewaySvcClient, configManager) {}
+                   serviceFramework::ConfigManager configManager);
 
     ENDPOINT("GET", "/", root,
              REQUEST(std::shared_ptr<IncomingRequest>, request)) {
@@ -189,7 +191,6 @@ class RootController : public WebRoute {
 
     ENDPOINT("GET", "/login", loginGET,
              REQUEST(std::shared_ptr<IncomingRequest>, request)) {
-
         // Get the HTTP method (GET, POST, etc.)
         auto method = request->getStartingLine().method;
 
@@ -231,7 +232,6 @@ class RootController : public WebRoute {
 
     ENDPOINT("GET", "/static/css/{stylesheet}", cssSheetGET,
              PATH(String, stylesheet)) {
-
         std::string directory = configManager_.GetStringEntry(
             SECTION_HTML, HTML_CSS_DIRECTORY);
         std::string css_file = PathAppend(directory, stylesheet);
@@ -282,11 +282,12 @@ class RootController : public WebRoute {
         response->putHeader("Content-Type", "text/html");
         return response;
     }
-};
 
-std::shared_ptr<Response> HandleLoginGet() {
-    return nullptr;
-}
+//RequestSharedPtr
+private:
+    ResponseSharedPtr HandleLoginGet(
+        std::shared_ptr<IncomingRequest> request);
+};
 
 #include OATPP_CODEGEN_END(ApiController)
 
