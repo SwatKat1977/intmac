@@ -150,7 +150,6 @@ class RootController : public WebRoute {
 
     ENDPOINT("GET", "/", root,
              REQUEST(std::shared_ptr<IncomingRequest>, request)) {
-
         std::string htmlDirectory = configManager_.GetStringEntry(
             SECTION_HTML, HTML_DIRECTORY);
         std::string loginPage = PathAppend(htmlDirectory,
@@ -188,7 +187,6 @@ class RootController : public WebRoute {
 
     ENDPOINT("GET", "/login", loginGET,
              REQUEST(std::shared_ptr<IncomingRequest>, request)) {
-
         json data;
 
         std::string serverHost = DetermineServerHost(request);
@@ -197,11 +195,8 @@ class RootController : public WebRoute {
         std::string templateDir = configManager_.GetStringEntry(
             "html", "html_directory");
         Environment env(templateDir);
-
-        // Render a string with json data
-        //std::string result = env.render(test, data); // "Hello world!"
-
         std::string renderedPage;
+
         try {
             renderedPage = env.render_file(TEMPLATE_LOGIN_PAGE, data);
         }
