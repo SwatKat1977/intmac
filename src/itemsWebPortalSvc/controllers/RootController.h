@@ -42,11 +42,13 @@ using namespace inja;
 
 #include OATPP_CODEGEN_BEGIN(ApiController)
 
+
+using oatpp::web::protocol::http::incoming::Request;
 using oatpp::web::protocol::http::outgoing::Response;
 using serviceFramework::ApiResponseFactory;
 using serviceFramework::ApiResponseStatus;
 
-//using RequestSharedPtr = std::shared_ptr<IncomingRequest>;
+using RequestSharedPtr = std::shared_ptr<Request>;
 using ResponseSharedPtr = std::shared_ptr<Response>;
 
 /*
@@ -254,27 +256,6 @@ class RootController : public WebRoute {
             ApiResponseStatus::CODE_200, rendered_css);
     }
 
-    std::string DetermineServerHost(std::shared_ptr<IncomingRequest> request) {
-        // Get the host and port
-        auto hostHeader = request->getHeader(Header::HOST);
-
-        // Determine the scheme (http or https) based on the request's
-        // connection or headers. Assume http by default
-        std::string scheme = "http";
-
-        // If you're running behind a proxy or load balancer, you might need to
-        // check for "X-Forwarded-Proto" header
-        auto forwardedProto = request->getHeader("X-Forwarded-Proto");
-        if (forwardedProto && forwardedProto == "https") {
-            scheme = "https";
-        }
-
-        // Construct the full URL
-        std::string serverUrl = scheme + "://" + hostHeader->c_str();
-
-        return serverUrl;
-    }
-
     ENDPOINT("GET", "/*", catchAll) {
         auto redirectUrl = GenerateRedirect("/", "");
         auto response = ApiResponseFactory::createResponse(
@@ -283,10 +264,10 @@ class RootController : public WebRoute {
         return response;
     }
 
-//RequestSharedPtr
 private:
-    ResponseSharedPtr HandleLoginGet(
-        std::shared_ptr<IncomingRequest> request);
+    ResponseSharedPtr HandleLoginGet(RequestSharedPtr request);
+
+    std::string DetermineServerHost(RequestSharedPtr request);
 };
 
 #include OATPP_CODEGEN_END(ApiController)

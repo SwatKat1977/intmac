@@ -30,6 +30,27 @@ RootController::RootController(
     WebRoute(gatewaySvcClient, configManager) {
 }
 
+std::string RootController::DetermineServerHost(std::shared_ptr<IncomingRequest> request) {
+    // Get the host and port
+    auto hostHeader = request->getHeader(Header::HOST);
+
+    // Determine the scheme (http or https) based on the request's
+    // connection or headers. Assume http by default
+    std::string scheme = "http";
+
+    // If you're running behind a proxy or load balancer, you might need to
+    // check for "X-Forwarded-Proto" header
+    auto forwardedProto = request->getHeader("X-Forwarded-Proto");
+    if (forwardedProto && forwardedProto == "https") {
+        scheme = "https";
+    }
+
+    // Construct the full URL
+    std::string serverUrl = scheme + "://" + hostHeader->c_str();
+
+    return serverUrl;
+}
+
 ResponseSharedPtr RootController::HandleLoginGet(
     std::shared_ptr<IncomingRequest> request) {
     json data;
