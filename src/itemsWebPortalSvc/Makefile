@@ -4,7 +4,8 @@ CPPFLAGS += -I../externalLibraries/INIReader \
             -I../serviceFramework \
 			-I../common \
 			-I ${ITEMS_OATPP_INCLUDE_DIR} \
-			-I ${ITEMS_INJA_INCLUDE_DIR}
+			-I ${ITEMS_INJA_INCLUDE_DIR} \
+			-I ${ITEMS_RAPIDJSON_INCLUDE_DIR}
 
 LIB_DIRS = -L ../lib/ -L /usr/local/lib/oatpp-1.3.0
 
@@ -14,7 +15,8 @@ OBJS = WebPortalSvc.o \
        ../common/PathHelpers.o \
        WebRoute.o \
        serviceModules/StartupModule.o \
-	   controllers/RootController.o
+	   controllers/RootController.o \
+	   controllers/ControllerDecorators.o
 
 WEBPORTALSVC = ${ITEMS_BIN_DIR}/webPortalSvc
 

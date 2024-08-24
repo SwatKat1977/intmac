@@ -17,11 +17,13 @@ Key:
 * AC = Accounts Service
 * CM = CMS Service
 * GW = Gateway Service
+* WP = Web Portal
 
 Dependency | Version | Applicable To | Environment Variable
 ------------ | ------------- | ------------- | -------------
 [OatPP Framework](https://oatpp.io/) | V1.3.0 | ALL | ITEMS_OATPP_INCLUDE_DIR
 [Inja HTML Template Engine](https://github.com/pantor/inja) | V3.4 | GW | ITEMS_INJA_INCLUDE_DIR
+[rapidjson](https://github.com/Tencent/rapidjson) | 1.1.0 | WP | ITEMS_RAPIDJSON_INCLUDE_DIR
 
 ### Prerequisites
 
