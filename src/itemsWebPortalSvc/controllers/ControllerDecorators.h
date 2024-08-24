@@ -20,3 +20,14 @@ Copyright 2014-2024 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
+#ifndef CONTROLLERS_CONTROLLERDECORATORS_H_
+#define CONTROLLERS_CONTROLLERDECORATORS_H_
+
+
+namespace items { namespace webPortalSvc { namespace controllers {
+
+}   // namespace controllers
+}   // namespace webPortalSvc
+}   // namespace items
+
+#endif  // CONTROLLERS_CONTROLLERDECORATORS_H_
