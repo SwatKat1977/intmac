@@ -22,6 +22,8 @@ Copyright 2014-2024 Integrated Test Management Suite Development Team
 */
 #ifndef CONTROLLERS_CONTROLLERDECORATORS_H_
 #define CONTROLLERS_CONTROLLERDECORATORS_H_
+#include <memory>
+#include <string>
 #include "oatpp/web/protocol/http/Http.hpp"
 #include "oatpp/web/protocol/http/incoming/Request.hpp"
 

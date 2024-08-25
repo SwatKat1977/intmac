@@ -264,7 +264,7 @@ class RootController : public WebRoute {
         return response;
     }
 
-private:
+ private:
     ResponseSharedPtr HandleLoginGet(RequestSharedPtr request);
 
     std::string DetermineServerHost(RequestSharedPtr request);

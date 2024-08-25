@@ -30,7 +30,8 @@ RootController::RootController(
     WebRoute(gatewaySvcClient, configManager) {
 }
 
-std::string RootController::DetermineServerHost(std::shared_ptr<IncomingRequest> request) {
+std::string RootController::DetermineServerHost(
+    std::shared_ptr<IncomingRequest> request) {
     // Get the host and port
     auto hostHeader = request->getHeader(Header::HOST);
 
