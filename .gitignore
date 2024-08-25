@@ -27,3 +27,9 @@ accountsSvc
 cmsSvc
 gatewaySvc
 webPortalSvc
+
+# -------
+# External Libraries
+# -------
+src/externalLibraries/rapidjson
+src/externalLibraries/inja
