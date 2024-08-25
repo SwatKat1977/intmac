@@ -20,60 +20,9 @@ Copyright 2014-2024 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
-#include <functional>
 #include <iostream>
-#include <sstream>
-#include <rapidjson/document.h>
-#include <rapidjson/schema.h>
-#include <rapidjson/error/en.h>
-#include <rapidjson/stringbuffer.h>
+#include "JsonHelpers.h"
 #include "ControllerDecorators.h"
-
-//using namespace rapidjson;
-
-std::string validate_json(const char* schema_json, const char* json_str) {
-    // Parse the schema
-    rapidjson::Document schema_doc;
-
-    if (schema_doc.Parse(schema_json).HasParseError()) {
-        std::stringstream str;
-        str << "JSON Schema parsing error: "
-            << GetParseError_En(schema_doc.GetParseError()) << " at "
-            << schema_doc.GetErrorOffset();
-        return str.str();
-    }
-
-    // Parse the JSON to validate
-    rapidjson::Document json_doc;
-    if (json_doc.Parse(json_str).HasParseError()) {
-        std::stringstream str;
-        str << "JSON parsing error: "
-            << GetParseError_En(json_doc.GetParseError()) << " at "
-            << json_doc.GetErrorOffset();
-        return str.str();
-    }
-
-    // Create schema validator
-    rapidjson::SchemaDocument schema(schema_doc);
-    rapidjson::SchemaValidator validator(schema);
-
-    // Validate the JSON
-    if (!json_doc.Accept(validator)) {
-        rapidjson::StringBuffer sb;
-        std::stringstream str;
-        validator.GetInvalidSchemaPointer().StringifyUriFragment(sb);
-        str << "Invalid schema: " << sb.GetString() << "\n"
-            << "\tInvalid keyword: "
-            << validator.GetInvalidSchemaKeyword() << "\n";
-
-        sb.Clear();
-        validator.GetInvalidDocumentPointer().StringifyUriFragment(sb);
-        str << "\tInvalid document: " << sb.GetString();
-        return str.str();
-    }
-
-    return "";
-}
 
 int main() {
     // Define a JSON schema
@@ -95,7 +44,7 @@ int main() {
     })";
 
         // Validate the JSON object against the schema
-        std::string res = validate_json(schema_json, json_str);
+        std::string res = items::ValidateJsonAgainstSchema(schema_json, json_str);
         if (!res.empty()) {
             std::cout << "[DEBUG]: " << res << "\n";
         }
@@ -107,17 +56,7 @@ namespace items { namespace webPortalSvc { namespace controllers {
 
 /*
 #ifdef TEST_
-void validate_json(const json& schema, const json& json_obj) {
-    try {
-        json_validator validator;
-        validator.set_root_schema(schema); // Parse and set the schema
-        validator.validate(json_obj);       // Validate the JSON object
 
-        std::cout << "JSON is valid according to the schema." << std::endl;
-    } catch (const std::exception &e) {
-        std::cerr << "Validation failed: " << e.what() << std::endl;
-    }
-}
 
 def validate_json_body(json_schema : dict = None):
     """
@@ -179,6 +118,55 @@ def validate_json_body(json_schema : dict = None):
 
     return decorator
 #endif
+*/
+
+/*
+
+def validate_auth_key(auth_key_key: str, configuration):
+    """
+    Decorator to validate the authorization key in the request header.
+
+    Args:
+        auth_key_key (str): The name of the authorization header key.
+        auth_key_value (str): The expected value of the authorization key.
+
+    Returns:
+        function: The decorated function which includes authorization key validation.
+    """
+
+    def decorator(func):
+        """
+        Wrapper function to validate the authorization key.
+
+        Returns:
+            Response: HTTP response with 401 if the authorization key is missing,
+                      403 if the authorization key is invalid, or
+                      the result of the decorated function if the key is valid.
+        """
+
+        @functools.wraps(func)
+        async def wrapper(*args, **kwargs):
+
+            # Verify that an authorisation key exists in the request header, if
+            # not then return a 401 error with a human-readable reasoning.
+            if auth_key_key not in request.headers:
+                return Response(ERR_MSG_AUTH_KEY_MISSING,
+                                status=http.HTTPStatus.UNAUTHORIZED,
+                                content_type=ERR_MSG_CONTENT_TYPE)
+
+            # Verify the authorisation key against what is specified in the
+            # configuration file.  If the key isn't valid then the error
+            # code of 403 (Forbidden) is returned.
+            if configuration.general_authentication_key != request.headers[auth_key_key]:
+                return Response(ERR_MSG_AUTH_KEY_INVALID,
+                                status=http.HTTPStatus.FORBIDDEN,
+                                content_type=ERR_MSG_CONTENT_TYPE)
+
+            return await func(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
 */
 
 }   // namespace controllers

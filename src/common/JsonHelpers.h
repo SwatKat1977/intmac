@@ -27,7 +27,7 @@ Copyright 2014-2024 Integrated Test Management Suite Development Team
 namespace items {
 
 std::string ValidateJsonAgainstSchema(const char* schema_json,
-                                      const char* json_str) {
+                                      const char* json_str);
 
 }   // namespace items
 

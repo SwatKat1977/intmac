@@ -29,6 +29,8 @@ Copyright 2014-2024 Integrated Test Management Suite Development Team
 #include <rapidjson/stringbuffer.h>
 #include "JsonHelpers.h"
 
+namespace items {
+
 std::string ValidateJsonAgainstSchema(const char* schema_json,
                                       const char* json_str) {
     // Parse the schema
@@ -73,3 +75,5 @@ std::string ValidateJsonAgainstSchema(const char* schema_json,
 
     return "";
 }
+
+}   // namespace items
