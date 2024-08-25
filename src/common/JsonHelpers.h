@@ -22,9 +22,12 @@ Copyright 2014-2024 Integrated Test Management Suite Development Team
 */
 #ifndef JSONHELPERS_H_
 #define JSONHELPERS_H_
-
+#include <string>
 
 namespace items {
+
+std::string ValidateJsonAgainstSchema(const char* schema_json,
+                                      const char* json_str) {
 
 }   // namespace items
 

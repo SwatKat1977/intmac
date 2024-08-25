@@ -29,38 +29,37 @@ Copyright 2014-2024 Integrated Test Management Suite Development Team
 #include <rapidjson/stringbuffer.h>
 #include "ControllerDecorators.h"
 
-using namespace rapidjson;
+//using namespace rapidjson;
 
 std::string validate_json(const char* schema_json, const char* json_str) {
     // Parse the schema
-    Document schema_doc;
+    rapidjson::Document schema_doc;
+
     if (schema_doc.Parse(schema_json).HasParseError()) {
         std::stringstream str;
         str << "JSON Schema parsing error: "
             << GetParseError_En(schema_doc.GetParseError()) << " at "
             << schema_doc.GetErrorOffset();
         return str.str();
-        //throw std::runtime_error(str.str());
     }
 
     // Parse the JSON to validate
-    Document json_doc;
+    rapidjson::Document json_doc;
     if (json_doc.Parse(json_str).HasParseError()) {
         std::stringstream str;
         str << "JSON parsing error: "
             << GetParseError_En(json_doc.GetParseError()) << " at "
             << json_doc.GetErrorOffset();
         return str.str();
-        //throw std::runtime_error(str.str());
     }
 
     // Create schema validator
-    SchemaDocument schema(schema_doc);
-    SchemaValidator validator(schema);
+    rapidjson::SchemaDocument schema(schema_doc);
+    rapidjson::SchemaValidator validator(schema);
 
     // Validate the JSON
     if (!json_doc.Accept(validator)) {
-        StringBuffer sb;
+        rapidjson::StringBuffer sb;
         std::stringstream str;
         validator.GetInvalidSchemaPointer().StringifyUriFragment(sb);
         str << "Invalid schema: " << sb.GetString() << "\n"
@@ -73,7 +72,6 @@ std::string validate_json(const char* schema_json, const char* json_str) {
         return str.str();
     }
 
-    std::cout << "JSON is valid according to the schema." << std::endl;
     return "";
 }
 
