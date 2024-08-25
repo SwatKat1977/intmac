@@ -20,15 +20,30 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
-#ifndef DEFINITIONS_H_
-#define DEFINITIONS_H_
+#include "PathHelpers.h"
+#include "Platform.h"
 
-namespace items { namespace webPortalSvc {
+namespace items {
 
-const char SERVICE_PROVIDER_API_NAME[] = "api";
-const int SERVICE_PROVIDER_API_PORT = 8080;
+std::string PathAppend(const std::string &left, const std::string &right) {
+#if ITEMS_PLATFORM == ITEMS_PLATFORM_WINDOWS_CORE || \
+    ITEMS_PLATFORM == ITEMS_PLATFORM_WINDOWS_MSVC
+    char seperator = '\\';
+#else
+    char seperator = '/';
+#endif
 
-}   // namespace webPortalSvc
+    std::string joinedPath = left;
+    bool leftHasSeperator = (left.back() == seperator);
+
+    if (right.front() == seperator) {
+        if (leftHasSeperator) joinedPath.pop_back();
+    } else {
+        if (!leftHasSeperator) joinedPath += seperator;
+    }
+    joinedPath += right;
+
+    return joinedPath;
+}
+
 }   // namespace items
-
-#endif  // DEFINITIONS_H_

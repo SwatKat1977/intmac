@@ -24,6 +24,7 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 #include <memory>
 #include "oatpp/network/tcp/client/ConnectionProvider.hpp"
 #include "spdlog/spdlog.h"
+#include "ConfigurationLayoutDefinitions.h"
 #include "controllers/RootController.h"
 #include "Definitions.h"
 #include "StartupModule.h"
@@ -31,6 +32,11 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 #include "Version.h"
 
 namespace items { namespace webPortalSvc {
+
+using oatpp::parser::json::mapping::ObjectMapper;
+using oatpp::web::client::HttpRequestExecutor;
+using oatpp::network::tcp::client::ConnectionProvider;
+using serviceFramework::AccountsSvcClient;
 
 StartupModule::StartupModule(std::string name)
     : ServiceModule(name) { }
@@ -66,7 +72,24 @@ bool StartupModule::Initialise() {
         m_context->GetConfigManager().GetStringEntry(
             "logging", "log_format").c_str());
 
+    LOGGER->info("[HTML]");
+    LOGGER->info("-> HTML Directory     : {0}",
+        m_context->GetConfigManager().GetStringEntry(
+            SECTION_HTML, "html_directory").c_str());
+    LOGGER->info("-> HTML CSS Directory : {0}",
+        m_context->GetConfigManager().GetStringEntry(
+            SECTION_HTML, HTML_CSS_DIRECTORY).c_str());
+
+    LOGGER->info("[Internal APIs]");
+    LOGGER->info("-> Gateway Service API : {0}:{1}",
+        m_context->GetConfigManager().GetStringEntry(
+            "internal_apis", "gateway_svc_host").c_str(),
+        m_context->GetConfigManager().GetIntEntry(
+            "internal_apis", "gateway_svc_port"));
+
     if (!AddServiceProviders()) return false;
+
+    CreateGatewaySvcClient();
 
     if (!AddRootController()) return false;
 
@@ -93,7 +116,8 @@ bool StartupModule::AddServiceProviders() {
 bool StartupModule::AddRootController() {
     try {
         auto controller = std::make_shared<
-            controllers::RootController>();
+            controllers::RootController>(gateway_service_client_,
+                                         m_context->GetConfigManager());
         m_context->AddApiController(SERVICE_PROVIDER_API_NAME,
                                     controller);
     }
@@ -106,6 +130,24 @@ bool StartupModule::AddRootController() {
     LOGGER->info("Added root controller");
 
     return true;
+}
+
+void StartupModule::CreateGatewaySvcClient() {
+    std::string svcHost = m_context->GetConfigManager()
+        .GetStringEntry(SECTION_INTERNAL_APIS,
+                        INTERNAL_APIS_GATEWAY_SVC_HOST).c_str();
+    int svcPort = m_context->GetConfigManager().GetIntEntry(
+        SECTION_INTERNAL_APIS, INTERNAL_APIS_GATEWAY_SVC_PORT);
+
+    auto objectMapper = ObjectMapper::createShared();
+    auto connectionProvider = ConnectionProvider::createShared(
+        { svcHost, (v_uint16)svcPort });
+    auto requestExecutor = HttpRequestExecutor::createShared(
+        connectionProvider);
+
+    gateway_service_client_ = GatewaySvcClient::createShared(
+        requestExecutor, objectMapper);
+    LOGGER->info("Created client for Gateway Service api");
 }
 
 }   // namespace webPortalSvc

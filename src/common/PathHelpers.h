@@ -20,15 +20,14 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
-#ifndef DEFINITIONS_H_
-#define DEFINITIONS_H_
+#ifndef PATHHELPERS_H_
+#define PATHHELPERS_H_
+#include <string>
 
-namespace items { namespace webPortalSvc {
+namespace items {
 
-const char SERVICE_PROVIDER_API_NAME[] = "api";
-const int SERVICE_PROVIDER_API_PORT = 8080;
+std::string PathAppend(const std::string &left, const std::string &right);
 
-}   // namespace webPortalSvc
 }   // namespace items
 
-#endif  // DEFINITIONS_H_
+#endif  // PATHHELPERS_H_

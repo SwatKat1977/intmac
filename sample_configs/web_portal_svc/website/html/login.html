@@ -10,7 +10,7 @@
 
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css">
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <link rel="stylesheet" href="{{ static_css_dir }}login.css">
 
     <title>Integrated Test Management Suite | Login</title>
   </head>
@@ -32,9 +32,7 @@
               <span class="fas fa-eye-slash"></span>
             </button>
           </div>
-          {% if generate_error_msg == True %}
-              <div class="jumbotron" id="error_msg" class="jumbotron text-black">{{ error_msg }}</div>
-          {% endif %}
+          <!-- GENERATE error message goes here -->
           <div class="d-sm-flex align-items-sm-center justify-content-sm-between">
               <div class="d-flex align-items-center">
                 <label class="option">

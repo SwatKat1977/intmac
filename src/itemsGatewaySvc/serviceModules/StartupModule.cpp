@@ -38,6 +38,7 @@ namespace items { namespace gatewaySvc {
     using oatpp::network::tcp::client::ConnectionProvider;
     using oatpp::web::client::HttpRequestExecutor;
     using oatpp::parser::json::mapping::ObjectMapper;
+    using controllers::AccountsSvcClient;
 
     StartupModule::StartupModule(std::string name) : ServiceModule(name) {
         sessions_manager_ = std::shared_ptr<SessionsManager>(

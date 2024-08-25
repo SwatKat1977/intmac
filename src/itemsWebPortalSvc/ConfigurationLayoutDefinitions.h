@@ -20,15 +20,30 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
-#ifndef DEFINITIONS_H_
-#define DEFINITIONS_H_
+#ifndef CONFIGURATIONLAYOUTDEFINITIONS_H_
+#define CONFIGURATIONLAYOUTDEFINITIONS_H_
 
 namespace items { namespace webPortalSvc {
 
-const char SERVICE_PROVIDER_API_NAME[] = "api";
-const int SERVICE_PROVIDER_API_PORT = 8080;
+const char BOOL_YES[] = "YES";
+const char BOOL_NO[] = "NO";
+
+const char SECTION_HTML[] = "html";
+const char HTML_DIRECTORY[] = "html_directory";
+const char HTML_DIRECTORY_DEFAULT[] = "../html/";
+const char HTML_CSS_DIRECTORY[] = "html_css_directory";
+const char HTML_CSS_DIRECTORY_DEFAULT[] = "../static/css/";
+
+const char SECTION_INTERNAL_APIS[] = "internal_apis";
+const char INTERNAL_APIS_GATEWAY_SVC_HOST[] = "gateway_svc_host";
+const char INTERNAL_APIS_GATEWAY_SVC_PORT[] = "gateway_svc_port";
+const char INTERNAL_APIS_GATEWAY_SVC_HOST_DEFAULT[] = "http://localhost";
+const int INTERNAL_APIS_GATEWAY_SVC_PORT_DEFAULT = 2222;
+
+const char SECTION_AUTHENTICATION[] = "authentication";
+const char AUTHENTICATION_TOKEN[] = "token";
 
 }   // namespace webPortalSvc
 }   // namespace items
 
-#endif  // DEFINITIONS_H_
+#endif  // CONFIGURATIONLAYOUTDEFINITIONS_H_

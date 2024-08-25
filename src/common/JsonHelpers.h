@@ -4,7 +4,7 @@ This source file is part of ITEMS
 (Integrated Test Management Suite)
 For the latest info, see https://github.com/SwatKat1977/intmac/
 
-Copyright 2014-2023 Integrated Test Management Suite Development Team
+Copyright 2014-2024 Integrated Test Management Suite Development Team
 
     This program is free software : you can redistribute it and /or modify
     it under the terms of the GNU General Public License as published by
@@ -20,15 +20,15 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
-#ifndef DEFINITIONS_H_
-#define DEFINITIONS_H_
+#ifndef JSONHELPERS_H_
+#define JSONHELPERS_H_
+#include <string>
 
-namespace items { namespace webPortalSvc {
+namespace items {
 
-const char SERVICE_PROVIDER_API_NAME[] = "api";
-const int SERVICE_PROVIDER_API_PORT = 8080;
+std::string ValidateJsonAgainstSchema(const char* schema_json,
+                                      const char* json_str);
 
-}   // namespace webPortalSvc
 }   // namespace items
 
-#endif  // DEFINITIONS_H_
+#endif  // JSONHELPERS_H_

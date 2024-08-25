@@ -23,6 +23,7 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 #ifndef SERVICEMODULES_STARTUPMODULE_H_
 #define SERVICEMODULES_STARTUPMODULE_H_
 #include <string>
+#include "apis/gatewaySvc/GatewaySvcClient.h"
 #include "ServiceContext.h"
 #include "ItemTypes.h"
 
@@ -33,9 +34,13 @@ class StartupModule : public serviceFramework::ServiceModule {
     explicit StartupModule(std::string name);
 
  private:
+    serviceFramework::GatewaySvcClientptr gateway_service_client_;
+
     bool AddServiceProviders();
 
     bool AddRootController();
+
+    void CreateGatewaySvcClient();
 
     bool Initialise();
 };

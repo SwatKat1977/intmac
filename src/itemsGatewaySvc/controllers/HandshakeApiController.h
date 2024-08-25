@@ -38,6 +38,7 @@ Copyright 2014-2024 Integrated Test Management Suite Development Team
 namespace items { namespace gatewaySvc { namespace controllers {
 
 using common::apis::accountsSvc::AccountsSvcClient;
+using serviceFramework::AccountsSvcBasicAuthRequestDto;
 using common::apis::accountsSvc::AccountsSvcBasicAuthResponseDto;
 
 #include OATPP_CODEGEN_BEGIN(ApiController)

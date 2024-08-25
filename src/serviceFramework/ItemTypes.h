@@ -24,14 +24,19 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 #define ITEMSTYPES_H
 #include <memory>
 #include "apis/accountsSvc/AccountsSvcClient.h"
+#include "apis/gatewaySvc/GatewaySvcClient.h"
 
-namespace items { namespace gatewaySvc {
+namespace items { namespace serviceFramework {
 
     using namespace common::apis::accountsSvc;
 
-    using AccountsSvcClientptr = std::shared_ptr<AccountsSvcClient>;
+    using AccountsSvcClientptr = std::shared_ptr<
+        common::apis::accountsSvc::AccountsSvcClient>;
 
-} }  // namespace items::gatewaySvc
+    using GatewaySvcClientptr = std::shared_ptr<
+        common::apis::gatewaySvc::GatewaySvcClient>;
+
+} }  // namespace items::serviceFramework
 
 
 #endif

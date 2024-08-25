@@ -22,16 +22,57 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 */
 #ifndef CONFIGURATIONLAYOUT_H_
 #define CONFIGURATIONLAYOUT_H_
+#include <string>
 #include "ConfigSetup.h"
 #include "LoggerSettings.h"
+#include "ConfigurationLayoutDefinitions.h"
 
 namespace items { namespace webPortalSvc {
 
-const char BOOL_YES[] = "YES";
-const char BOOL_NO[] = "NO";
+const serviceFramework::SectionList HtmlSettings = {
+    {
+        HTML_DIRECTORY,
+        serviceFramework::ConfigSetupItem(HTML_DIRECTORY,
+                        serviceFramework::CONFIG_ITEM_TYPE_STRING)
+                .DefaultValue(HTML_DIRECTORY_DEFAULT)
+    },
+    {
+        HTML_CSS_DIRECTORY,
+        serviceFramework::ConfigSetupItem(HTML_CSS_DIRECTORY,
+                        serviceFramework::CONFIG_ITEM_TYPE_STRING)
+                .DefaultValue(HTML_CSS_DIRECTORY_DEFAULT)
+    }
+};
+
+const serviceFramework::SectionList InternalApisSettings = {
+    {
+        INTERNAL_APIS_GATEWAY_SVC_HOST,
+        serviceFramework::ConfigSetupItem(INTERNAL_APIS_GATEWAY_SVC_HOST,
+                        serviceFramework::CONFIG_ITEM_TYPE_STRING)
+                .DefaultValue(INTERNAL_APIS_GATEWAY_SVC_HOST_DEFAULT)
+    },
+    {
+        INTERNAL_APIS_GATEWAY_SVC_PORT,
+        serviceFramework::ConfigSetupItem(INTERNAL_APIS_GATEWAY_SVC_PORT,
+                    serviceFramework::CONFIG_ITEM_TYPE_INTEGER)
+                .DefaultValue(INTERNAL_APIS_GATEWAY_SVC_PORT_DEFAULT)
+    }
+};
+
+const serviceFramework::SectionList AuthenticationSettings = {
+    {
+        AUTHENTICATION_TOKEN,
+        serviceFramework::ConfigSetupItem(AUTHENTICATION_TOKEN,
+                    serviceFramework::CONFIG_ITEM_TYPE_STRING)
+                .IsRequired(true)
+    },
+};
 
 serviceFramework::SectionsMap CONFIGURATION_LAYOUT_MAP = {
-    {serviceFramework::LOGGING_SECTION, serviceFramework::LoggerSettings }
+    {serviceFramework::LOGGING_SECTION, serviceFramework::LoggerSettings},
+    {SECTION_HTML, HtmlSettings},
+    {SECTION_INTERNAL_APIS, InternalApisSettings},
+    {SECTION_AUTHENTICATION, AuthenticationSettings }
 };
 
 }   // namespace webPortalSvc

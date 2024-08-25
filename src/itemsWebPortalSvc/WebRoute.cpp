@@ -21,10 +21,17 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
 -----------------------------------------------------------------------------
 */
 #include <sstream>
+#include <string>
 #include "WebRoute.h"
 #include "Logger.h"
+#include "apis/gatewaySvc/GatewaySvcClient.h"
+#include "apis/gatewaySvc/GatewaySvcDTOs.h"
+#include "apis/CommonDTOs.h"
 
 namespace items { namespace webPortalSvc {
+
+    using common::apis::gatewaySvc::IsValidUserTokenResponseDTO;
+    using common::apis::gatewaySvc::GATEWAYSVC_RESPONSE_STATUS_OK;
 
     // Name of cookies.
     const std::string COOKIE_TOKEN = "items_token";
@@ -33,7 +40,10 @@ namespace items { namespace webPortalSvc {
     const std::string REDIRECT_URL =
         "<meta http-equiv=\"Refresh\" content=\"0; url='{0}\"/>";
 
-    WebRoute::WebRoute() : serviceFramework::ApiEndpointController() {
+    WebRoute::WebRoute(std::shared_ptr<GatewaySvcClient> gatewaySvcClient,
+                       serviceFramework::ConfigManager configManager)
+        : serviceFramework::ApiEndpointController(),
+          gatewaySvcClient_(gatewaySvcClient), configManager_(configManager) {
     }
 
     std::string WebRoute::GenerateRedirect(std::string redirectURLRoot,
@@ -82,6 +92,43 @@ bool WebRoute::HasAuthCookies(std::vector<std::string> cookies) {
     }
 
     return true;
+}
+
+bool WebRoute::IsValidSession(std::string cookieHeader) {
+    std::vector<std::string> cookieValues = ParseCookieHeader(
+        cookieHeader);
+
+    if (!HasAuthCookies(cookieValues)) return false;
+
+    auto authCookies = GetAuthCookies(cookieValues);
+
+    return CallIsSessionValid(authCookies->User(), authCookies->Token());
+}
+
+bool WebRoute::CallIsSessionValid(std::string user, std::string token) {
+    std::string tokenValue =  configManager_.GetStringEntry("authentication",
+                                                           "token");
+
+    auto requestBody = common::apis::EmptyDTO::createShared();
+    oatpp::Object<IsValidUserTokenResponseDTO> callBody;
+    try {
+        auto response = gatewaySvcClient_->isValidSession(user, token,
+            requestBody, tokenValue);
+
+        if (response->getStatusCode() != 200) {
+            throw std::runtime_error("Call to check valid session Failed!");
+        }
+
+        callBody = response->readBodyToDto<
+            oatpp::Object<IsValidUserTokenResponseDTO>>(m_objectMapper.get());
+    }
+    catch (std::runtime_error& ex) {
+        LOGGER->error("Cannot connect to gateway service API, reason: {0}",
+            ex.what());
+        throw std::runtime_error("Cannot connect to gateway service API");
+    }
+
+    return (callBody->status == GATEWAYSVC_RESPONSE_STATUS_OK);
 }
 
 std::vector<std::string> WebRoute::ParseCookieHeader(

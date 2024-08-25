@@ -4,7 +4,7 @@ This source file is part of ITEMS
 (Integrated Test Management Suite)
 For the latest info, see https://github.com/SwatKat1977/intmac/
 
-Copyright 2014-2023 Integrated Test Management Suite Development Team
+Copyright 2014-2024 Integrated Test Management Suite Development Team
 
     This program is free software : you can redistribute it and /or modify
     it under the terms of the GNU General Public License as published by
@@ -20,15 +20,27 @@ Copyright 2014-2023 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
-#ifndef DEFINITIONS_H_
-#define DEFINITIONS_H_
+#include <string>
+#include "ControllerDecorators.h"
 
-namespace items { namespace webPortalSvc {
+namespace items { namespace webPortalSvc { namespace controllers {
 
-const char SERVICE_PROVIDER_API_NAME[] = "api";
-const int SERVICE_PROVIDER_API_PORT = 8080;
+bool AuthKeyInHeaderValid(const std::shared_ptr<OatppRequest>& request,
+                          std::string auth_key_key,
+                          std::string auth_key_value) {
 
+    // Get the value of the auth key header value.
+    auto headerValue = request->getHeader(auth_key_key.c_str());
+
+    // Check if the header is missing or empty
+    if (!headerValue || headerValue->empty()) {
+        return false;
+    }
+
+    // Check if it equal to the auth key value;
+    return (headerValue == auth_key_value);
+}
+
+}   // namespace controllers
 }   // namespace webPortalSvc
 }   // namespace items
-
-#endif  // DEFINITIONS_H_
