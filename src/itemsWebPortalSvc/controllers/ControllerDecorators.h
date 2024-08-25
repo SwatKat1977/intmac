@@ -22,9 +22,16 @@ Copyright 2014-2024 Integrated Test Management Suite Development Team
 */
 #ifndef CONTROLLERS_CONTROLLERDECORATORS_H_
 #define CONTROLLERS_CONTROLLERDECORATORS_H_
-
+#include "oatpp/web/protocol/http/Http.hpp"
+#include "oatpp/web/protocol/http/incoming/Request.hpp"
 
 namespace items { namespace webPortalSvc { namespace controllers {
+
+using OatppRequest = oatpp::web::protocol::http::incoming::Request;
+
+bool AuthKeyInHeaderValid(const std::shared_ptr<OatppRequest>& request,
+                          std::string auth_key_key,
+                          std::string auth_key_value);
 
 }   // namespace controllers
 }   // namespace webPortalSvc
