@@ -189,28 +189,7 @@ class RootController : public WebRoute {
 
     ENDPOINT("GET", "/login", loginGET,
              REQUEST(std::shared_ptr<IncomingRequest>, request)) {
-        // Get the HTTP method (GET, POST, etc.)
-        auto method = request->getStartingLine().method;
-
-        inja::json data;
-
-        std::string serverHost = DetermineServerHost(request);
-        data["static_css_dir"] = serverHost + "/static/css/";
-
-        std::string templateDir = configManager_.GetStringEntry(
-            "html", "html_directory");
-        inja::Environment env(templateDir);
-        std::string renderedPage;
-
-        try {
-            renderedPage = env.render_file(TEMPLATE_LOGIN_PAGE, data);
-        }
-        catch(std::exception &ex) {
-            printf("[ERROR] : %s\n", ex.what());
-        }
-
-        return ApiResponseFactory::createResponse(
-            ApiResponseStatus::CODE_200, renderedPage);
+        return HandleLoginGet(request);
 
 #ifdef PYCODE
         try:
@@ -226,6 +205,12 @@ class RootController : public WebRoute {
         if api_request.method == "GET":
             return await render_template(self.TEMPLATE_LOGIN_PAGE)
 #endif
+    }
+
+    ENDPOINT("POST", "/login", loginPOST,
+             REQUEST(std::shared_ptr<IncomingRequest>, request)) {
+
+        return createResponse(Status::CODE_405, "TO BE DONE");
     }
 
     ENDPOINT("GET", "/static/css/{stylesheet}", cssSheetGET,
