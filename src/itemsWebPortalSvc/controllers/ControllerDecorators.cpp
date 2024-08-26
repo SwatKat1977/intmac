@@ -28,7 +28,6 @@ namespace items { namespace webPortalSvc { namespace controllers {
 bool AuthKeyInHeaderValid(const std::shared_ptr<OatppRequest>& request,
                           std::string auth_key_key,
                           std::string auth_key_value) {
-
     // Get the value of the auth key header value.
     auto headerValue = request->getHeader(auth_key_key.c_str());
 

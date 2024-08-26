@@ -37,11 +37,7 @@ Copyright 2014-2024 Integrated Test Management Suite Development Team
 
 namespace items { namespace webPortalSvc { namespace controllers {
 
-// Just for convenience
-using namespace inja;
-
 #include OATPP_CODEGEN_BEGIN(ApiController)
-
 
 using oatpp::web::protocol::http::incoming::Request;
 using oatpp::web::protocol::http::outgoing::Response;
@@ -161,7 +157,7 @@ class RootController : public WebRoute {
         std::string loginPage = PathAppend(htmlDirectory,
                                            TEMPLATE_LOGIN_PAGE);
 
-        Environment env;
+        inja::Environment env;
         auto redirectToLogin = GenerateRedirect("/", "login");
 
         // If No cookies then render the login page.
@@ -196,14 +192,14 @@ class RootController : public WebRoute {
         // Get the HTTP method (GET, POST, etc.)
         auto method = request->getStartingLine().method;
 
-        json data;
+        inja::json data;
 
         std::string serverHost = DetermineServerHost(request);
         data["static_css_dir"] = serverHost + "/static/css/";
 
         std::string templateDir = configManager_.GetStringEntry(
             "html", "html_directory");
-        Environment env(templateDir);
+        inja::Environment env(templateDir);
         std::string renderedPage;
 
         try {
@@ -248,8 +244,8 @@ class RootController : public WebRoute {
 
         file.close();
 
-        json data;
-        Environment env(directory);
+        inja::json data;
+        inja::Environment env(directory);
 
         auto rendered_css = env.render_file(stylesheet, data);
         return ApiResponseFactory::createResponse(

@@ -54,14 +54,14 @@ std::string RootController::DetermineServerHost(
 
 ResponseSharedPtr RootController::HandleLoginGet(
     std::shared_ptr<IncomingRequest> request) {
-    json data;
+    inja::json data;
 
     std::string serverHost = DetermineServerHost(request);
     data["static_css_dir"] = serverHost + "/static/css/";
 
     std::string templateDir = configManager_.GetStringEntry(
         "html", "html_directory");
-    Environment env(templateDir);
+    inja::Environment env(templateDir);
     std::string renderedPage;
 
     try {
