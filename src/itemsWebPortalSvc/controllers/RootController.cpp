@@ -54,6 +54,20 @@ std::string RootController::DetermineServerHost(
 
 ResponseSharedPtr RootController::HandleLoginGet(
     std::shared_ptr<IncomingRequest> request) {
+    auto rawCookies = request->getHeader("Cookie");
+
+    if (rawCookies) {
+        auto headers = ParseCookieHeader(rawCookies);
+
+        if (HasAuthCookies(headers) && IsValidSession(rawCookies)) {
+            auto redirectUrl = GenerateRedirect("/", "");
+            auto response = ApiResponseFactory::createResponse(
+                ApiResponseStatus::CODE_200, redirectUrl);
+            response->putHeader("Content-Type", "text/html");
+            return response;
+        }
+    }
+
     inja::json data;
 
     std::string serverHost = DetermineServerHost(request);
@@ -73,6 +87,37 @@ ResponseSharedPtr RootController::HandleLoginGet(
 
     return ApiResponseFactory::createResponse(
         ApiResponseStatus::CODE_200, renderedPage);
+}
+
+ResponseSharedPtr RootController::HandleLoginPost(
+    std::shared_ptr<IncomingRequest> request) {
+
+    auto body = request->readBodyToString();
+    auto formData = oatpp::network::Url::Parser::parseQueryParams("?" + body);
+
+    // Extract specific form entries
+    auto userEmail = formData.get("user_email");
+    auto password = formData.get("password");
+
+    if (!userEmail || !password) {
+        printf("something went wrong\n");
+        return createResponse(Status::CODE_405, "TBD WRONG!");
+    }
+
+    std::string email_decoded = DecodeUrl(userEmail->c_str());
+    std::string password_decoded = DecodeUrl(password->c_str());
+
+    OATPP_LOGD("Root Controller", "User Email : %s",
+               userEmail ? userEmail->c_str() : "not found");
+    OATPP_LOGD("Root Controller", "Password   : %s",
+               password ? password->c_str() : "not found");
+
+    OATPP_LOGD("Root Controller", "User Email (decoded) : %s",
+               email_decoded.c_str());
+    OATPP_LOGD("Root Controller", "Password (decoded)   : %s",
+               password_decoded.c_str());
+
+    return createResponse(Status::CODE_405, "TO BE DONE");
 }
 
 }   // namespace controllers

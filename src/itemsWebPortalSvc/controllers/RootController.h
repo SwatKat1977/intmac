@@ -190,27 +190,11 @@ class RootController : public WebRoute {
     ENDPOINT("GET", "/login", loginGET,
              REQUEST(std::shared_ptr<IncomingRequest>, request)) {
         return HandleLoginGet(request);
-
-#ifdef PYCODE
-        try:
-            if self._has_auth_cookies() and self._validate_cookies():
-                redirect = self._generate_redirect('')
-                response = await make_response(redirect)
-                return response
-
-        except ItemsException as ex:
-                self._logger.error('Internal Error: %s', ex)
-                return await render_template(self.TEMPLATE_INTERNAL_ERROR_PAGE)
-
-        if api_request.method == "GET":
-            return await render_template(self.TEMPLATE_LOGIN_PAGE)
-#endif
     }
 
     ENDPOINT("POST", "/login", loginPOST,
              REQUEST(std::shared_ptr<IncomingRequest>, request)) {
-
-        return createResponse(Status::CODE_405, "TO BE DONE");
+        return HandleLoginPost(request);
     }
 
     ENDPOINT("GET", "/static/css/{stylesheet}", cssSheetGET,
@@ -247,6 +231,8 @@ class RootController : public WebRoute {
 
  private:
     ResponseSharedPtr HandleLoginGet(RequestSharedPtr request);
+
+    ResponseSharedPtr HandleLoginPost(RequestSharedPtr request);
 
     std::string DetermineServerHost(RequestSharedPtr request);
 };
