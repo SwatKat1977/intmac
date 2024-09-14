@@ -70,6 +70,8 @@ class WebRoute  : public serviceFramework::ApiEndpointController {
 
     bool IsValidSession(std::string cookieHeader);
 
+    std::string DecodeUrl(const std::string &encoded);
+
  protected:
     std::shared_ptr<GatewaySvcClient> gatewaySvcClient_;
     serviceFramework::ConfigManager configManager_;

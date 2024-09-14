@@ -13,10 +13,10 @@ LIBRARIES = -lServiceFramework -loatpp
 
 OBJS = WebPortalSvc.o \
        ../common/PathHelpers.o \
+	   ../common/ControllerDecorators.o \
        WebRoute.o \
        serviceModules/StartupModule.o \
 	   controllers/RootController.o \
-	   controllers/ControllerDecorators.o
 
 WEBPORTALSVC = ${ITEMS_BIN_DIR}/webPortalSvc
 

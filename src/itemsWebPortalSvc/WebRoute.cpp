@@ -155,5 +155,31 @@ CookieKeyPair *WebRoute::GetCookieValue(const std::string& cookieValue) {
     return nullptr;
 }
 
+std::string WebRoute::DecodeUrl(const std::string &encoded) {
+    std::ostringstream decoded;
+    for (size_t i = 0; i < encoded.size(); ++i) {
+        if (encoded[i] == '%') {
+            if (i + 2 < encoded.size()) {
+                // Get the two characters after '%'
+                std::string hex = encoded.substr(i + 1, 2);
+                // Convert hex string to integer value
+                char decodedChar = static_cast<char>(std::stoi(hex, nullptr, 16));
+                decoded << decodedChar;
+                i += 2;  // Move the index forward past the hex digits
+            } else {
+                // Invalid encoding, add % as is
+                decoded << '%';
+            }
+        } else if (encoded[i] == '+') {
+            // Handle '+' as space (commonly used in query strings)
+            decoded << ' ';
+        } else {
+            // Normal characters, copy as is
+            decoded << encoded[i];
+        }
+    }
+    return decoded.str();
+}
+
 }   // namespace webPortalSvc
 }   // namespace items
