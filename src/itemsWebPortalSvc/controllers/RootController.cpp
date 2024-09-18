@@ -20,6 +20,9 @@ Copyright 2014-2024 Integrated Test Management Suite Development Team
     along with this program.If not, see < https://www.gnu.org/licenses/>.
 -----------------------------------------------------------------------------
 */
+#include <rapidjson/document.h>
+#include <rapidjson/writer.h>
+#include <rapidjson/stringbuffer.h>
 #include "RootController.h"
 
 namespace items { namespace webPortalSvc { namespace controllers {
@@ -108,14 +111,87 @@ ResponseSharedPtr RootController::HandleLoginPost(
     std::string password_decoded = DecodeUrl(password->c_str());
 
     OATPP_LOGD("Root Controller", "User Email : %s",
-               userEmail ? userEmail->c_str() : "not found");
-    OATPP_LOGD("Root Controller", "Password   : %s",
-               password ? password->c_str() : "not found");
-
-    OATPP_LOGD("Root Controller", "User Email (decoded) : %s",
                email_decoded.c_str());
-    OATPP_LOGD("Root Controller", "Password (decoded)   : %s",
+    OATPP_LOGD("Root Controller", "Password   : %s",
                password_decoded.c_str());
+
+    rapidjson::Document auth_body;
+    auth_body.SetObject();
+    rapidjson::Document::AllocatorType& allocator = auth_body.GetAllocator();
+
+    auth_body.AddMember("email_address",
+                        rapidjson::Value().SetString(email_decoded.c_str(),
+                        allocator), allocator);
+    auth_body.AddMember("password",
+                        rapidjson::Value().SetString(password_decoded.c_str(),
+                        allocator), allocator);
+
+    // --- TEMPORARY ---
+    if (email_decoded == "admin@test.internal" &&
+        password_decoded == "TestTest2024") {
+
+        printf("[DEBUG] Login success (temp)\n");
+        auto redirectUrl = GenerateRedirect("/", "");
+        auto response = ApiResponseFactory::createResponse(
+            ApiResponseStatus::CODE_302, redirectUrl);
+        response->putHeader("Content-Type", "text/html");
+
+        std::string user_cookie = std::string(COOKIE_USER) + "=" +
+                                              email_decoded +
+                                              "; Path=/; HttpOnly";
+                                              //"; Path=/; HttpOnly; Secure";
+        response->putHeader("Set-Cookie", user_cookie);
+
+        std::string token_cookie = std::string(COOKIE_TOKEN) + "=" +
+                                               "TOKEN" +
+                                               "; Path=/; HttpOnly";
+                                               // "; Path=/; HttpOnly; Secure";
+        response->putHeader("Set-Cookie", token_cookie);
+
+        return response;
+    }
+
+#ifdef old_
+    auth_body = {
+        "email_address": user_email,
+        "password": password
+    }
+    url = f"{Configuration().internal_api_gateway}/handshake/basic_authenticate"
+
+    try:
+        response = requests.post(url, json = auth_body)
+
+    except requests.exceptions.ConnectionError as ex:
+        self._logger.error('Connection to gateway api timed out: %s',
+                           str(ex))
+        return await render_template(self.TEMPLATE_INTERNAL_ERROR_PAGE)
+
+    body = json.loads(response.content,
+                      object_hook=lambda d: SimpleNamespace(**d))
+
+    if response.status_code == HTTPStatus.NOT_ACCEPTABLE:
+        except_str = ("Internal error communicating with gateway: "
+                  f"{body.error}")
+        self._logger.error(except_str)
+        return await render_template(self.TEMPLATE_INTERNAL_ERROR_PAGE)
+
+    if body.status == 1:
+        redirect = self._generate_redirect('')
+        response = await make_response(redirect)
+        response.set_cookie(self.COOKIE_USER, user_email)
+        response.set_cookie(self.COOKIE_TOKEN, body.token)
+        return response
+
+    else:
+        error_msg = "Invalid username/password"
+        return await render_template(self.TEMPLATE_LOGIN_PAGE,
+                                     generate_error_msg = True,
+                                     error_msg = error_msg)
+
+return self._generate_redirect('/login')
+
+#endif
+
 
     return createResponse(Status::CODE_405, "TO BE DONE");
 }

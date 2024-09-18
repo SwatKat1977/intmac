@@ -32,6 +32,9 @@ namespace items { namespace webPortalSvc {
 
 using common::apis::gatewaySvc::GatewaySvcClient;
 
+const char COOKIE_TOKEN[] = "items_token";
+const char COOKIE_USER[] = "items_user";
+
 class CookieKeyPair {
  public:
     CookieKeyPair(std::string key, std::string value)

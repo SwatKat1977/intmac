@@ -33,10 +33,6 @@ namespace items { namespace webPortalSvc {
     using common::apis::gatewaySvc::IsValidUserTokenResponseDTO;
     using common::apis::gatewaySvc::GATEWAYSVC_RESPONSE_STATUS_OK;
 
-    // Name of cookies.
-    const std::string COOKIE_TOKEN = "items_token";
-    const std::string COOKIE_USER = "items_user";
-
     const std::string REDIRECT_URL =
         "<meta http-equiv=\"Refresh\" content=\"0; url='{0}\"/>";
 
